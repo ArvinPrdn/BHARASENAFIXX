@@ -202,8 +202,8 @@ img { max-width: 100%; }
 .gallery-dialog::backdrop { background: rgba(0,0,0,.87); }
 .gallery-dialog img { display: block; max-height: 70dvh; margin: 0 auto; }
 .dialog-close { position: absolute; top: 5px; right: 8px; min-width: 44px; min-height: 44px; color: var(--ivory); background: transparent; border: 0; font-size: 30px; }
-.dialog-arrows { display: flex; justify-content: space-between; }
-.dialog-arrows button { min-width: 44px; min-height: 44px; color: var(--ivory); background: transparent; border: 1px solid var(--rule); }
+.dialog-controls { display: flex; justify-content: space-between; }
+.dialog-controls button { min-width: 44px; min-height: 44px; color: var(--ivory); background: transparent; border: 1px solid var(--rule); }
 
 /* The message wall is a moderated guestbook, styled like a stack of ballroom cards. */
 .message-wall { min-height: 80vh; padding: 125px 8vw 145px; background: radial-gradient(circle at 82% 30%, rgba(143,29,43,.28), transparent 34%), linear-gradient(118deg,#160b0f 0%,#0d0709 58%,#211016 100%); }
