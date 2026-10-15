@@ -18,18 +18,18 @@ itu proyek tidak membawa Astro atau adapter Astro. Perbedaan dari brief awal dic
 
 ## Prasyarat
 
-- Node.js **26.7.0** (lihat `.nvmrc`) dan npm 11.
+- Node.js **24.x** (lihat `.nvmrc`) dan npm 11.
 - Git.
 - Docker hanya diperlukan untuk pemeriksaan deployment; Docker belum tersedia di lingkungan
   pengembangan ini.
 
-Node 26 dipakai agar SQLite dapat memakai modul bawaan `node:sqlite`, sehingga instalasi
+Node 24 dipakai agar SQLite dapat memakai modul bawaan `node:sqlite`, sehingga instalasi
 Windows tidak bergantung pada kompilasi modul native `better-sqlite3`.
 
 ## Menjalankan di Windows PowerShell
 
 ```powershell
-nvm use 26.7.0
+nvm use 24
 npm install
 Copy-Item .env.example .env
 npm run migrate
@@ -37,7 +37,7 @@ npm run seed
 npm run dev
 ```
 
-Buka `http://localhost:4321`. Jika `nvm` tidak tersedia, pasang Node 26.7.0 dari situs
+Buka `http://localhost:4321`. Jika `nvm` tidak tersedia, pasang Node 24 dari situs
 resmi Node lalu jalankan perintah npm yang sama.
 
 ## Menjalankan di Linux/macOS

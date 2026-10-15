@@ -1,9 +1,9 @@
-FROM node:26-bookworm-slim AS build
+FROM node:24-bookworm-slim AS build
 WORKDIR /app
 COPY . .
 RUN node scripts/build.mjs
 
-FROM node:26-bookworm-slim AS runtime
+FROM node:24-bookworm-slim AS runtime
 ENV NODE_ENV=production
 WORKDIR /app
 RUN useradd --create-home --uid 10001 appuser
