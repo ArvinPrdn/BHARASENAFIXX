@@ -392,3 +392,70 @@ img { max-width: 100%; }
   .room-glow,.room-pillar,.curtain,.chandelier,.invite-card { transform: none !important; }
   .chandelier { left: 50%; transform: translateX(-50%) !important; }
 }
+
+/* Sponsorship proposal room */
+.proposal { min-height: 100svh; padding: 150px clamp(22px, 8vw, 130px) 155px; background: radial-gradient(circle at 78% 18%, rgba(143,29,43,.24), transparent 31%), linear-gradient(145deg, #14090c 0%, #090607 55%, #1c0b10 100%); }
+.proposal::before { content: ''; position: absolute; inset: 0; opacity: .25; pointer-events: none; background: linear-gradient(115deg, transparent 0 45%, rgba(217,195,160,.08) 45.1% 45.2%, transparent 45.3%), repeating-linear-gradient(90deg, transparent 0 80px, rgba(243,234,216,.025) 81px 82px); }
+.proposal-heading { position: relative; z-index: 1; width: min(1160px,100%); margin: 0 auto 72px; display: flex; align-items: end; justify-content: space-between; gap: 60px; }
+.proposal h2 { margin: 25px 0 0; font: 500 clamp(4.6rem, 8vw, 8.6rem)/.87 var(--display); letter-spacing: -.07em; }
+.proposal h2 em { color: var(--champagne); font-style: italic; }
+.proposal-intro { max-width: 310px; margin: 0 0 10px; color: var(--muted); }
+.proposal-stage { position: relative; z-index: 1; width: min(1160px,100%); margin: auto; padding: 52px clamp(18px, 5vw, 74px) 66px; border: 1px solid rgba(217,195,160,.3); background: linear-gradient(115deg, rgba(20,9,12,.9), rgba(65,19,25,.32)); box-shadow: 0 30px 80px rgba(0,0,0,.36), inset 0 0 70px rgba(143,29,43,.1); }
+.proposal-stage::before { content: 'CONFIDENTIAL · OFFICIAL DOCUMENTS'; position: absolute; top: 20px; right: 28px; color: rgba(217,195,160,.48); font-size: 10px; letter-spacing: .18em; }
+.proposal-card-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: clamp(18px, 4vw, 48px); }
+.proposal-card { position: relative; min-width: 0; border: 1px solid rgba(217,195,160,.38); background: #10090b; box-shadow: 0 18px 42px rgba(0,0,0,.32); transition: transform .5s cubic-bezier(.2,.7,.2,1), box-shadow .5s ease; }
+.proposal-card:hover { transform: translateY(-10px) rotate(-.4deg); box-shadow: 0 28px 55px rgba(0,0,0,.48), 0 0 0 1px rgba(217,195,160,.18); }
+.proposal-card:nth-child(2):hover { transform: translateY(-10px) rotate(.4deg); }
+.proposal-card-top { display: flex; justify-content: space-between; padding: 17px 19px; color: var(--champagne); font-size: 10px; font-weight: 700; letter-spacing: .16em; }
+.proposal-cover { position: relative; min-height: 320px; margin: 0 16px; padding: 34px 28px 25px; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; color: var(--ivory); background: radial-gradient(circle at 75% 25%, rgba(255,244,201,.18), transparent 18%), linear-gradient(145deg, #3d121b, #17090d 64%, #080607); }
+.proposal-cover::before { content: ''; position: absolute; width: 270px; height: 270px; right: -110px; bottom: -100px; border: 1px solid rgba(217,195,160,.3); border-radius: 50%; box-shadow: 0 0 0 24px rgba(217,195,160,.04), 0 0 0 48px rgba(217,195,160,.035); }
+.proposal-cover::after { content: ''; position: absolute; inset: 12px; border: 1px solid rgba(217,195,160,.23); pointer-events: none; }
+.proposal-cover > * { position: relative; z-index: 1; }
+.proposal-cover-kicker { font-size: 10px; letter-spacing: .28em; }
+.proposal-cover strong { font: 500 clamp(2.9rem, 5vw, 5.2rem)/.84 var(--display); letter-spacing: -.07em; }
+.proposal-cover strong em { color: var(--champagne); font-style: italic; }
+.proposal-cover-mark { align-self: flex-end; font: 500 5.5rem/.8 var(--display); color: rgba(243,234,216,.15); letter-spacing: .12em; }
+.proposal-cover-line { width: 80px; height: 1px; background: var(--champagne); }
+.proposal-cover small { font-size: 9px; letter-spacing: .16em; color: var(--muted); }
+.proposal-cover-red { background: radial-gradient(circle at 20% 25%, rgba(255,244,201,.14), transparent 21%), linear-gradient(145deg, #741c2d, #2b0c13 62%, #10080a); }
+.proposal-card-body { padding: 24px 21px 23px; }
+.proposal-card-body p { min-height: 53px; margin: 0 0 22px; color: var(--muted); font-size: 14px; line-height: 1.55; }
+.proposal-actions { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.proposal-primary, .proposal-download { text-decoration: none; font-size: 12px; font-weight: 700; letter-spacing: .08em; }
+.proposal-primary { padding: 12px 15px; color: var(--ink); background: var(--champagne); }
+.proposal-primary span { margin-left: 9px; font-size: 16px; }
+.proposal-download { color: var(--champagne); border-bottom: 1px solid rgba(217,195,160,.5); padding-bottom: 3px; }
+.proposal-note { position: relative; z-index: 1; display: flex; align-items: center; gap: 12px; width: min(1160px,100%); margin: 24px auto 0; color: rgba(197,184,173,.8); font-size: 12px; }
+.proposal-note .wax-mini { flex: 0 0 auto; width: 28px; height: 28px; }
+.proposal-stamp { position: absolute; z-index: 2; top: -28px; right: clamp(18px, 5vw, 85px); width: 92px; height: 92px; display: grid; place-content: center; gap: 2px; border: 1px solid rgba(217,195,160,.7); border-radius: 50%; transform: rotate(12deg); color: var(--champagne); text-align: center; font-size: 8px; letter-spacing: .16em; background: rgba(34,10,15,.92); box-shadow: 0 8px 24px rgba(0,0,0,.35); }
+.proposal-stamp strong { font: 500 26px/1 var(--display); color: var(--ivory); }
+.proposal-stack { position: absolute; bottom: -11px; left: clamp(30px, 8vw, 120px); right: clamp(30px, 8vw, 120px); height: 18px; pointer-events: none; }
+.proposal-stack span { position: absolute; inset: 0; border: 1px solid rgba(217,195,160,.22); background: #241015; transform: rotate(-1.2deg); }
+.proposal-stack span:nth-child(2) { transform: translateY(5px) rotate(.8deg); background: #32151c; }
+.proposal-stack span:nth-child(3) { transform: translateY(10px) rotate(-.3deg); background: #12090d; }
+.proposal-orbit { position: absolute; border: 1px solid rgba(217,195,160,.1); border-radius: 50%; pointer-events: none; }
+.proposal-orbit-one { width: 45vw; height: 45vw; top: 5%; right: -22vw; }
+.proposal-orbit-two { width: 26vw; height: 26vw; bottom: -9vw; left: -13vw; }
+
+@media (max-width: 900px) {
+  .header-nav { gap: 14px; }
+  .proposal { padding: 120px 22px 125px; }
+  .proposal-heading { display: block; margin-bottom: 45px; }
+  .proposal h2 { font-size: clamp(4.3rem, 14vw, 7rem); }
+  .proposal-intro { margin-top: 27px; max-width: 510px; }
+  .proposal-stage { padding: 44px 16px 45px; }
+  .proposal-card-grid { gap: 16px; }
+}
+
+@media (max-width: 620px) {
+  .proposal { padding: 100px 18px 115px; }
+  .proposal-stage { margin-inline: -2px; padding: 39px 12px 35px; }
+  .proposal-stage::before { top: 15px; right: 15px; font-size: 8px; }
+  .proposal-card-grid { grid-template-columns: 1fr; gap: 24px; }
+  .proposal-card:nth-child(2) { margin-left: 7vw; }
+  .proposal-cover { min-height: 285px; }
+  .proposal-cover strong { font-size: clamp(3.4rem, 16vw, 5.4rem); }
+  .proposal-note { align-items: flex-start; }
+  .proposal-stamp { width: 76px; height: 76px; right: 24px; top: -24px; font-size: 7px; }
+  .proposal-stamp strong { font-size: 21px; }
+}
