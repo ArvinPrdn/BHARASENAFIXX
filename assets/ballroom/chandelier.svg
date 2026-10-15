@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 650" fill="none">
+  <title>Lampu gantung kristal ballroom</title>
+  <defs>
+    <radialGradient id="aura"><stop stop-color="#E9D49A" stop-opacity=".2"/><stop offset=".46" stop-color="#B88A3E" stop-opacity=".08"/><stop offset="1" stop-color="#B88A3E" stop-opacity="0"/></radialGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1" gradientUnits="objectBoundingBox">
+      <stop stop-color="#68491F"/><stop offset=".24" stop-color="#DBBE78"/><stop offset=".45" stop-color="#FFF0BB"/><stop offset=".63" stop-color="#A67830"/><stop offset=".86" stop-color="#E9D49A"/><stop offset="1" stop-color="#68491F"/>
+    </linearGradient>
+    <linearGradient id="crystal" x1="0" y1="0" x2="1" y2="1" gradientUnits="objectBoundingBox">
+      <stop stop-color="#FFF8E8" stop-opacity=".85"/><stop offset=".36" stop-color="#D9C3A0" stop-opacity=".22"/><stop offset=".7" stop-color="#FFF3CB" stop-opacity=".65"/><stop offset="1" stop-color="#B9914B" stop-opacity=".25"/>
+    </linearGradient>
+    <g id="drop">
+      <path d="M0 0 12 8 9 35 0 56 -9 35 -12 8Z" fill="url(#crystal)" stroke="#F5DEA7" stroke-opacity=".72" stroke-width="1"/>
+      <path d="M0 0v56M-12 8 0 18 12 8M-9 35 0 26l9 9" stroke="#FFF9E8" stroke-opacity=".53" stroke-width=".8"/>
+      <path d="M0 0 5 15 0 26-5 15Z" fill="#FFF9E8" fill-opacity=".4"/>
+    </g>
+    <g id="left-arm" stroke="url(#gold)" stroke-linecap="round">
+      <path d="M380 225c-35 18-63 23-103 19-30-3-56 9-68 33-14 28-35 40-67 39" stroke-width="4"/>
+      <path d="M380 231c-39 13-75 30-102 63-17 21-38 26-62 18" stroke-width="1.5" stroke-opacity=".8"/>
+      <path d="M377 272c-34 8-56 27-66 52-8 22-28 34-49 30" stroke-width="3"/>
+      <path d="M379 295c-17 7-30 19-37 40-6 20-16 30-28 32" stroke-width="2"/>
+      <path d="M142 316v-19m67 17v-20m56 61v-19m48 31v-16" stroke-width="2.5"/>
+      <path d="M131 296h22m44-2h24m32 42h22m28 15h20" stroke-width="3"/>
+      <path d="M133 292q8-10 16 0m50-2q8-10 16 0m40 42q8-10 16 0m37 15q6-8 12 0" stroke-width="2"/>
+    </g>
+  </defs>
+  <ellipse cx="380" cy="290" rx="330" ry="285" fill="url(#aura)"/>
+  <path d="M380 0v158" stroke="url(#gold)" stroke-width="3"/>
+  <path d="M373 59h14m-13 43h12" stroke="#F4DCA0" stroke-width="2"/>
+  <path d="M365 155c0-17 30-17 30 0v31h-30z" fill="url(#gold)"/>
+  <path d="M344 186c0-16 72-16 72 0v29c0 20-72 20-72 0z" fill="url(#gold)" stroke="#FFF1BD" stroke-opacity=".55"/>
+  <path d="M347 192c23 9 43 9 66 0" stroke="#FFF5CF" stroke-opacity=".76"/>
+  <use href="#left-arm"/>
+  <use href="#left-arm" transform="translate(760 0) scale(-1 1)"/>
+  <path d="M380 221v173M372 291h16M367 318h26" stroke="url(#gold)" stroke-width="3"/>
+  <path d="M354 368c7-21 45-21 52 0l-13 24h-26z" fill="url(#gold)" stroke="#FFF0B5" stroke-opacity=".6"/>
+  <path d="M380 389c-19 0-24 14-16 29l16 29 16-29c8-15 3-29-16-29Z" fill="url(#crystal)" stroke="#F1D79B"/>
+  <path d="M380 389v58m-16-29h32" stroke="#FFF9DE" stroke-opacity=".65"/>
+  <path d="M223 252c94-44 220-44 314 0M178 286c127-81 277-81 404 0" stroke="url(#gold)" stroke-width="1.5" stroke-opacity=".65"/>
+  <g class="crystal" data-crystal="1" transform="translate(142 316)"><use href="#drop"/></g>
+  <g class="crystal" data-crystal="2" transform="translate(209 314) scale(.82)"><use href="#drop"/></g>
+  <g class="crystal" data-crystal="3" transform="translate(265 355) scale(.96)"><use href="#drop"/></g>
+  <g class="crystal" data-crystal="4" transform="translate(313 367) scale(.78)"><use href="#drop"/></g>
+  <g class="crystal" data-crystal="5" transform="translate(447 367) scale(.78)"><use href="#drop"/></g>
+  <g class="crystal" data-crystal="6" transform="translate(495 355) scale(.96)"><use href="#drop"/></g>
+  <g class="crystal" data-crystal="7" transform="translate(551 314) scale(.82)"><use href="#drop"/></g>
+  <g class="crystal" data-crystal="8" transform="translate(618 316)"><use href="#drop"/></g>
+  <g class="crystal" data-crystal="9" transform="translate(236 282) scale(.56)"><use href="#drop"/></g>
+  <g class="crystal" data-crystal="10" transform="translate(290 257) scale(.5)"><use href="#drop"/></g>
+  <g class="crystal" data-crystal="11" transform="translate(340 245) scale(.46)"><use href="#drop"/></g>
+  <g class="crystal" data-crystal="12" transform="translate(420 245) scale(.46)"><use href="#drop"/></g>
+  <g class="crystal" data-crystal="13" transform="translate(470 257) scale(.5)"><use href="#drop"/></g>
+  <g class="crystal" data-crystal="14" transform="translate(524 282) scale(.56)"><use href="#drop"/></g>
+  <path d="m98 356 4 11 11 4-11 4-4 11-4-11-11-4 11-4Zm549-49 3 8 8 3-8 3-3 8-3-8-8-3 8-3Z" fill="#FFF5D1" fill-opacity=".55"/>
+</svg>

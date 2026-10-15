@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 450 1100" fill="none">
+  <title>Panel tirai beludru ballroom</title>
+  <defs>
+    <linearGradient id="velvet" x1="0" y1="0" x2="1" y2="0">
+      <stop stop-color="#100609"/><stop offset=".1" stop-color="#3A0A12"/><stop offset=".21" stop-color="#160609"/><stop offset=".32" stop-color="#5E1420"/><stop offset=".43" stop-color="#1D070D"/><stop offset=".55" stop-color="#6B1626"/><stop offset=".67" stop-color="#1A070B"/><stop offset=".8" stop-color="#48101C"/><stop offset=".91" stop-color="#19070C"/><stop offset="1" stop-color="#3A0A12"/>
+    </linearGradient>
+    <linearGradient id="hem" x1="0" y1="0" x2="1" y2="0">
+      <stop stop-color="#755421"/><stop offset=".33" stop-color="#E9D49A"/><stop offset=".58" stop-color="#FFF4C9"/><stop offset=".8" stop-color="#B88A3E"/><stop offset="1" stop-color="#6E4F1E"/>
+    </linearGradient>
+    <linearGradient id="shade" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#100408" stop-opacity="0"/><stop offset=".65" stop-color="#0D0709" stop-opacity=".08"/><stop offset="1" stop-color="#0D0709" stop-opacity=".78"/>
+    </linearGradient>
+  </defs>
+  <path d="M0 0h450c-39 45-67 98-64 162 3 76 35 141 11 209-18 52-73 89-89 160-21 97 15 187-4 269-23 103-73 182-62 300H0Z" fill="url(#velvet)"/>
+  <path d="M0 0h450c-35 33-76 84-81 151-5 88 50 167 24 222-18 36-59 63-84 92-67-35-129-89-162-151C84 198 94 66 0 0Z" fill="url(#shade)"/>
+  <path d="M35 0c89 142 42 264 115 359 39 51 107 88 159 105M143 0c55 130 35 263 87 369 26 53 55 76 79 95M270 0c10 132-18 236 13 346 10 38 20 74 26 118M388 0c-67 112-98 253-80 464" stroke="#BA4050" stroke-opacity=".18" stroke-width="9"/>
+  <path d="M70 0c42 169 35 300 98 378m88-378c-29 147-20 290 24 410M0 197c39 122 106 207 203 266" stroke="#080307" stroke-opacity=".37" stroke-width="17"/>
+  <path d="M0 392c86 47 169 90 290 42l18 35C188 517 86 478 0 435Z" fill="url(#hem)"/>
+  <path d="M0 394c107 57 210 77 298 43" stroke="#FFF3C0" stroke-opacity=".73" stroke-width="2.5"/>
+  <path d="M304 452c22 10 31 29 27 49-5 23-36 29-43 5-7-25-1-45 16-54Z" fill="url(#hem)"/>
+  <path d="M304 476c-6 37-20 52-31 80m35-78c1 38-4 60-6 88m11-89c8 41 10 66 17 88" stroke="url(#hem)" stroke-width="5" stroke-linecap="round"/>
+  <path d="M0 1097c72-15 149 8 243-8" stroke="#B88A3E" stroke-opacity=".48" stroke-width="3"/>
+  <path d="M0 0h450" stroke="url(#hem)" stroke-opacity=".42" stroke-width="3"/>
+</svg>

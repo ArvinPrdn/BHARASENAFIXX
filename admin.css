@@ -1,0 +1,31 @@
+:root { color-scheme: light; font-family: system-ui, sans-serif; }
+* { box-sizing: border-box; }
+body { margin: 0; background: #f4f1ea; color: #211b1c; line-height: 1.5; }
+.admin-shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 36px 0 90px; }
+.admin-top { display: flex; justify-content: space-between; align-items: start; gap: 20px; }
+.admin-shell h1 { font: 500 clamp(2.5rem, 5vw, 4.5rem)/1.05 Georgia, serif; margin: 8px 0 24px; }
+.admin-shell h2 { font: 500 clamp(1.8rem, 3vw, 2.4rem)/1.15 Georgia, serif; margin: 0 0 22px; }
+.admin-shell h3 { margin: 0 0 16px; font-size: 1rem; }
+.admin-shell section { border-top: 1px solid #cabdb5; padding: 34px 0 46px; }
+.admin-shell p { max-width: 65ch; }
+.admin-shell .scene-kicker { color: #704334; font-size: 12px; font-weight: 700; letter-spacing: .14em; }
+.admin-jump { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 30px; }
+.admin-jump a { display: inline-flex; min-height: 44px; align-items: center; padding: 8px 14px; border: 1px solid #9a8882; color: #211b1c; text-decoration: none; }
+.admin-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 310px), 1fr)); gap: 16px; }
+.admin-form { display: grid; gap: 14px; max-width: 670px; padding: 24px; border: 1px solid #cabdb5; background: #fffdf8; }
+.admin-grid .admin-form { max-width: none; }
+.admin-form label { display: grid; gap: 5px; font-size: 14px; font-weight: 600; }
+.admin-form label:has(input[type="checkbox"]) { display: flex; align-items: center; gap: 10px; }
+.admin-form input:not([type="checkbox"]), .admin-form textarea { width: 100%; min-height: 44px; border: 1px solid #8d7c78; border-radius: 0; background: white; color: #211b1c; padding: 9px 11px; font: inherit; }
+.admin-form textarea { resize: vertical; }
+.admin-form input[type="checkbox"] { width: 18px; height: 18px; }
+.admin-shell button { min-height: 44px; padding: 9px 16px; border: 1px solid #3a0a12; border-radius: 0; background: #3a0a12; color: #fff; font: 700 14px/1.2 system-ui, sans-serif; cursor: pointer; }
+.admin-shell button:hover { background: #6b1626; }
+.admin-shell :focus-visible { outline: 2px solid #6b1626; outline-offset: 3px; }
+.admin-table-wrap { overflow-x: auto; }
+.admin-table-wrap table { width: 100%; border-collapse: collapse; background: #fffdf8; }
+.admin-table-wrap th, .admin-table-wrap td { border-bottom: 1px solid #d9ccc4; padding: 12px; text-align: left; vertical-align: top; }
+.admin-table-wrap form { display: flex; flex-wrap: wrap; gap: 8px; }
+.admin-table-wrap button[value="rejected"] { background: #fffdf8; color: #3a0a12; }
+.admin-audit { padding-left: 22px; font-size: 14px; }
+@media (max-width: 620px) { .admin-shell { width: min(100% - 24px, 1100px); padding-top: 24px; } .admin-top { align-items: start; } .admin-form { padding: 18px; } .admin-table-wrap table { min-width: 610px; } }

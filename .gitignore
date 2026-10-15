@@ -1,0 +1,30 @@
+# Dependencies and build output
+node_modules/
+dist/
+coverage/
+.astro/
+
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+
+# Runtime data — database, uploaded media, and local backups
+data/*.db
+data/*.db-*
+data/uploads/
+data/backups/
+
+# QA artefacts and generated screenshots
+_qa/
+*.log
+playwright-report/
+test-results/
+
+# Editor and operating-system files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json

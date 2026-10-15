@@ -1,0 +1,16 @@
+services:
+  bharasena:
+    build: .
+    ports:
+      - "4321:4321"
+    environment:
+      NODE_ENV: production
+      APP_SECRET: ${APP_SECRET:?APP_SECRET wajib diisi}
+      TRUST_PROXY: ${TRUST_PROXY:-0}
+      DB_PATH: /app/data/bharasena.db
+    volumes:
+      - bharasena_data:/app/data
+    restart: unless-stopped
+
+volumes:
+  bharasena_data:
