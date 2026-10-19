@@ -3,9 +3,34 @@
 Situs informasi acara untuk BHARASENA. Pengalaman publik memakai bahasa Indonesia dan
 memperlakukan scroll sebagai perjalanan satu malam di ballroom: beludru gelap, foil emas,
 kristal, dan lantai marmer cermin. Situs ini tidak mengumpulkan RSVP, profil peserta, atau
-data pelacakan pihak ketiga.
+data pelacakan pihak ketiga. Panel musik memakai pemutar audio lokal. Musik dapat
+tetap diputar saat panel ditutup; tekan Hentikan atau jeda pada pemutar untuk menghentikannya.
+
+## Audio lokal
+
+Masukkan rekaman yang telah diizinkan untuk digunakan ke folder `assets/audio/`.
+Nama file yang didukung: `melukis-senja`, `mesin-waktu`, `tak-kan-hilang`, dan `tolong`,
+dengan ekstensi `.mp3`, `.m4a`, `.ogg`, atau `.wav`.
+Panel mendeteksi file saat dibuka. Lagu yang belum memiliki file ditandai
+“Audio belum tersedia”. Empat file audio pada salinan lokal ini disediakan pengguna
+dari folder Downloads dan tersimpan di `assets/audio/`.
 
 ## Status pengembangan
+
+### Publikasi Vercel
+
+Proyek Vercel bernama `bharasena`; judul tab versi publik adalah **Bharasena**.
+`vercel.json` menjalankan `node scripts/build-static.mjs` dan hanya menerbitkan
+folder `public/`. Paket publik memuat tampilan, audio lokal, kartu undangan, dan
+proposal. Database lokal, konfigurasi rahasia, dan panel admin tidak dimasukkan.
+Pengiriman pesan ditandai belum dibuka pada versi statis; server lokal tetap
+menjalankan backend SQLite. Backend online memerlukan penyimpanan persisten terpisah.
+
+Untuk memeriksa paket publik sebelum deployment:
+
+```text
+node scripts/build-static.mjs
+```
 
 Repositori sudah memiliki server Node.js native, SQLite, endpoint konten/pesan, panel admin,
 moderasi, audit log, dan upload galeri. Pemeriksaan produksi yang bergantung pada instalasi

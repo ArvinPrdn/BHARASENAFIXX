@@ -17,9 +17,9 @@
 
     <header class="site-header">
       <a class="site-brand" href="#hero" aria-label="BHARASENA, kembali ke awal">BHARASENA <span>· 2026</span></a>
-      <nav class="header-nav" aria-label="Navigasi utama"><a href="#rundown">Rundown</a><a href="#undangan">Undanganku</a><a href="#proposal">Proposal</a><a href="#info-peserta">Info peserta</a><a href="#dinding-pesan">Dinding pesan</a></nav>
+      <nav class="header-nav" aria-label="Navigasi utama"><a href="#rundown">Rundown</a><a href="#info-peserta">Info peserta</a><a href="#undangan">Undanganku</a><a href="#proposal">Proposal</a><a href="#dinding-pesan">Dinding pesan</a></nav>
       <div class="clock-group"><span class="clock-caption">MALAM BERJALAN</span><output class="scene-clock" aria-label="Jam cerita">18.00</output></div>
-      <button id="audio-toggle" class="icon-button audio-toggle" type="button" aria-pressed="false" aria-label="Aktifkan bunyi lonceng"><span aria-hidden="true">♫</span></button>
+      <button id="audio-toggle" class="icon-button audio-toggle" type="button" aria-expanded="false" aria-haspopup="dialog" aria-label="Pilih lagu Budi Doremi"><span aria-hidden="true">♫</span></button>
     </header>
 
     <nav class="scene-rail" aria-label="Lompat ke adegan">
@@ -63,12 +63,66 @@
 
       <section id="tentang" class="scene about" data-scene="2" aria-labelledby="about-title">
         <div class="about-number" aria-hidden="true">06</div>
-        <div class="about-content"><p class="scene-kicker">18.45 / SEBUAH PERJALANAN</p><h2 id="about-title">Satu angkatan.<br /><span>Banyak cerita.</span></h2><div class="about-copy"><span class="vertical-rule"></span><p>BHARASENA merayakan perjalanan Batalyon Bhara Arsa Nawasena. Di sini kita berhenti sejenak, berkumpul, dan memberi ruang bagi cerita yang tumbuh selama bersama di SMAN 2 Taruna Bhayangkara.</p></div></div>
+        <div class="about-content"><p class="scene-kicker">18.45 / SEBUAH PERJALANAN</p><h2 id="about-title">Satu angkatan.<br /><span>Banyak cerita.</span></h2><div class="about-copy"><span class="vertical-rule"></span><div><p>BHARASENA merayakan perjalanan Batalyon Bhara Arsa Nawasena. Di sini kita berhenti sejenak, berkumpul, dan memberi ruang bagi cerita yang tumbuh selama bersama di SMAN 2 Taruna Bhayangkara.</p><a class="heritage-discover" href="#identitas">Kenali lambang kita <span aria-hidden="true">↗</span></a></div></div></div>
+      </section>
+
+      <section id="identitas" class="scene heritage" data-scene="2.5" aria-labelledby="heritage-title">
+        <div class="heritage-heading">
+          <p class="scene-kicker">IDENTITAS BATALYON</p>
+          <h2 id="heritage-title">Di balik <em>lambang kita.</em></h2>
+          <p>Setiap simbol menyimpan cerita. Setiap makna menjadi bagian dari kita.</p>
+        </div>
+        <div class="heritage-layout">
+          <figure class="heritage-emblem">
+            <div class="heritage-halo" aria-hidden="true"></div>
+            <button class="heritage-logo" type="button" aria-label="Jelajahi filosofi logo Bhara Arsa Nawasena" aria-expanded="false" aria-controls="heritage-explorer">
+              <img src="assets/batalyon/bhara-arsa-nawasena.png" width="1024" height="1024" alt="Lambang Batalyon Bhara Arsa Nawasena: ksatria, perisai merah, tiga bintang, matahari, obor, buku, padi, kapas, dan pita nama." loading="lazy" />
+              <span class="heritage-spotlight" aria-hidden="true"></span>
+            </button>
+            <figcaption>BHARA ARSA NAWASENA<span>Tekan lambang untuk mengenal maknanya</span></figcaption>
+          </figure>
+          <div class="heritage-story">
+            <p class="heritage-overline">SATU NAMA. SATU TEKAD.</p>
+            <dl class="heritage-name"><div><dt>Bhara</dt><dd>Ksatria</dd></div><div><dt>Arsa</dt><dd>Semangat &amp; tekad</dd></div><div><dt>Nawasena</dt><dd>Masa depan yang cerah</dd></div></dl>
+            <p class="heritage-intro">Keberanian untuk melindungi. Semangat untuk terus belajar. Harapan untuk membawa masa depan yang lebih cerah.</p>
+            <details id="heritage-explorer" class="heritage-explorer">
+              <summary><span>Jelajahi maknanya</span><span class="heritage-expand" aria-hidden="true">+</span></summary>
+              <div class="heritage-explorer-body">
+                <div class="heritage-symbols" role="group" aria-label="Pilih simbol pada lambang">
+                  <button type="button" data-symbol="ksatria" aria-pressed="true" aria-controls="philosophy-ksatria">Ksatria</button>
+                  <button type="button" data-symbol="perisai" aria-pressed="false" aria-controls="philosophy-perisai">Perisai</button>
+                  <button type="button" data-symbol="bintang" aria-pressed="false" aria-controls="philosophy-bintang">Tiga Bintang</button>
+                  <button type="button" data-symbol="matahari" aria-pressed="false" aria-controls="philosophy-matahari">Matahari</button>
+                  <button type="button" data-symbol="obor" aria-pressed="false" aria-controls="philosophy-obor">Obor</button>
+                  <button type="button" data-symbol="buku" aria-pressed="false" aria-controls="philosophy-buku">Buku</button>
+                  <button type="button" data-symbol="padi" aria-pressed="false" aria-controls="philosophy-padi">Padi</button>
+                  <button type="button" data-symbol="kapas" aria-pressed="false" aria-controls="philosophy-kapas">Kapas</button>
+                  <button type="button" data-symbol="tahun" aria-pressed="false" aria-controls="philosophy-tahun">MMXXIV</button>
+                  <button type="button" data-symbol="pita" aria-pressed="false" aria-controls="philosophy-pita">Pita Nama</button>
+                </div>
+                <div class="heritage-panels" aria-live="polite" aria-atomic="true">
+                  <article class="heritage-panel" id="philosophy-ksatria" data-philosophy="ksatria"><p class="heritage-value">BERANI · DISIPLIN · MEMIMPIN</p><h3>Ksatria berbaju zirah</h3><p>Prajurit dengan tombak dan helm melambangkan keberanian, kedisiplinan, serta jiwa kepemimpinan. Sosok taruna yang tangguh, siaga, dan siap melindungi masyarakat.</p><p class="heritage-color">Merah untuk keberanian dan ketegasan. Emas untuk kehormatan dan kejayaan.</p></article>
+                  <article class="heritage-panel" id="philosophy-perisai" data-philosophy="perisai"><p class="heritage-value">MELINDUNGI · MENGUATKAN</p><h3>Perisai merah</h3><p>Perlindungan, kekuatan, dan kesiapan taruna dalam menghadapi tantangan. Perisai menjadi lambang keteguhan untuk berdiri dan menjaga.</p><p class="heritage-color">Merah mencerminkan semangat, keberanian, dan pengorbanan.</p></article>
+                  <article class="heritage-panel" id="philosophy-bintang" data-philosophy="bintang"><p class="heritage-value">KEBENARAN · PENGABDIAN · KEHORMATAN</p><h3>Tiga bintang emas</h3><p>Dalam filosofi batalyon, tiga bintang menggambarkan Tribrata sebagai dasar moral anggota Polri: kebenaran, pengabdian, dan kehormatan. Emas menyimbolkan nilai luhur, cita-cita tinggi, dan kejayaan.</p><p class="heritage-color">Tiga bintang dengan masing-masing lima sudut membentuk angka 15: tanggal pembaretan pada 15 Oktober 2024 di Lanud Iswahjudi.</p></article>
+                  <article class="heritage-panel" id="philosophy-matahari" data-philosophy="matahari"><p class="heritage-value">ILMU · PENCERAHAN · HARAPAN</p><h3>Matahari dan sinarnya</h3><p>Simbol pencerahan dan ilmu pengetahuan. Taruna diharapkan menjadi cahaya penerang bagi masa depan bangsa.</p><p class="heritage-color">Kuning emas membawa makna kejayaan, kecerdasan, dan harapan.</p></article>
+                  <article class="heritage-panel" id="philosophy-obor" data-philosophy="obor"><p class="heritage-value">SEMANGAT YANG TAK PADAM</p><h3>Obor menyala</h3><p>Api yang terus menyala melambangkan semangat belajar dan semangat juang yang tidak pernah padam.</p><p class="heritage-color">Oranye dan cokelat mewakili keberanian yang stabil serta semangat yang berkelanjutan.</p></article>
+                  <article class="heritage-panel" id="philosophy-buku" data-philosophy="buku"><p class="heritage-value">PENGETAHUAN · INTEGRITAS</p><h3>Buku terbuka</h3><p>Ilmu pengetahuan dan pendidikan menjadi dasar untuk membentuk karakter taruna. Buku yang terbuka mencerminkan kesiapan untuk terus belajar.</p><p class="heritage-color">Putih menyimbolkan ketulusan, kejujuran, dan integritas.</p></article>
+                  <article class="heritage-panel" id="philosophy-padi" data-philosophy="padi"><p class="heritage-value">KEMAKMURAN · PENGABDIAN</p><h3>Padi emas</h3><p>Simbol kemakmuran, kesejahteraan, serta pengabdian kepada rakyat. Kuning emas menggambarkan kesuburan dan hasil perjuangan.</p><p class="heritage-color">Jumlah 24 padi merujuk pada tahun 2024, saat Taruna Bhayangkara 6 melaksanakan Dashbara dan pembaretan.</p></article>
+                  <article class="heritage-panel" id="philosophy-kapas" data-philosophy="kapas"><p class="heritage-value">KEADILAN · KESEDERHANAAN</p><h3>Kapas dan tangkai hijau</h3><p>Kapas melambangkan keadilan sosial dan kesederhanaan. Putih mencerminkan kesucian niat, sedangkan hijau berarti kehidupan, pertumbuhan, dan harapan.</p><p class="heritage-color">Jumlah 10 kapas merujuk pada bulan Oktober, bulan pelaksanaan pembaretan pada 15 Oktober 2024.</p></article>
+                  <article class="heritage-panel" id="philosophy-tahun" data-philosophy="tahun"><p class="heritage-value">MENGINGAT AWAL PERJALANAN</p><h3>MMXXIV</h3><p>Angka Romawi yang berarti 2024. Menandai tahun pembaretan Taruna Bhayangkara 6 di Lanud Iswahjudi.</p><p class="heritage-color">Sebuah pengingat akan langkah bersama yang dimulai pada 15 Oktober 2024.</p></article>
+                  <article class="heritage-panel" id="philosophy-pita" data-philosophy="pita"><p class="heritage-value">NAMA YANG KITA BAWA</p><h3>Bhara Arsa Nawasena</h3><p>Bhara berarti ksatria. Arsa membawa makna semangat, kebahagiaan, atau tekad. Nawasena adalah masa depan yang cerah. Bersama, nama ini menyatukan karakter dan cita-cita batalyon.</p><p class="heritage-color">Pita merah adalah keberanian dan semangat juang. Tulisan emas menjadi lambang kebanggaan dan kehormatan.</p></article>
+                </div>
+                <button class="heritage-close" type="button">Tutup filosofi <span aria-hidden="true">−</span></button>
+              </div>
+            </details>
+          </div>
+        </div>
+        <div class="heritage-footnote"><span>15 OKTOBER 2024 · LANUD ISWAHJUDI</span><p>Cerdas, berani, penuh semangat, dan berjiwa pelindung. Bersama membawa perubahan positif untuk masa depan bangsa.</p></div>
       </section>
 
       <section id="penampil" class="scene performer" data-scene="3" aria-labelledby="performer-title">
         <div class="performer-beam" aria-hidden="true"></div>
-          <div class="performer-layout"><div class="performer-head"><p class="scene-kicker">19.30 / DI BAWAH LAMPU</p><p class="performer-small">PENAMPIL TAMU</p><h2 id="performer-title">Budi<br /><span>Doremi</span></h2><p class="performer-summary">Suara yang akrab menemani cerita kita. Detail waktu penampilannya akan disampaikan setelah jadwal acara ditetapkan.</p><!-- slot:performer-schedule:start --><div class="mini-envelope" data-envelope="performer" data-dynamic="performer-schedule"><span class="wax-mini" aria-hidden="true"></span><span>Jadwal penampilan<br /><strong>Menunggu pengumuman</strong></span></div><!-- slot:performer-schedule:end --></div><figure class="performer-portrait"><div class="portrait-mat"><img src="assets/budi-doremi.jpg" width="960" height="640" alt="Budi Doremi memegang ukulele" /></div><figcaption>Foto: <a href="https://commons.wikimedia.org/wiki/File:Lelaki_dengan_gitar_kecil.jpg" target="_blank" rel="noopener noreferrer">Agnis Putriana / Wikimedia Commons</a> · <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener noreferrer">CC BY-SA 4.0</a>. Foto dipotong dan diolah warnanya; hasil edit mengikuti lisensi yang sama.</figcaption></figure></div>
+          <div class="performer-layout"><div class="performer-head"><p class="scene-kicker">19.30 / DI BAWAH LAMPU</p><p class="performer-small">PENAMPIL TAMU</p><h2 id="performer-title">Budi<br /><span>Doremi</span></h2><p class="performer-summary">Suara yang akrab menemani cerita kita. Detail waktu penampilannya akan disampaikan setelah jadwal acara ditetapkan.</p><!-- slot:performer-schedule:start --><div class="mini-envelope" data-envelope="performer" data-dynamic="performer-schedule"><span class="wax-mini" aria-hidden="true"></span><span>Jadwal penampilan<br /><strong>Menunggu pengumuman</strong></span></div><!-- slot:performer-schedule:end --></div><figure class="performer-portrait"><div class="portrait-mat"><img src="assets/budi-doremi.jpg" width="960" height="640" alt="Budi Doremi memegang ukulele" /></div><figcaption><span class="performer-portrait__name">Budi Doremi</span><details class="performer-portrait__credit"><summary>Kredit foto</summary>Foto: <a href="https://commons.wikimedia.org/wiki/File:Lelaki_dengan_gitar_kecil.jpg" target="_blank" rel="noopener noreferrer">Agnis Putriana / Wikimedia Commons</a> · <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener noreferrer">CC BY-SA 4.0</a>. Foto dipotong dan diolah warnanya; hasil edit mengikuti lisensi yang sama.</details></figcaption></figure></div>
       </section>
 
       <section id="rundown" class="scene programme" data-scene="4" aria-labelledby="programme-title">
@@ -147,7 +201,7 @@
       <section id="tengah-malam" class="scene finale" data-scene="10" aria-labelledby="finale-title"><canvas id="gold-rain" class="gold-rain" aria-hidden="true"></canvas><div class="finale-content"><p class="scene-kicker">24.00 / TENGAH MALAM</p><span class="midnight-clock" aria-hidden="true">XII</span><h2 id="finale-title">Sampai jumpa<br />di BHARASENA.</h2><p class="finale-message">11–13 Desember 2026 · SMAN 2 Taruna Bhayangkara</p><!-- slot:contact:start --><p class="contact-note" data-dynamic="contact">Kontak resmi panitia akan dicantumkan setelah terverifikasi.</p><!-- slot:contact:end --><a href="#hero" class="return-link">Kembali ke awal</a></div></section>
     </main>
 
-    <nav class="mobile-dock" aria-label="Akses cepat"><a href="#rundown">Rundown</a><a href="#undangan">Undangan</a><a href="#proposal">Proposal</a><a href="#dinding-pesan">Pesan</a><a href="#info-peserta">Info</a></nav>
+    <nav class="mobile-dock" aria-label="Akses cepat"><a href="#rundown">Rundown</a><a href="#info-peserta">Info</a><a href="#undangan">Undangan</a><a href="#proposal">Proposal</a><a href="#dinding-pesan">Pesan</a></nav>
     <footer class="site-footer"><span>BHARASENA © 2026</span><span>Batalyon Bhara Arsa Nawasena</span><a href="#hero">Kembali ke awal</a></footer>
   </body>
 </html>

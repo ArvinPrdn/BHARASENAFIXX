@@ -8,6 +8,7 @@ const phonePattern = /(?:\+?62|0)[\s.-]?(?:\d[\s.-]?){8,13}/u;
 
 export function cleanText(value, max) {
   if (typeof value !== 'string') return '';
+  // eslint-disable-next-line no-control-regex -- Remove control characters from submitted text.
   return Array.from(value.replace(/[\u0000-\u001f\u007f-\u009f]/gu, ' ').replace(/\s+/gu, ' ').trim()).slice(0, max).join('');
 }
 
@@ -66,7 +67,7 @@ export function requestIp(request, trustProxy = false) {
 
 export function securityHeaders({ production = false, requestId = '' } = {}) {
   return {
-    'Content-Security-Policy': "default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'",
+    'Content-Security-Policy': "default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data:; connect-src 'self'; media-src 'self'; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'",
     'X-Content-Type-Options': 'nosniff',
     'Referrer-Policy': 'strict-origin-when-cross-origin',
     'Permissions-Policy': 'camera=(), microphone=(), geolocation=(), gyroscope=(self), accelerometer=(self)',

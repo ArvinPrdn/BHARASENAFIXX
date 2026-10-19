@@ -2,9 +2,11 @@
 // progressive enhancement code. Keep this source type-checkable in strict
 // projects while preserving the no-build static fallback.
 // @ts-nocheck
+import { initMusic } from './music.js';
+import { initHeritage } from './heritage.js';
 import {
   EVENT, rundown, envelopes, gallery,
-  getNow, getPhase, getCountdown, getJakartaDate,
+  getPhase, getCountdown, getJakartaDate,
   getCurrentSession, getEnvelopeState,
 } from '../data/event.js';
 
@@ -206,7 +208,7 @@ function initTimeline() {
   const heroLayers = hero ? $$('[data-depth]', hero) : [];
   const clock = $('.scene-clock');
   const dots = $$('.scene-dot');
-  const dock = $('.mobile-dock');
+  const navigationLinks = $$('.header-nav a[href^="#"], .mobile-dock a[href^="#"]');
   let dirty = true;
   let activeIndex = -1;
 
@@ -221,13 +223,11 @@ function initTimeline() {
       if (selected) dot.setAttribute('aria-current', 'location');
       else dot.removeAttribute('aria-current');
     });
-    if (dock) {
-      $$('a[href^="#"]', dock).forEach((link) => {
-        const selected = link.hash === `#${scenes[index]?.id}`;
-        if (selected) link.setAttribute('aria-current', 'location');
-        else link.removeAttribute('aria-current');
-      });
-    }
+    navigationLinks.forEach((link) => {
+      const selected = link.hash === `#${scenes[index]?.id}`;
+      if (selected) link.setAttribute('aria-current', 'location');
+      else link.removeAttribute('aria-current');
+    });
   }
 
   function update() {
@@ -314,7 +314,7 @@ function initSeal() {
         <span class="seal-wax" aria-hidden="true">B</span>
         <span class="seal-hold__label">${reduceMotion() ? 'Buka undangan' : 'Tahan untuk membuka'}</span>
       </button>
-      <div class="seal-actions"><button type="button" class="seal-direct">Buka undangan</button><button type="button" class="seal-skip">Lewati</button></div>
+      <div class="seal-actions"><button type="button" class="seal-direct">Buka undangan</button></div>
     </div>`;
   document.body.append(gate);
   const oldFocus = document.activeElement;
@@ -326,7 +326,6 @@ function initSeal() {
   const hold = $('.seal-hold', gate);
   const ring = $('.seal-ring circle', gate);
   const direct = $('.seal-direct', gate);
-  const skip = $('.seal-skip', gate);
   let holding = false;
   let holdStart = 0;
   let closing = false;
@@ -384,11 +383,10 @@ function initSeal() {
   });
   hold.addEventListener('click', (event) => event.preventDefault());
   direct.addEventListener('click', close);
-  skip.addEventListener('click', close);
   gate.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') { event.preventDefault(); close(); return; }
     if (event.key !== 'Tab') return;
-    const options = [hold, direct, skip].filter((node) => getComputedStyle(node).display !== 'none');
+    const options = [hold, direct].filter((node) => getComputedStyle(node).display !== 'none');
     const first = options[0], last = options.at(-1);
     if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
     if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
@@ -404,7 +402,7 @@ function initHero() {
   const crystals = chandelier ? $$('[data-crystal]', chandelier) : [];
   const gyroButton = $('[data-gyro-toggle]') || $('#gyro-toggle') || $('#motion-toggle');
   let pointerTarget = { x: 0, y: 0 };
-  let pointer = { x: 0, y: 0 };
+  const pointer = { x: 0, y: 0 };
   let usingGyro = false;
   let swing = 0, swingVelocity = 0, swingTarget = 0;
   let dragStart = null;
@@ -663,13 +661,21 @@ function initMessageWall() {
   const empty = $('[data-message-empty]');
   const state = $('[data-message-state]');
   if (!form || !nameInput || !bodyInput) return;
+  if (root.dataset.hosting === 'static') {
+    form.querySelectorAll('input, textarea, button').forEach((control) => { control.disabled = true; });
+    if (status) status.textContent = 'Pengiriman pesan akan segera dibuka.';
+    if (state) state.textContent = 'SEGERA DIBUKA';
+    return;
+  }
 
   const clean = (value, max) => String(value || '')
+    // eslint-disable-next-line no-control-regex -- Remove control characters from visitor text.
     .replace(/[\u0000-\u001f\u007f]/g, '')
     .replace(/\s+/g, ' ')
     .trim()
     .slice(0, max);
   const cleanBody = (value, max) => String(value || '')
+    // eslint-disable-next-line no-control-regex -- Remove control characters from visitor text.
     .replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/g, '')
     .replace(/\r\n?/g, '\n')
     .trim()
@@ -789,6 +795,7 @@ function initCard() {
   const form = $('#invite-form');
   const status = $('#invite-status');
   const urlName = new URLSearchParams(location.search).get('to');
+  // eslint-disable-next-line no-control-regex -- Remove control characters from visitor text.
   const safeName = (value) => [...String(value || '').replace(/[\u0000-\u001f\u007f]/g, '').replace(/\s+/g, ' ').trim()].slice(0, 40).join('');
   let name = safeName(urlName || input.value);
   if (name) input.value = name;
@@ -805,7 +812,8 @@ function initCard() {
   form?.addEventListener('submit', (event) => { event.preventDefault(); updateName(); preview.focus({ preventScroll: true }); });
   updateName();
 
-  let tilt = { x: 0, y: 0 }, target = { x: 0, y: 0 };
+  const tilt = { x: 0, y: 0 };
+  let target = { x: 0, y: 0 };
   preview.addEventListener('pointermove', (event) => {
     if (reduceMotion()) return;
     const rect = preview.getBoundingClientRect();
@@ -1105,45 +1113,10 @@ function initGalleryAndFinale() {
       if (finaleVisible && !rang) {
         rang = true;
         rain(6500, true);
-        playBell();
+
       }
     }, { threshold: 0.35 }).observe(finale);
   }
-}
-
-let audioOn = false;
-let audioContext = null;
-function playBell() {
-  if (!audioOn) return;
-  try {
-    audioContext ||= new (window.AudioContext || window.webkitAudioContext)();
-    if (audioContext.state === 'suspended') audioContext.resume();
-    const start = audioContext.currentTime;
-    [523.25, 659.25, 783.99].forEach((frequency, index) => {
-      const oscillator = audioContext.createOscillator();
-      const gain = audioContext.createGain();
-      oscillator.type = 'sine';
-      oscillator.frequency.value = frequency;
-      gain.gain.setValueAtTime(0.0001, start + index * 0.14);
-      gain.gain.exponentialRampToValueAtTime(0.045, start + index * 0.14 + 0.02);
-      gain.gain.exponentialRampToValueAtTime(0.0001, start + index * 0.14 + 2.3);
-      oscillator.connect(gain).connect(audioContext.destination);
-      oscillator.start(start + index * 0.14);
-      oscillator.stop(start + index * 0.14 + 2.35);
-    });
-  } catch { /* Audio is optional. */ }
-}
-function initAudio() {
-  const button = $('#audio-toggle');
-  if (!button) return;
-  button.setAttribute('aria-pressed', 'false');
-  button.addEventListener('click', () => {
-    audioOn = !audioOn;
-    button.setAttribute('aria-pressed', String(audioOn));
-    button.setAttribute('aria-label', audioOn ? 'Matikan suara' : 'Aktifkan suara');
-    button.classList.toggle('is-on', audioOn);
-    if (audioOn) playBell();
-  });
 }
 
 function initNavigation() {
@@ -1191,7 +1164,8 @@ function init() {
   initMessageWall();
   initCard();
   initGalleryAndFinale();
-  initAudio();
+  initMusic();
+  initHeritage();
   initNavigation();
   initSeal();
 }

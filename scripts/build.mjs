@@ -1,6 +1,5 @@
 import { cp, mkdir, readFile, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
-import { join } from 'node:path';
 
 const copy = async (from, to) => { if (existsSync(from)) { await mkdir(to.substring(0, to.lastIndexOf('/')), { recursive: true }).catch(() => {}); await cp(from, to, { recursive: true }); } };
 await mkdir('dist', { recursive: true });

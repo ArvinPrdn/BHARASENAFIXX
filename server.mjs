@@ -1,4 +1,5 @@
 import { createServer } from 'node:http';
+import { sendAudio } from './src/lib/audio.mjs';
 import { randomBytes, randomUUID } from 'node:crypto';
 import { mkdir, readFile, stat, unlink, writeFile } from 'node:fs/promises';
 import { existsSync, readFileSync } from 'node:fs';
@@ -7,7 +8,7 @@ import { fileURLToPath } from 'node:url';
 import { getApprovedMessages, getPublicContent, dbHealth, openDb, seed } from './src/lib/db.mjs';
 import { csrfValid, authenticate, getSession, revokeSession, sessionCookie } from './src/lib/auth.mjs';
 import { cleanText, createRateLimiter, dailyIpHash, escapeHtml, hmac, requestIp, securityHeaders, validateMessage } from './src/lib/security.mjs';
-import { createAnnouncement, createGallery, deleteGallery, saveAnnouncement, saveEnvelope, saveGallery, savePerformer, saveRundown, saveSettings } from './src/lib/admin-content.mjs';
+import { createAnnouncement, createGallery, saveAnnouncement, saveEnvelope, saveGallery, savePerformer, saveRundown, saveSettings } from './src/lib/admin-content.mjs';
 
 const root = resolve(fileURLToPath(new URL('.', import.meta.url)));
 if (existsSync(join(root, '.env'))) {
@@ -24,7 +25,7 @@ const db = seed(openDb());
 const limiter = createRateLimiter({ capacity: 4, refillMs: 15 * 60_000 });
 const loginLimiter = createRateLimiter({ capacity: 5, refillMs: 15 * 60_000 });
 
-const mime = { '.html':'text/html; charset=utf-8', '.css':'text/css; charset=utf-8', '.js':'text/javascript; charset=utf-8', '.ts':'text/plain; charset=utf-8', '.svg':'image/svg+xml', '.jpg':'image/jpeg', '.jpeg':'image/jpeg', '.png':'image/png', '.webp':'image/webp', '.avif':'image/avif', '.ico':'image/x-icon', '.pdf':'application/pdf', '.json':'application/json; charset=utf-8' };
+const mime = { '.html':'text/html; charset=utf-8', '.css':'text/css; charset=utf-8', '.js':'text/javascript; charset=utf-8', '.ts':'text/plain; charset=utf-8', '.svg':'image/svg+xml', '.jpg':'image/jpeg', '.jpeg':'image/jpeg', '.png':'image/png', '.webp':'image/webp', '.avif':'image/avif', '.ico':'image/x-icon', '.mp3':'audio/mpeg', '.m4a':'audio/mp4', '.ogg':'audio/ogg', '.wav':'audio/wav', '.pdf':'application/pdf', '.json':'application/json; charset=utf-8' };
 
 function send(response, status, body, headers = {}) {
   response.writeHead(status, { 'Content-Type': 'text/plain; charset=utf-8', ...headers });
@@ -264,15 +265,21 @@ async function handle(request, response) {
   if (request.method === 'GET' && path === '/sitemap.xml') return send(response, 200, `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>${escapeHtml(siteOrigin(request))}/</loc></url></urlset>`, { 'Content-Type':'application/xml; charset=utf-8', 'Cache-Control':'public, max-age=3600' });
   if (request.method === 'GET' && path === '/robots.txt') return send(response, 200, `User-agent: *\nAllow: /\nDisallow: /admin\nSitemap: ${siteOrigin(request)}/sitemap.xml\n`, { 'Content-Type':'text/plain; charset=utf-8' });
 
-  if (request.method === 'GET') {
+  if (request.method === 'GET' || request.method === 'HEAD') {
     const requested = path === '/favicon.ico' ? '/assets/favicon.svg' : path;
     const file = resolve(root, `.${requested}`);
     const assetRelative = relative(join(root, 'assets'), file);
     const publicAsset = path.startsWith('/assets/') && assetRelative && !assetRelative.startsWith('..') && !isAbsolute(assetRelative);
     const publicFile = publicAsset || path === '/styles.css' || path === '/admin.css' || path === '/favicon.ico'
-      || path === '/src/scripts/experience.js' || path === '/src/data/event.js';
+      || path === '/src/scripts/experience.js' || path === '/src/scripts/music.js' || path === '/src/scripts/heritage.js' || path === '/src/data/event.js';
     if (publicFile && !relative(root, file).startsWith('..') && existsSync(file) && (await stat(file)).isFile()) {
       const type = mime[extname(file).toLowerCase()] || 'application/octet-stream';
+      if (type.startsWith('audio/')) return sendAudio(request, response, file, (await stat(file)).size, type);
+      if (request.method === 'HEAD') {
+        response.writeHead(200, { 'Content-Type': type, 'Content-Length': (await stat(file)).size });
+        response.end();
+        return;
+      }
       return send(response, 200, await readFile(file), { 'Content-Type': type, 'Cache-Control': path.startsWith('/assets/') ? 'public, max-age=86400' : 'no-cache' });
     }
   }

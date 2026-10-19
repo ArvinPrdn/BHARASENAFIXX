@@ -1,4 +1,5 @@
 import js from '@eslint/js';
+import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
@@ -6,6 +7,8 @@ export default tseslint.config(
     ignores: [
       'node_modules/**',
       'dist/**',
+      'public/**',
+      '.vercel/**',
       'coverage/**',
       '_qa/**',
       'data/**',
@@ -20,6 +23,7 @@ export default tseslint.config(
     languageOptions: {
       ecmaVersion: 2024,
       sourceType: 'module',
+      globals: globals.node,
     },
     rules: {
       '@typescript-eslint/consistent-type-imports': 'error',
@@ -28,6 +32,16 @@ export default tseslint.config(
         { argsIgnorePattern: '^_', caughtErrorsIgnorePattern: '^_' },
       ],
       'no-console': 'off',
+    },
+  },
+  {
+    files: ['src/**/*.js', 'src/scripts/**/*.ts'],
+    languageOptions: { globals: globals.browser },
+  },
+  {
+    files: ['src/scripts/experience.js', 'src/scripts/experience.ts'],
+    rules: {
+      '@typescript-eslint/ban-ts-comment': ['error', { 'ts-nocheck': false }],
     },
   },
 );
