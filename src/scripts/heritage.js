@@ -20,11 +20,17 @@ export function initHeritage() {
   const panels = [...section.querySelectorAll('[data-philosophy]')];
   const summary = explorer.querySelector('summary');
   const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+  const symbolCount = document.createElement('span');
+  symbolCount.className = 'heritage-symbol-count';
+  symbolCount.setAttribute('aria-hidden', 'true');
+  summary.append(symbolCount);
   let selected = 'ksatria';
 
   function selectSymbol(key) {
     if (!Object.hasOwn(symbolLights, key)) return;
     selected = key;
+    const position = buttons.findIndex((button) => button.dataset.symbol === key) + 1;
+    symbolCount.textContent = `${String(position).padStart(2, '0')} / ${String(buttons.length).padStart(2, '0')}`;
     buttons.forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.symbol === key)));
     panels.forEach((panel) => { panel.hidden = panel.dataset.philosophy !== key; });
     const [x, y, width, height] = symbolLights[key];

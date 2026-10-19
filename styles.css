@@ -631,3 +631,150 @@ img { max-width: 100%; }
   .proposal-stamp { width: 76px; height: 76px; right: 24px; top: -24px; font-size: 7px; }
   .proposal-stamp strong { font-size: 21px; }
 }
+
+/* Motion polish: one-time entrances, small pointer feedback, and no layout animation. */
+@media (prefers-reduced-motion: no-preference) {
+  .motion-reveal {
+    opacity: 0;
+    transform: translate3d(0, 22px, 0);
+    transition: opacity .8s ease, transform .8s cubic-bezier(.18,.7,.2,1);
+  }
+  .motion-reveal.is-revealed {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+  .proposal-card-grid .proposal-card:nth-child(2),
+  .envelope-grid .envelope:nth-child(2),
+  .envelope-grid .envelope:nth-child(3),
+  .envelope-grid .envelope:nth-child(4) {
+    transition-delay: .08s;
+  }
+  .is-entered .hero-intro { animation: ballroom-enter .7s both; }
+  .is-entered .hero-presents { animation: ballroom-enter .75s .12s both; }
+  .is-entered .wordmark-wrap { animation: ballroom-enter .9s .2s both; }
+  .is-entered .hero-line { animation: ballroom-enter .8s .34s both; }
+  .is-entered .hero-tickets { animation: ballroom-enter .8s .43s both; }
+  .is-entered .hero-scroll { animation: ballroom-enter .7s .55s both; }
+  @keyframes ballroom-enter {
+    from { opacity: 0; transform: translate3d(0, 18px, 0); }
+    to { opacity: 1; transform: translate3d(0, 0, 0); }
+  }
+  .invite-card.is-updated { animation: invitation-printed .8s cubic-bezier(.2,.7,.2,1); }
+  .invite-card.is-updated strong { animation: invitation-name .65s .12s both; }
+  @keyframes invitation-printed {
+    0% { opacity: .7; transform: translate3d(0, 10px, 0) rotateX(var(--tilt-x)) rotateY(var(--tilt-y)); }
+    100% { opacity: 1; transform: translate3d(0, 0, 0) rotateX(var(--tilt-x)) rotateY(var(--tilt-y)); }
+  }
+  @keyframes invitation-name {
+    from { opacity: 0; transform: translate3d(0, 8px, 0); }
+    to { opacity: 1; transform: translate3d(0, 0, 0); }
+  }
+  .message-card.is-new { animation: message-arrives .6s cubic-bezier(.2,.7,.2,1) both; }
+  @keyframes message-arrives {
+    from { opacity: 0; transform: translate3d(0, 14px, 0); }
+    to { opacity: 1; transform: translate3d(0, 0, 0); }
+  }
+}
+
+.heritage-symbol-count {
+  margin-inline-start: auto;
+  padding-inline-start: 12px;
+  color: var(--champagne);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: .14em;
+  white-space: nowrap;
+}
+
+.scene-rail::before,
+.scene-rail::after {
+  content: '';
+  position: absolute;
+  top: 15px;
+  right: 1px;
+  width: 1px;
+  height: calc(100% - 30px);
+  pointer-events: none;
+}
+.scene-rail::before { background: rgba(217,195,160,.25); }
+.scene-rail::after {
+  background: var(--champagne);
+  transform: scaleY(var(--t));
+  transform-origin: top;
+}
+.scene-dot { position: relative; }
+@media (hover: hover) and (pointer: fine) {
+  .scene-dot::after {
+    content: attr(aria-label);
+    position: absolute;
+    right: 52px;
+    top: 50%;
+    transform: translate3d(5px, -50%, 0);
+    padding: 5px 9px;
+    background: rgba(13,7,9,.94);
+    border: 1px solid rgba(217,195,160,.35);
+    color: var(--ivory);
+    white-space: nowrap;
+    font-size: 11px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .2s ease, transform .2s ease;
+  }
+  .scene-dot:hover::after,
+  .scene-dot:focus-visible::after {
+    opacity: 1;
+    transform: translate3d(0, -50%, 0);
+  }
+}
+
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .proposal-card:hover {
+    transform: translate3d(var(--hover-x, 0px), calc(-6px + var(--hover-y, 0px)), 0) rotate(-.3deg);
+  }
+  .proposal-card:nth-child(2):hover {
+    transform: translate3d(var(--hover-x, 0px), calc(-6px + var(--hover-y, 0px)), 0) rotate(.3deg);
+  }
+  .proposal-primary:hover,
+  .hero-scroll:hover,
+  .return-link:hover {
+    transform: translate3d(var(--hover-x, 0px), var(--hover-y, 0px), 0);
+  }
+  .proposal-primary,
+  .hero-scroll,
+  .return-link {
+    transition: transform .35s cubic-bezier(.2,.7,.2,1), color .35s ease, background-color .35s ease;
+  }
+  .gallery-frame img {
+    transition: transform .65s cubic-bezier(.2,.7,.2,1);
+  }
+  .gallery-frame:hover img {
+    transform: scale(1.04);
+  }
+}
+
+.low-end .proposal-card:hover,
+.low-end .gallery-frame:hover img {
+  transform: none;
+}
+
+@media (max-width: 767px) {
+  .motion-reveal { transform: none; }
+  .gallery-track { scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; }
+  .gallery-frame { scroll-snap-align: center; }
+  .proposal-card:hover { transform: none; }
+  .mobile-dock::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto;
+    height: 2px;
+    background: var(--champagne);
+    transform: scaleX(var(--t));
+    transform-origin: left;
+    pointer-events: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .motion-reveal { opacity: 1; transform: none; }
+  .invite-card.is-updated, .invite-card.is-updated strong { animation: none; }
+}

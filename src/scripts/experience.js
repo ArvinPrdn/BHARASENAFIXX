@@ -241,7 +241,7 @@ function initTimeline() {
     const a = t < 0.5 ? lightStops[0] : lightStops[1];
     const b = t < 0.5 ? lightStops[1] : lightStops[2];
     root.style.setProperty('--ambient-rgb', a.map((value, i) => Math.round(lerp(value, b[i], span))).join(', '));
-    if (hero && !reduceMotion()) {
+    if (hero && !reduceMotion() && !mobileQuery.matches && !lowEnd) {
       const heroRect = hero.getBoundingClientRect();
       if (heroRect.bottom >= 0 && heroRect.top <= innerHeight) {
         const heroProgress = clamp(-heroRect.top / Math.max(1, heroRect.height), 0, 1);
@@ -282,22 +282,16 @@ function initTimeline() {
   dots.forEach((dot, index) => {
     if (dot.tagName !== 'A') dot.addEventListener('click', () => scenes[index]?.scrollIntoView({ behavior: reduceMotion() ? 'instant' : 'smooth' }));
   });
-  document.addEventListener('keydown', (event) => {
-    if (!['PageDown', 'PageUp', 'ArrowDown', 'ArrowUp'].includes(event.key)) return;
-    if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey || $('.seal-gate')) return;
-    if (event.target.closest?.('input, textarea, select, button, a, [contenteditable="true"], dialog')) return;
-    const next = clamp(activeIndex + (event.key.endsWith('Down') ? 1 : -1), 0, scenes.length - 1);
-    if (next === activeIndex || !scenes[next]) return;
-    event.preventDefault();
-    scenes[next].scrollIntoView({ behavior: reduceMotion() ? 'instant' : 'smooth' });
-  });
   markDirty();
 }
 
 function initSeal() {
   let visited = false;
   try { visited = sessionStorage.getItem('bharasena-opened') === '1'; } catch { /* private mode */ }
-  if (visited) return;
+  if (visited) {
+    root.classList.add('is-entered');
+    return;
+  }
   const gate = document.createElement('div');
   gate.className = 'seal-gate';
   gate.setAttribute('role', 'dialog');
@@ -338,6 +332,7 @@ function initSeal() {
     gate.classList.add('is-opening');
     setTimeout(() => {
       gate.remove();
+      root.classList.add('is-entered');
       siblings.forEach((child, i) => { child.inert = previousInert[i]; });
       document.body.style.overflow = previousOverflow;
       if (oldFocus instanceof HTMLElement && oldFocus !== document.body && oldFocus.isConnected) oldFocus.focus();
@@ -409,7 +404,7 @@ function initHero() {
   let crystalCount = 0;
 
   function setPointer(event) {
-    if (usingGyro || reduceMotion()) return;
+    if (usingGyro || reduceMotion() || !finePointerQuery.matches || lowEnd) return;
     const box = hero.getBoundingClientRect();
     pointerTarget = {
       x: clamp(((event.clientX - box.left) / box.width - 0.5) * 2, -1, 1),
@@ -767,7 +762,12 @@ function initMessageWall() {
       const approved = payload?.message && (payload.message.approved === true || payload.message.status === 'approved');
       if (approved) {
         const card = renderMessage(payload.message);
-        if (card && list) { empty?.setAttribute('hidden', ''); list.prepend(card); }
+        if (card && list) {
+          empty?.setAttribute('hidden', '');
+          list.prepend(card);
+          card.classList.add('is-new');
+          window.setTimeout(() => card.classList.remove('is-new'), 700);
+        }
       }
       form.reset();
       updateCount();
@@ -809,7 +809,15 @@ function initCard() {
     preview.setAttribute('aria-label', `Pratinjau undangan BHARASENA untuk ${clean || 'Anda'}`);
   }
   input.addEventListener('input', updateName);
-  form?.addEventListener('submit', (event) => { event.preventDefault(); updateName(); preview.focus({ preventScroll: true }); });
+  form?.addEventListener('submit', (event) => {
+    event.preventDefault();
+    updateName();
+    preview.classList.remove('is-updated');
+    void preview.offsetWidth;
+    preview.classList.add('is-updated');
+    window.setTimeout(() => preview.classList.remove('is-updated'), 900);
+    preview.focus({ preventScroll: true });
+  });
   updateName();
 
   const tilt = { x: 0, y: 0 };
@@ -817,8 +825,8 @@ function initCard() {
   preview.addEventListener('pointermove', (event) => {
     if (reduceMotion()) return;
     const rect = preview.getBoundingClientRect();
-    target.x = clamp(((event.clientY - rect.top) / rect.height - 0.5) * -12, -6, 6);
-    target.y = clamp(((event.clientX - rect.left) / rect.width - 0.5) * 12, -6, 6);
+    target.x = clamp(((event.clientY - rect.top) / rect.height - 0.5) * -6, -3, 3);
+    target.y = clamp(((event.clientX - rect.left) / rect.width - 0.5) * 6, -3, 3);
     requestFrame();
   }, { passive: true });
   preview.addEventListener('pointerleave', () => { target = { x: 0, y: 0 }; requestFrame(); });
@@ -1071,7 +1079,7 @@ function initGalleryAndFinale() {
     rainRequiresFinale = requireFinale;
     resizeCanvas();
     canvas.style.display = 'block';
-    const count = lowEnd ? 35 : 90;
+    const count = lowEnd || mobileQuery.matches ? 28 : 72;
     particles = Array.from({ length: count }, () => ({
       x: Math.random() * innerWidth,
       y: -Math.random() * innerHeight,
@@ -1137,6 +1145,52 @@ function initNavigation() {
   document.addEventListener('click', (event) => { if (!nav.contains(event.target) && !button.contains(event.target)) close(); });
 }
 
+function initMotionPolish() {
+  if (!('IntersectionObserver' in window)) return;
+  const groups = $$('.about-content, .heritage-heading, .heritage-layout, .performer-layout, .programme-heading, .information-heading, .invitation-copy, .proposal-heading, .proposal-card-grid, .gallery-top, .message-wall-heading, .finale-content');
+  const items = $$('.envelope, .proposal-card');
+  const targets = [...groups, ...items];
+  if (!targets.length) return;
+  targets.forEach((element) => element.classList.add('motion-reveal'));
+  const observer = new IntersectionObserver((entries) => {
+    for (const entry of entries) {
+      if (!entry.isIntersecting) continue;
+      entry.target.classList.add('is-revealed');
+      observer.unobserve(entry.target);
+    }
+  }, { threshold: 0.08, rootMargin: '0px 0px -5% 0px' });
+  targets.forEach((element) => observer.observe(element));
+  // Keep content visible when the browser restores a page at a scrolled position.
+  if (reduceMotion()) targets.forEach((element) => element.classList.add('is-revealed'));
+}
+
+function initSubtleHover() {
+  if (!finePointerQuery.matches || reduceMotion() || lowEnd) return;
+  const targets = $$('.proposal-card, .proposal-primary, .hero-scroll, .return-link');
+  targets.forEach((element) => {
+    let frame = 0;
+    let x = 0, y = 0;
+    const strength = element.classList.contains('proposal-card') ? 3 : 4;
+    const update = () => {
+      frame = 0;
+      element.style.setProperty('--hover-x', `${x.toFixed(1)}px`);
+      element.style.setProperty('--hover-y', `${y.toFixed(1)}px`);
+    };
+    element.addEventListener('pointermove', (event) => {
+      const box = element.getBoundingClientRect();
+      x = clamp((event.clientX - box.left - box.width / 2) / box.width * strength * 2, -strength, strength);
+      y = clamp((event.clientY - box.top - box.height / 2) / box.height * strength * 2, -strength, strength);
+      if (!frame) frame = requestAnimationFrame(update);
+    }, { passive: true });
+    element.addEventListener('pointerleave', () => {
+      if (frame) cancelAnimationFrame(frame);
+      frame = 0;
+      x = 0; y = 0;
+      update();
+    });
+  });
+}
+
 function initPublishedContent() {
   if (EVENT.venue) {
     const place = $('.ticket-place strong');
@@ -1157,6 +1211,7 @@ function initPublishedContent() {
 function init() {
   initPublishedContent();
   initTimeline();
+  initMotionPolish();
   initHero();
   initRundown();
   initTime();
@@ -1167,6 +1222,7 @@ function init() {
   initMusic();
   initHeritage();
   initNavigation();
+  initSubtleHover();
   initSeal();
 }
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, { once: true });
