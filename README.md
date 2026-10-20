@@ -11,7 +11,8 @@ tetap diputar saat panel ditutup; tekan Hentikan atau jeda pada pemutar untuk me
 Masukkan rekaman yang telah diizinkan untuk digunakan ke folder `assets/audio/`.
 Nama file yang didukung: `melukis-senja`, `mesin-waktu`, `tak-kan-hilang`, dan `tolong`,
 dengan ekstensi `.mp3`, `.m4a`, `.ogg`, atau `.wav`.
-Panel mendeteksi file saat dibuka. Lagu yang belum memiliki file ditandai
+Musik mencoba mulai saat undangan dibuka. Jika browser menahan suara otomatis,
+pengunjung dapat menekan tombol play pada panel musik. Panel mendeteksi file saat dibuka. Lagu yang belum memiliki file ditandai
 “Audio belum tersedia”. Empat file audio pada salinan lokal ini disediakan pengguna
 dari folder Downloads dan tersimpan di `assets/audio/`.
 

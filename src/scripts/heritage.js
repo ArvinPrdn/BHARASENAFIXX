@@ -45,6 +45,16 @@ export function initHeritage() {
   }
 
   buttons.forEach((button) => button.addEventListener('click', () => selectSymbol(button.dataset.symbol)));
+  section.querySelector('.heritage-symbols')?.addEventListener('keydown', (event) => {
+    if (!['ArrowRight', 'ArrowLeft', 'Home', 'End'].includes(event.key)) return;
+    const current = buttons.indexOf(document.activeElement);
+    if (current < 0) return;
+    event.preventDefault();
+    const next = event.key === 'Home' ? 0 : event.key === 'End' ? buttons.length - 1
+      : (current + (event.key === 'ArrowRight' ? 1 : -1) + buttons.length) % buttons.length;
+    buttons[next].focus();
+    selectSymbol(buttons[next].dataset.symbol);
+  });
   emblem.addEventListener('click', () => {
     explorer.open = !explorer.open;
     if (explorer.open) {

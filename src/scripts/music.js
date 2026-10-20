@@ -59,6 +59,7 @@ export function initMusic() {
   const sources = new Map();
   let sourceCheck;
   let selectedIndex = -1;
+  let pendingIndex = -1;
 
   const icons = {
     play: '<path d="m9 5 11 7-11 7Z" fill="currentColor" stroke="none"/>',
@@ -118,7 +119,7 @@ export function initMusic() {
   function play() {
     const index = selectedIndex;
     audio.play().catch((error) => {
-      if (index !== selectedIndex || error.name === 'AbortError') return;
+      if (index !== selectedIndex || error.name === 'AbortError' || !audio.paused) return;
       status.textContent = error.name === 'NotAllowedError' ? 'Tekan play untuk mulai mendengarkan.' : 'Audio belum dapat diputar. Pilih lagu lain.';
       updatePlayback();
     });
@@ -155,6 +156,7 @@ export function initMusic() {
   }
 
   function reset() {
+    pendingIndex = -1;
     setPlaying(false);
     audio.pause();
     audio.removeAttribute('src');
@@ -169,15 +171,18 @@ export function initMusic() {
   function selectTrack(index) {
     const source = sources.get(index);
     if (!source) {
+      if (sourceCheck) pendingIndex = index;
       status.textContent = sourceCheck ? 'Memeriksa ketersediaan audio…' : 'Rekaman lagu ini belum tersedia.';
       return;
     }
+    pendingIndex = -1;
     if (index === selectedIndex) return;
     selectedIndex = index;
     const track = tracks[index];
     choices.forEach((item, itemIndex) => item.setAttribute('aria-pressed', String(itemIndex === index)));
     audio.pause();
     audio.src = source;
+    audio.load();
     audio.setAttribute('aria-label', `Putar ${track.title} — Budi Doremi`);
     controls.querySelector('.music-console__title').textContent = track.title;
     player.replaceChildren(audio, controls);
@@ -224,6 +229,7 @@ export function initMusic() {
       const available = sources.has(index);
       choices[index].setAttribute('aria-disabled', String(!available));
       choices[index].querySelector('small').textContent = available ? track.note : 'Audio belum tersedia';
+      if (pendingIndex === index && available) selectTrack(index);
     }));
     if (!sources.size) {
       empty.querySelector('p').textContent = 'Koleksi lagu sedang disiapkan.';
@@ -244,4 +250,32 @@ export function initMusic() {
       sourceCheck = checkSources().finally(() => { sourceCheck = null; });
     }
   });
+
+  // The invitation opening is the first intentional gesture. Browsers may
+  // still block audio, in which case the player keeps a visible play control.
+  document.addEventListener('bharasena:entered', () => {
+    if (selectedIndex >= 0) return;
+    sources.set(0, 'assets/audio/melukis-senja.mp3');
+    selectTrack(0);
+  }, { once: true });
+  document.addEventListener('bharasena:resume-audio', () => {
+    if (selectedIndex >= 0 && audio.paused) play();
+  });
+
+  let enteredBefore = false;
+  try { enteredBefore = sessionStorage.getItem('bharasena-opened') === '1'; } catch { /* private mode */ }
+  if (enteredBefore) {
+    const onKeydown = (event) => {
+      if (event.key !== 'Enter' && event.key !== ' ') return;
+      document.removeEventListener('keydown', onKeydown);
+      beginOnGesture();
+    };
+    const beginOnGesture = () => {
+      if (selectedIndex >= 0) return;
+      sources.set(0, 'assets/audio/melukis-senja.mp3');
+      selectTrack(0);
+    };
+    document.addEventListener('click', beginOnGesture, { once: true });
+    document.addEventListener('keydown', onKeydown);
+  }
 }

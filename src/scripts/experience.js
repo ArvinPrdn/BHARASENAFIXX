@@ -328,6 +328,7 @@ function initSeal() {
     if (closing) return;
     closing = true;
     holding = false;
+    document.dispatchEvent(new Event('bharasena:entered'));
     try { sessionStorage.setItem('bharasena-opened', '1'); } catch { /* private mode */ }
     gate.classList.add('is-opening');
     setTimeout(() => {
@@ -369,6 +370,9 @@ function initSeal() {
     return true;
   });
   hold.addEventListener('pointerdown', startHold);
+  hold.addEventListener('pointerup', () => {
+    if (closing) document.dispatchEvent(new Event('bharasena:resume-audio'));
+  });
   ['pointerup', 'pointercancel', 'pointerleave'].forEach((name) => hold.addEventListener(name, stopHold));
   hold.addEventListener('keydown', (event) => {
     if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); startHold(event); }
