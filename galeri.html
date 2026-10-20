@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0d0709" />
+    <meta name="description" content="Lorong kenangan BHARASENA — dokumentasi foto selama perayaan." />
+    <title>Galeri — BHARASENA</title>
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="gallery-page.css" />
+    <script type="module" src="src/scripts/gallery-page.js"></script>
+  </head>
+  <body class="gallery-page">
+    <a class="skip-link" href="#gallery-main">Lewati ke galeri</a>
+    <div class="velvet-grain" aria-hidden="true"></div>
+    <div class="ambient" aria-hidden="true"></div>
+
+    <header class="gallery-header">
+      <a class="gallery-back" href="/" aria-label="Kembali ke halaman utama">← <span>Kembali ke ballroom</span></a>
+      <a class="gallery-brand" href="/" aria-label="BHARASENA, kembali ke halaman utama">BHARASENA <span>· 2026</span></a>
+      <span class="gallery-header-count" data-gallery-count>0 FOTO</span>
+    </header>
+
+    <main id="gallery-main">
+      <section class="gallery-hero" aria-labelledby="gallery-page-title">
+        <div class="gallery-hero__ornament" aria-hidden="true"><span></span><span></span><span></span></div>
+        <p class="scene-kicker">BHARASENA / LORONG KENANGAN</p>
+        <h1 id="gallery-page-title">Jejak<br /><em>yang tinggal.</em></h1>
+        <p class="gallery-hero__intro">Foto-foto yang mengabadikan satu angkatan, tiga hari, dan cerita yang terus dibawa pulang.</p>
+        <div class="gallery-hero__meta" aria-label="Informasi galeri">
+          <span><strong data-gallery-count>0</strong> bingkai</span>
+          <span class="gallery-hero__rule" aria-hidden="true"></span>
+          <span>11—13 Desember 2026</span>
+        </div>
+      </section>
+
+      <section class="gallery-room" aria-labelledby="gallery-room-title">
+        <div class="gallery-room__top">
+          <div>
+            <p class="scene-kicker">DOKUMENTASI ACARA</p>
+            <h2 id="gallery-room-title">Ruang foto.</h2>
+          </div>
+          <p class="gallery-room__note" data-gallery-status>Foto akan ditambahkan panitia selama acara.</p>
+        </div>
+        <div class="gallery-toolbar">
+          <div class="gallery-filters" role="group" aria-label="Saring foto berdasarkan hari" data-gallery-filters>
+            <button type="button" class="gallery-filter is-active" data-gallery-filter="all" aria-pressed="true">Semua foto</button>
+          </div>
+          <span class="gallery-toolbar__hint">Tekan foto untuk memperbesar</span>
+        </div>
+        <div class="gallery-grid" data-gallery-grid aria-live="polite"></div>
+      </section>
+
+      <section class="gallery-note" aria-label="Catatan galeri">
+        <span class="gallery-note__number">B / 26</span>
+        <div>
+          <p class="scene-kicker">SEBUAH CATATAN KECIL</p>
+          <p>Setiap foto di sini dipilih untuk menjaga cerita tetap dekat. Panitia dapat menambahkan dokumentasi baru dari ruang kendali acara.</p>
+        </div>
+        <a href="/" class="gallery-note__back">Kembali ke halaman utama <span aria-hidden="true">↗</span></a>
+      </section>
+    </main>
+
+    <footer class="gallery-footer"><span>BHARASENA © 2026</span><span>Batalyon Bhara Arsa Nawasena</span></footer>
+
+    <dialog class="gallery-lightbox" data-gallery-dialog aria-label="Foto dokumentasi BHARASENA">
+      <button class="gallery-lightbox__close" type="button" data-gallery-close aria-label="Tutup foto">×</button>
+      <div class="gallery-lightbox__stage">
+        <button class="gallery-lightbox__arrow gallery-lightbox__arrow--prev" type="button" data-gallery-prev aria-label="Foto sebelumnya">←</button>
+        <figure>
+          <img data-gallery-dialog-image alt="" />
+          <figcaption><span data-gallery-dialog-caption></span><span data-gallery-dialog-counter></span></figcaption>
+        </figure>
+        <button class="gallery-lightbox__arrow gallery-lightbox__arrow--next" type="button" data-gallery-next aria-label="Foto berikutnya">→</button>
+      </div>
+    </dialog>
+  </body>
+</html>

@@ -8,7 +8,7 @@ if (output !== join(root, 'public')) throw new Error('Unexpected static output p
 await rm(output, { recursive: true, force: true });
 await mkdir(join(output, 'src', 'scripts'), { recursive: true });
 await mkdir(join(output, 'src', 'data'), { recursive: true });
-for (const path of ['styles.css', 'assets', 'src/scripts/experience.js', 'src/scripts/music.js', 'src/scripts/heritage.js', 'src/data/event.js']) {
+for (const path of ['styles.css', 'galeri.html', 'gallery-page.css', 'assets', 'src/scripts/experience.js', 'src/scripts/gallery-page.js', 'src/scripts/music.js', 'src/scripts/heritage.js', 'src/data/event.js']) {
   await cp(join(root, path), join(output, path), { recursive: true });
 }
 let html = await readFile(join(root, 'index.html'), 'utf8');

@@ -262,7 +262,7 @@ async function handle(request, response) {
       response.writeHead(303, { Location: '/admin', 'Cache-Control': 'no-store' }); response.end(); return;
     } catch (error) { return send(response, error.status || 400, error.message || 'Permintaan tidak valid.'); }
   }
-  if (request.method === 'GET' && path === '/sitemap.xml') return send(response, 200, `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>${escapeHtml(siteOrigin(request))}/</loc></url></urlset>`, { 'Content-Type':'application/xml; charset=utf-8', 'Cache-Control':'public, max-age=3600' });
+  if (request.method === 'GET' && path === '/sitemap.xml') return send(response, 200, `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>${escapeHtml(siteOrigin(request))}/</loc></url><url><loc>${escapeHtml(siteOrigin(request))}/galeri.html</loc></url></urlset>`, { 'Content-Type':'application/xml; charset=utf-8', 'Cache-Control':'public, max-age=3600' });
   if (request.method === 'GET' && path === '/robots.txt') return send(response, 200, `User-agent: *\nAllow: /\nDisallow: /admin\nSitemap: ${siteOrigin(request)}/sitemap.xml\n`, { 'Content-Type':'text/plain; charset=utf-8' });
 
   if (request.method === 'GET' || request.method === 'HEAD') {
@@ -270,8 +270,8 @@ async function handle(request, response) {
     const file = resolve(root, `.${requested}`);
     const assetRelative = relative(join(root, 'assets'), file);
     const publicAsset = path.startsWith('/assets/') && assetRelative && !assetRelative.startsWith('..') && !isAbsolute(assetRelative);
-    const publicFile = publicAsset || path === '/styles.css' || path === '/admin.css' || path === '/favicon.ico'
-      || path === '/src/scripts/experience.js' || path === '/src/scripts/music.js' || path === '/src/scripts/heritage.js' || path === '/src/data/event.js';
+    const publicFile = publicAsset || path === '/styles.css' || path === '/gallery-page.css' || path === '/galeri.html' || path === '/admin.css' || path === '/favicon.ico'
+      || path === '/src/scripts/experience.js' || path === '/src/scripts/gallery-page.js' || path === '/src/scripts/music.js' || path === '/src/scripts/heritage.js' || path === '/src/data/event.js';
     if (publicFile && !relative(root, file).startsWith('..') && existsSync(file) && (await stat(file)).isFile()) {
       const type = mime[extname(file).toLowerCase()] || 'application/octet-stream';
       if (type.startsWith('audio/')) return sendAudio(request, response, file, (await stat(file)).size, type);
