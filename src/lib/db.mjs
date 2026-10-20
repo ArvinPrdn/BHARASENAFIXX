@@ -47,7 +47,9 @@ export function seed(db = openDb()) {
     school: 'SMAN 2 Taruna Bhayangkara',
     date_start: '2026-12-11',
     date_end: '2026-12-13',
-    venue: '', contact: '', dress_code: '', admission: '',
+    venue: 'SMADATARA, Banyuwangi, Jawa Timur',
+    contact: 'WhatsApp 082233244629 · Instagram @asonetothelight_',
+    dress_code: '', admission: '',
     event_start_at: '', event_end_at: '', location_final: '0',
   };
   const insertSetting = db.prepare('INSERT OR IGNORE INTO settings (key,value) VALUES (?,?)');
@@ -70,6 +72,9 @@ export function settings(db = openDb()) {
 
 export function getPublicContent(now = new Date(), db = openDb()) {
   const event = settings(db);
+  // Keep the public page useful before the admin panel is configured.
+  if (!event.venue) event.venue = 'SMADATARA, Banyuwangi, Jawa Timur';
+  if (!event.contact) event.contact = 'WhatsApp 082233244629 · Instagram @asonetothelight_';
   const instant = now.getTime();
   const announcements = db.prepare('SELECT id,title,body,created_at FROM announcements WHERE published=1 ORDER BY created_at DESC LIMIT 10').all();
   const latestAnnouncement = announcements[0] ? `${announcements[0].title}: ${announcements[0].body}` : '';

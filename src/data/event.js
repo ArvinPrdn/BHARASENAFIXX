@@ -17,11 +17,12 @@ export const EVENT = {
   start: '2026-12-11T16:00:00+07:00',
   end: '2026-12-13T22:00:00+07:00',
   timePlaceholder: true,
-  venue: null,
+  venue: 'SMADATARA, Banyuwangi, Jawa Timur',
+  mapsUrl: null,
   artistAt: null,
   dressCode: null,
   admission: null,
-  contact: null,
+  contact: 'WhatsApp 082233244629 · Instagram @asonetothelight_',
   showPlaceholderHints: false,
 };
 
