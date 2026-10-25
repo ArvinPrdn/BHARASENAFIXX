@@ -329,8 +329,37 @@ img { max-width: 100%; }
 .envelope-body h3 { font: 500 28px/1.13 var(--display); margin: 0 0 10px; }
 .envelope-body p { color: var(--muted); font-size: 15px; margin: 0; }
 .envelope-bottom { display: flex; align-items: center; justify-content: space-between; color: var(--muted); font-size: 12px; letter-spacing: .08em; }
+.envelope[data-letter-card] { cursor: pointer; transition: transform .35s cubic-bezier(.2,.7,.2,1), border-color .35s ease, box-shadow .35s ease; }
+.envelope[data-letter-card]:hover { transform: translateY(-7px) rotate(-.35deg); border-color: var(--champagne); box-shadow: 0 24px 42px rgba(0,0,0,.3), 0 0 0 1px rgba(217,195,160,.12); }
+.envelope[data-letter-card]:focus-visible { outline: 2px solid var(--champagne); outline-offset: 5px; }
 .envelope.is-jolted { animation: jolt .35s ease; }
 @keyframes jolt { 25%{transform:translateX(-3px) rotate(-1deg)} 55%{transform:translateX(4px) rotate(1deg)} 85%{transform:translateX(-2px)} }
+
+/* A nearly full-screen letter that opens from each information card. */
+.letter-dialog { width: min(96vw, 1180px); height: min(92dvh, 820px); max-width: none; max-height: none; margin: auto; padding: 0; border: 0; overflow: visible; color: #3b2118; background: transparent; }
+.letter-dialog::backdrop { background: rgba(7,3,5,.88); backdrop-filter: blur(8px) saturate(.82); }
+.letter-dialog-stage { position: relative; width: 100%; height: 100%; display: grid; place-items: center; isolation: isolate; }
+.letter-bottle { position: absolute; width: min(36vw, 330px); height: min(64vh, 520px); border: 2px solid rgba(189,211,195,.16); border-radius: 43% 43% 22% 22% / 18% 18% 12% 12%; transform: translate(28%, 2%) rotate(8deg); opacity: .62; background: linear-gradient(90deg, rgba(111,154,139,.05), rgba(229,244,215,.12) 48%, rgba(54,91,80,.05)); box-shadow: inset 18px 0 30px rgba(229,244,215,.08), inset -24px 0 34px rgba(8,25,24,.25), 0 30px 70px rgba(0,0,0,.3); z-index: -1; }
+.letter-bottle::before { content: ''; position: absolute; left: 22%; top: -17%; width: 56%; height: 22%; border: 2px solid rgba(189,211,195,.2); border-bottom: 0; border-radius: 50% 50% 0 0; background: rgba(161,193,169,.06); }
+.letter-bottle::after { content: ''; position: absolute; inset: 11% 10% 8%; border-radius: 45%; border: 1px solid rgba(255,245,213,.1); transform: rotate(-5deg); }
+.letter-bottle-cork { position: absolute; left: 33%; top: -20%; width: 34%; height: 11%; border-radius: 5px 5px 2px 2px; background: linear-gradient(90deg,#5e321c,#c08b4b 48%,#5a2b19); box-shadow: 0 5px 5px rgba(0,0,0,.3); }
+.letter-scroll { width: min(720px, calc(100% - 44px)); max-height: calc(100% - 34px); position: relative; filter: drop-shadow(0 28px 32px rgba(0,0,0,.4)); transform: rotate(-1deg); animation: letter-unroll .65s cubic-bezier(.16,1,.3,1) both; }
+.letter-paper { position: relative; max-height: calc(92dvh - 92px); overflow-y: auto; overscroll-behavior: contain; padding: clamp(42px, 7vw, 78px) clamp(28px, 7vw, 84px) clamp(38px, 6vw, 64px); border: 1px solid rgba(112,65,35,.65); background: radial-gradient(circle at 20% 12%, rgba(255,255,255,.48), transparent 25%), radial-gradient(circle at 80% 85%, rgba(124,64,29,.14), transparent 34%), repeating-linear-gradient(0deg, rgba(102,58,28,.035) 0 1px, transparent 1px 4px), #d9b878; box-shadow: inset 0 0 0 7px rgba(103,56,30,.08), inset 0 0 70px rgba(79,39,18,.2); scrollbar-color: #8e552e rgba(80,43,20,.1); }
+.letter-paper::before { content: ''; position: absolute; inset: 16px; border: 1px solid rgba(91,48,23,.28); pointer-events: none; }
+.letter-roll { height: 25px; position: relative; z-index: 2; border: 1px solid rgba(96,51,25,.7); background: linear-gradient(180deg,#f0d89e 0%,#b6793e 45%,#e0b66f 72%,#89502c 100%); box-shadow: 0 5px 8px rgba(57,28,14,.25); }
+.letter-roll::before, .letter-roll::after { content: ''; position: absolute; top: 3px; bottom: 3px; width: 18px; border-radius: 50%; background: linear-gradient(90deg,#704023,#d49b51 48%,#6d3a20); }
+.letter-roll::before { left: -9px; }.letter-roll::after { right: -9px; }
+.letter-roll-top { margin: 0 -12px -9px; border-radius: 50% 50% 7px 7px; }.letter-roll-bottom { margin: -9px -12px 0; border-radius: 7px 7px 50% 50%; }
+.letter-dialog-close { position: absolute; z-index: 3; top: 13px; right: 15px; width: 42px; height: 42px; display: grid; place-items: center; border: 1px solid rgba(76,39,19,.48); border-radius: 50%; color: #4a291a; background: rgba(244,213,151,.65); font: 400 27px/1 var(--body); cursor: pointer; transition: transform .25s ease, background .25s ease; }
+.letter-dialog-close:hover { transform: rotate(8deg) scale(1.06); background: #f1d294; }
+.letter-dialog-close:focus-visible, .letter-map-link:focus-visible { outline: 2px solid #4d291b; outline-offset: 3px; }
+.letter-kicker { margin: 0 0 18px; color: #744426; font-size: 11px; font-weight: 800; letter-spacing: .2em; }
+.letter-paper h2 { max-width: 540px; margin: 0; color: #3c2118; font: 500 clamp(2.8rem, 6vw, 5.5rem)/.96 var(--display); letter-spacing: -.055em; }
+.letter-divider { display: block; margin: 30px 0 25px; color: #8d542d; font-size: 20px; letter-spacing: .55em; }
+.letter-body { max-width: 570px; color: #553020; font: 400 clamp(1rem, 1.5vw, 1.2rem)/1.75 var(--body); white-space: pre-wrap; }
+.letter-map-link { display: inline-block; margin-top: 22px; color: #5b2b1b; font-size: 13px; font-weight: 800; text-underline-offset: 5px; }
+.letter-signoff { margin: 44px 0 0; color: #704426; font: 1.2rem/1.5 var(--script); }.letter-signoff strong { font: 600 13px/1.5 var(--body); letter-spacing: .1em; }
+@keyframes letter-unroll { from { opacity: 0; transform: translateY(25px) rotate(-4deg) scaleY(.72); transform-origin: 50% 0; } to { opacity: 1; transform: translateY(0) rotate(-1deg) scaleY(1); } }
 
 /* The invitation is printed locally, on demand. */
 .invitation { padding: 130px 8vw 145px; background: linear-gradient(105deg,#0c0709 0%,#210f14 55%,#0d0709 100%); display: grid; grid-template-columns: minmax(0,1fr) minmax(360px,.84fr); gap: min(9vw,120px); align-items: center; }
@@ -542,6 +571,13 @@ img { max-width: 100%; }
   .envelope-grid { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; }.envelope { min-height: 280px; padding: 16px; }
   .envelope-body h3 { font-size: 23px; }.envelope-body p { font-size: 14px; }.envelope-top,.envelope-bottom { font-size: 11px; }
   .wax-mini { width: 32px; height: 32px; }
+  .letter-dialog { width: 100vw; height: 100dvh; }
+  .letter-scroll { width: calc(100% - 22px); max-height: calc(100% - 18px); }
+  .letter-paper { max-height: calc(100dvh - 75px); padding: 48px 26px 40px; }
+  .letter-paper h2 { font-size: clamp(2.8rem, 14vw, 5rem); }
+  .letter-body { font-size: 16px; line-height: 1.7; }
+  .letter-bottle { width: 220px; height: 390px; transform: translate(25%, 4%) rotate(7deg); opacity: .35; }
+  .letter-dialog-close { top: 12px; right: 12px; }
   .invitation { display: block; padding: 100px 22px 120px; }.invitation h2 { font-size: clamp(3.4rem,13vw,5.5rem); }
   .invitation-copy { max-width: 560px; margin-inline: auto; }.invite-form { margin-top: 35px; }
   .invite-card-wrap { margin: 55px auto 0; width: min(100%,360px); }.invite-card { padding: 20px; }
@@ -568,6 +604,7 @@ img { max-width: 100%; }
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
   .room-glow,.room-pillar,.curtain,.chandelier,.invite-card { transform: none !important; }
+  .letter-scroll { animation: none !important; transform: none !important; }
   .chandelier { left: 50%; transform: translateX(-50%) !important; }
 }
 

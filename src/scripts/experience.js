@@ -599,6 +599,56 @@ function initRundown() {
 
 function initEnvelopes() {
   const cards = $$('.envelope[data-envelope]');
+  const letterDialog = $('#letter-dialog');
+  const letterTitle = letterDialog && $('[data-letter-title]', letterDialog);
+  const letterKicker = letterDialog && $('[data-letter-kicker]', letterDialog);
+  const letterBody = letterDialog && $('[data-letter-body]', letterDialog);
+  const letterMap = letterDialog && $('[data-letter-map]', letterDialog);
+  const letterClose = letterDialog && $('.letter-dialog-close', letterDialog);
+  let activeCard = null;
+  let previouslyFocused = null;
+
+  function closeLetter() {
+    if (!letterDialog) return;
+    letterDialog.close?.();
+    letterDialog.removeAttribute('open');
+    document.body.classList.remove('letter-open');
+    activeCard?.setAttribute('aria-expanded', 'false');
+    const returnTarget = previouslyFocused;
+    activeCard = null;
+    previouslyFocused = null;
+    if (returnTarget && document.contains(returnTarget)) requestAnimationFrame(() => returnTarget.focus());
+  }
+
+  function openLetter(card) {
+    if (!letterDialog || !letterTitle || !letterBody) return;
+    const title = $('.envelope-body h3', card)?.textContent?.trim() || 'Surat BHARASENA';
+    const label = $('.envelope-top > span', card)?.textContent?.trim() || 'INFORMASI';
+    let bodyText = $('.envelope-body p', card)?.textContent?.trim() || 'Informasi resmi segera dibuka.';
+    const mapMatch = bodyText.match(/https?:\/\/maps\.app\.goo\.gl\/[^\s]+/u);
+    bodyText = bodyText.replace(/\s*·?\s*Google Maps:\s*https?:\/\/maps\.app\.goo\.gl\/[^\s]+/u, '').trim();
+    if (letterKicker) letterKicker.textContent = `${label} · SURAT BHARASENA`;
+    letterTitle.textContent = title;
+    letterBody.textContent = bodyText;
+    if (letterMap) {
+      letterMap.hidden = !mapMatch;
+      if (mapMatch) letterMap.href = mapMatch[0];
+    }
+    previouslyFocused = document.activeElement;
+    activeCard?.setAttribute('aria-expanded', 'false');
+    activeCard = card;
+    card.setAttribute('aria-expanded', 'true');
+    document.body.classList.add('letter-open');
+    if (typeof letterDialog.showModal === 'function') letterDialog.showModal();
+    else letterDialog.setAttribute('open', '');
+    letterClose?.focus();
+  }
+
+  if (letterDialog) {
+    letterClose?.addEventListener('click', closeLetter);
+    letterDialog.addEventListener('cancel', (event) => { event.preventDefault(); closeLetter(); });
+    letterDialog.addEventListener('click', (event) => { if (event.target === letterDialog) closeLetter(); });
+  }
   const performerEnvelope = $('.mini-envelope[data-envelope="performer"]');
   if (performerEnvelope) {
     performerEnvelope.setAttribute('role', 'button');
@@ -629,7 +679,7 @@ function initEnvelopes() {
       const open = getEnvelopeState(resolved, now) === 'open';
       card.classList.toggle('is-open', open);
       card.classList.toggle('is-sealed', !open);
-      card.setAttribute('aria-expanded', String(open));
+      card.dataset.contentState = open ? 'open' : 'sealed';
       const body = $('[data-envelope-body]', card) || $('.envelope-body p', card);
       if (body) body.textContent = open ? resolved.body : 'Informasi resmi segera dibuka.';
       const status = $('[data-envelope-status]', card) || $('.envelope-bottom > span:first-child', card);
@@ -637,12 +687,10 @@ function initEnvelopes() {
     });
   }
   cards.forEach((card) => {
-    card.addEventListener('click', () => {
-      if (!card.classList.contains('is-sealed')) return;
-      card.classList.remove('is-jolted');
-      void card.offsetWidth;
-      card.classList.add('is-jolted');
-      setTimeout(() => card.classList.remove('is-jolted'), 460);
+    if (!card.hasAttribute('data-letter-card')) return;
+    card.addEventListener('click', () => openLetter(card));
+    card.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openLetter(card); }
     });
   });
   refresh();

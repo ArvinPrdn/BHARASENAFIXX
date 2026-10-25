@@ -167,7 +167,8 @@ function envelopeGrid(content) {
     const open = !item.sealed && item.body;
     const text = open ? item.body : 'Informasi resmi segera dibuka.';
     const status = open ? 'Terbuka' : 'SEGEL PANITIA';
-    return `<article class="envelope ${open ? 'is-open' : 'is-sealed'}" data-envelope="${escapeHtml(item.id)}" aria-expanded="${open}"><div class="envelope-top"><span>${escapeHtml(label[0])}</span><span class="envelope-fold" aria-hidden="true"></span></div><div class="envelope-body"><h3>${escapeHtml(label[1])}</h3><p data-envelope-body>${escapeHtml(text)}</p></div><div class="envelope-bottom"><span data-envelope-status>${escapeHtml(status)}</span><span class="wax-mini" aria-hidden="true"></span></div></article>`;
+    const state = open ? 'open' : 'sealed';
+    return `<article class="envelope ${open ? 'is-open' : 'is-sealed'}" data-envelope="${escapeHtml(item.id)}" data-letter-card data-content-state="${state}" role="button" tabindex="0" aria-haspopup="dialog" aria-expanded="false" aria-label="Buka surat ${escapeHtml(label[1])}"><div class="envelope-top"><span>${escapeHtml(label[0])}</span><span class="envelope-fold" aria-hidden="true"></span></div><div class="envelope-body"><h3>${escapeHtml(label[1])}</h3><p data-envelope-body>${escapeHtml(text)}</p></div><div class="envelope-bottom"><span data-envelope-status>${escapeHtml(status)}</span><span class="wax-mini" aria-hidden="true"></span></div></article>`;
   }).join('');
   return cards;
 }
