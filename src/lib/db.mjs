@@ -42,26 +42,38 @@ export function migrate(db = openDb()) {
 export function seed(db = openDb()) {
   const settings = {
     title: 'BHARASENA',
-    subtitle: 'Prom Night Batalyon 6',
+    subtitle: 'As one to the light',
+    tagline: 'As one to the light',
     battalion: 'Batalyon Bhara Arsa Nawasena',
     school: 'SMAN 2 Taruna Bhayangkara',
     date_start: '2026-12-11',
     date_end: '2026-12-13',
-    venue: 'SMADATARA, Banyuwangi, Jawa Timur',
-    contact: 'WhatsApp 082233244629 · Instagram @asonetothelight_',
-    dress_code: '', admission: '',
-    event_start_at: '', event_end_at: '', location_final: '0',
+    venue: 'SMA Negeri 2 Taruna Bhayangkara Jawa Timur, Jl. Pandan, Desa Kembiritan, Kecamatan Genteng, Kabupaten Banyuwangi',
+    maps_url: 'https://maps.app.goo.gl/XGUJMNvkwBCmNSDWA?g_st=ac',
+    contact: '+62 821-5185-9028 (Humas)',
+    instagram: '@asonetothelight_',
+    dress_code: '11 Des: baju muslim (muslim) atau batik/bebas rapi (nonmuslim). 12 Des pagi: atasan putih polos dan bawahan training hitam; malam: seragam PDSUS berjas Taruna Bhayangkara. 13 Des: baju prom night semi PDL. Warna tambahan, aksesori terlarang, dan contoh outfit: menyusul.',
+    admission: 'Hadir untuk seluruh anggota SMAN 2 Taruna Bhayangkara dan tamu tertentu yang diundang. Parkir dan konsumsi tersedia. Yang wajib dibawa: menyusul. Tiket/kartu identitas/undangan: menyusul. Aturan masuk, keterlambatan, dan barang terlarang: menyusul.',
+    event_start_at: '2026-12-11T06:00:00+07:00', event_end_at: '2026-12-13T23:00:00+07:00', location_final: '1',
   };
   const insertSetting = db.prepare('INSERT OR IGNORE INTO settings (key,value) VALUES (?,?)');
   for (const [key, value] of Object.entries(settings)) insertSetting.run(key, value);
-  const insertEnvelope = db.prepare('INSERT OR IGNORE INTO envelopes (id,title,body,is_placeholder) VALUES (?,?,?,1)');
-  for (const [id, title] of [['venue','Tempat acara'],['admission','Ketentuan masuk'],['dress-code','Busana acara'],['updates','Informasi terbaru']]) insertEnvelope.run(id, title, '');
-  if (!db.prepare('SELECT 1 FROM performers LIMIT 1').get()) db.prepare('INSERT INTO performers (name,photo_path,is_announced) VALUES (?,?,1)').run('Budi Doremi', '/assets/budi-doremi.jpg');
+  const insertEnvelope = db.prepare('INSERT OR IGNORE INTO envelopes (id,title,body,is_placeholder) VALUES (?,?,?,?)');
+  insertEnvelope.run('venue', 'Tempat acara', 'SMA Negeri 2 Taruna Bhayangkara Jawa Timur, Jl. Pandan, Desa Kembiritan, Kecamatan Genteng, Kabupaten Banyuwangi · Google Maps: https://maps.app.goo.gl/XGUJMNvkwBCmNSDWA?g_st=ac', 0);
+  insertEnvelope.run('admission', 'Ketentuan masuk', settings.admission, 0);
+  insertEnvelope.run('dress-code', 'Busana acara', settings.dress_code, 0);
+  insertEnvelope.run('updates', 'Informasi terbaru', '', 1);
+  if (!db.prepare('SELECT 1 FROM performers LIMIT 1').get()) {
+    const addPerformer = db.prepare('INSERT INTO performers (name,photo_path,scheduled_at,is_announced) VALUES (?,?,?,1)');
+    addPerformer.run('Ust. Fuad Naim', '', '11 Desember 2026 · 20.00–selesai');
+    addPerformer.run('DJ Gemoy', '', '12 Desember 2026 · 07.50–09.00');
+    addPerformer.run('Budi Doremi', '/assets/budi-doremi.jpg', '13 Desember 2026 · 20.30–selesai');
+  }
   if (!db.prepare('SELECT 1 FROM rundown LIMIT 1').get()) {
-    const add = db.prepare('INSERT INTO rundown (day,start_at,end_at,title,description,is_placeholder,sort_order) VALUES (?,?,?,?,?,1,?)');
-    for (const [index, day] of ['2026-12-11','2026-12-12','2026-12-13'].entries()) {
-      for (let order = 0; order < 3; order += 1) add.run(day, '', '', `Sesi ${order + 1}`, '', index * 3 + order);
-    }
+    const add = db.prepare('INSERT INTO rundown (day,start_at,end_at,title,description,is_placeholder,sort_order) VALUES (?,?,?,?,?,0,?)');
+    add.run('2026-12-11', '2026-12-11T06:00:00+07:00', '2026-12-11T22:00:00+07:00', 'Taruna Bakti & Istigosah', 'Hari pertama Bharasena diisi dengan Taruna Bakti dan Istigosah. Penampil: Ust. Fuad Naim, pukul 20.00–selesai.', 0);
+    add.run('2026-12-12', '2026-12-12T06:00:00+07:00', '2026-12-12T22:00:00+07:00', 'Colour Festival & Malam Intimate', 'Hari kedua Bharasena menghadirkan Colour Festival dan Malam Intimate. Penampil: DJ Gemoy, pukul 07.50–09.00.', 1);
+    add.run('2026-12-13', '2026-12-13T19:00:00+07:00', '2026-12-13T23:00:00+07:00', 'Malam Puncak · Konser', 'Penutupan Bharasena berupa malam puncak dan konser bersama Budi Doremi, pukul 20.30–selesai. Ada penampil tambahan dari para taruna.', 2);
   }
   return db;
 }
@@ -73,8 +85,10 @@ export function settings(db = openDb()) {
 export function getPublicContent(now = new Date(), db = openDb()) {
   const event = settings(db);
   // Keep the public page useful before the admin panel is configured.
-  if (!event.venue) event.venue = 'SMADATARA, Banyuwangi, Jawa Timur';
-  if (!event.contact) event.contact = 'WhatsApp 082233244629 · Instagram @asonetothelight_';
+  if (!event.venue) event.venue = 'SMA Negeri 2 Taruna Bhayangkara Jawa Timur, Jl. Pandan, Desa Kembiritan, Kecamatan Genteng, Kabupaten Banyuwangi';
+  if (!event.maps_url) event.maps_url = 'https://maps.app.goo.gl/XGUJMNvkwBCmNSDWA?g_st=ac';
+  if (!event.contact) event.contact = '+62 821-5185-9028 (Humas)';
+  if (!event.instagram) event.instagram = '@asonetothelight_';
   const instant = now.getTime();
   const announcements = db.prepare('SELECT id,title,body,created_at FROM announcements WHERE published=1 ORDER BY created_at DESC LIMIT 10').all();
   const latestAnnouncement = announcements[0] ? `${announcements[0].title}: ${announcements[0].body}` : '';

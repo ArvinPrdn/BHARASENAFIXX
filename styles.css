@@ -176,8 +176,10 @@ img { max-width: 100%; }
 .event-ticket.ticket-place { transform: rotate(2deg); }
 .event-ticket .ticket-label { color: var(--champagne); font-size: 12px; letter-spacing: .15em; font-weight: 700; }
 .event-ticket strong { font: 500 19px/1.2 var(--display); }
+.event-ticket.ticket-place strong { font-size: 16px; line-height: 1.35; }
 .event-ticket strong em { font-style: normal; }
 .event-ticket > span:last-child { color: var(--muted); font-size: 13px; }
+.event-ticket > span:last-child a { color: var(--champagne); }
 .hero-scroll { margin-top: auto; padding-top: 38px; font-size: 13px; font-weight: 700; letter-spacing: .08em; text-decoration: none; }
 .hero-scroll span { margin-left: 8px; color: var(--champagne); }
 .hero-bottom { position: absolute; z-index: 5; left: 3.8vw; right: 3.8vw; bottom: 20px; display: flex; justify-content: space-between; align-items: center; gap: 14px; color: var(--champagne); font-size: 12px; letter-spacing: .06em; }

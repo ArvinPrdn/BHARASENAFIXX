@@ -39,9 +39,15 @@ const currentTime = () => new Date(Date.now() + clockOffset);
 const eventStartMeta = document.querySelector('meta[name="event-start"]')?.getAttribute('content');
 const eventEndMeta = document.querySelector('meta[name="event-end"]')?.getAttribute('content');
 const eventVenueMeta = document.querySelector('meta[name="event-venue"]')?.getAttribute('content');
+const eventMapsMeta = document.querySelector('meta[name="event-maps"]')?.getAttribute('content');
+const eventContactMeta = document.querySelector('meta[name="event-contact"]')?.getAttribute('content');
+const eventInstagramMeta = document.querySelector('meta[name="event-instagram"]')?.getAttribute('content');
 if (eventStartMeta) EVENT.start = eventStartMeta;
 if (eventEndMeta) EVENT.end = eventEndMeta;
 if (eventVenueMeta) EVENT.venue = eventVenueMeta || null;
+if (eventMapsMeta) EVENT.mapsUrl = eventMapsMeta || null;
+if (eventContactMeta) EVENT.contact = eventContactMeta || null;
+if (eventInstagramMeta) EVENT.instagram = eventInstagramMeta || null;
 
 // All continuous visual work shares one frame loop. Hidden tabs schedule none.
 const frameTasks = new Set();
@@ -1200,7 +1206,16 @@ function initPublishedContent() {
     const place = $('.ticket-place strong');
     const note = $('.ticket-place > span:last-child');
     if (place) place.textContent = EVENT.venue;
-    if (note) note.textContent = 'Lokasi acara';
+    if (note) {
+      const mapLink = $('.ticket-place a');
+      if (mapLink && EVENT.mapsUrl) {
+        mapLink.href = EVENT.mapsUrl;
+        mapLink.textContent = 'Buka Google Maps ↗';
+        note.replaceChildren(document.createTextNode('Lokasi acara · '), mapLink);
+      } else {
+        note.textContent = 'Lokasi acara';
+      }
+    }
   }
   if (EVENT.artistAt) {
     const artistTime = $('.mini-envelope[data-envelope="performer"] strong');
@@ -1208,7 +1223,7 @@ function initPublishedContent() {
   }
   if (EVENT.contact) {
     const note = $('.contact-note');
-    if (note) note.textContent = `Kontak panitia: ${EVENT.contact}`;
+    if (note) note.textContent = `Kontak panitia: ${EVENT.contact}${EVENT.instagram ? ` · Instagram ${EVENT.instagram}` : ''}`;
   }
 }
 
