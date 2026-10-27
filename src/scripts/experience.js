@@ -248,13 +248,14 @@ function initTimeline() {
     const a = t < 0.5 ? lightStops[0] : lightStops[1];
     const b = t < 0.5 ? lightStops[1] : lightStops[2];
     root.style.setProperty('--ambient-rgb', a.map((value, i) => Math.round(lerp(value, b[i], span))).join(', '));
-    if (hero && !reduceMotion() && !lowEnd) {
+    if (hero && !reduceMotion()) {
       const heroRect = hero.getBoundingClientRect();
       if (heroRect.bottom >= 0 && heroRect.top <= innerHeight) {
         const heroProgress = clamp(-heroRect.top / Math.max(1, heroRect.height), 0, 1);
+        const heroAmplitude = lowEnd ? (mobileQuery.matches ? 110 : 240) : (mobileQuery.matches ? 180 : 360);
         heroLayers.forEach((layer) => {
           const depth = clamp(Number(layer.dataset.depth) || 0.03, -0.2, 0.2);
-          layer.style.setProperty('--parallax-scroll', `${(heroProgress * depth * (mobileQuery.matches ? 95 : 180)).toFixed(2)}px`);
+          layer.style.setProperty('--parallax-scroll', `${(heroProgress * depth * heroAmplitude).toFixed(2)}px`);
         });
       } else {
         heroLayers.forEach((layer) => layer.style.setProperty('--parallax-scroll', '0px'));
@@ -262,9 +263,9 @@ function initTimeline() {
     } else {
       heroLayers.forEach((layer) => layer.style.setProperty('--parallax-scroll', '0px'));
     }
-    if (!reduceMotion() && !lowEnd) {
+    if (!reduceMotion()) {
       parallaxLayers = $$('[data-parallax-depth]');
-      const amplitude = mobileQuery.matches ? 180 : 420;
+      const amplitude = lowEnd ? (mobileQuery.matches ? 140 : 260) : (mobileQuery.matches ? 260 : 520);
       parallaxLayers.forEach((layer) => {
         const scene = layer.closest('.scene');
         if (!scene) return;
