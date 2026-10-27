@@ -168,6 +168,7 @@ function initTimeline() {
   const scenes = $$('.scene[data-scene]');
   const hero = $('.hero');
   const heroLayers = hero ? $$('[data-depth]', hero) : [];
+  const parallaxLayers = $$('[data-parallax-depth]');
   const clock = $('.scene-clock');
   const dots = $$('.scene-dot');
   const navigationLinks = $$('.header-nav a[href^="#"], .mobile-dock a[href^="#"]');
@@ -211,7 +212,29 @@ function initTimeline() {
           const depth = clamp(Number(layer.dataset.depth) || 0.03, -0.2, 0.2);
           layer.style.setProperty('--parallax-scroll', `${(heroProgress * depth * (mobileQuery.matches ? 95 : 180)).toFixed(2)}px`);
         });
+      } else {
+        heroLayers.forEach((layer) => layer.style.setProperty('--parallax-scroll', '0px'));
       }
+    } else {
+      heroLayers.forEach((layer) => layer.style.setProperty('--parallax-scroll', '0px'));
+    }
+    if (!reduceMotion()) {
+      const amplitude = mobileQuery.matches ? 180 : 420;
+      parallaxLayers.forEach((layer) => {
+        const scene = layer.closest('.scene');
+        if (!scene) return;
+        const rect = scene.getBoundingClientRect();
+        if (rect.bottom < -50 || rect.top > innerHeight + 50) {
+          layer.style.setProperty('--parallax-offset', '0px');
+          return;
+        }
+        const center = rect.top + rect.height / 2;
+        const progress = clamp((innerHeight * 0.5 - center) / Math.max(innerHeight, rect.height), -1, 1);
+        const depth = clamp(Number(layer.dataset.parallaxDepth) || 0.05, -0.2, 0.2);
+        layer.style.setProperty('--parallax-offset', `${(progress * depth * amplitude).toFixed(2)}px`);
+      });
+    } else {
+      parallaxLayers.forEach((layer) => layer.style.setProperty('--parallax-offset', '0px'));
     }
     const minutes = Math.round(t * 360);
     const hours = 18 + Math.floor(minutes / 60);
