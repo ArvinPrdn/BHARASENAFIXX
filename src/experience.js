@@ -168,7 +168,7 @@ function initTimeline() {
   const scenes = $$('.scene[data-scene]');
   const hero = $('.hero');
   const heroLayers = hero ? $$('[data-depth]', hero) : [];
-  const parallaxLayers = $$('[data-parallax-depth]');
+  let parallaxLayers = $$('[data-parallax-depth]');
   const clock = $('.scene-clock');
   const dots = $$('.scene-dot');
   const navigationLinks = $$('.header-nav a[href^="#"], .mobile-dock a[href^="#"]');
@@ -219,6 +219,7 @@ function initTimeline() {
       heroLayers.forEach((layer) => layer.style.setProperty('--parallax-scroll', '0px'));
     }
     if (!reduceMotion()) {
+      parallaxLayers = $$('[data-parallax-depth]');
       const amplitude = mobileQuery.matches ? 180 : 420;
       parallaxLayers.forEach((layer) => {
         const scene = layer.closest('.scene');
