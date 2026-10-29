@@ -718,7 +718,7 @@ function initEnvelopes() {
     busanaCard.addEventListener('keydown', (event) => {
       if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openBusana(); }
     });
-    $('.busana-close', busanaDialog).addEventListener('click', () => busanaDialog.close());
+    $$('.busana-close', busanaDialog).forEach((button) => button.addEventListener('click', () => busanaDialog.close()));
     busanaDialog.addEventListener('click', (event) => { if (event.target === busanaDialog) busanaDialog.close(); });
     busanaDialog.addEventListener('close', () => {
       document.body.classList.remove('busana-open');
