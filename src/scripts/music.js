@@ -29,7 +29,7 @@ export function initMusic() {
     </div>
     <div class="music-intro">
       <div class="music-turntable" aria-hidden="true"><div class="music-record"><img src="assets/budi-doremi.jpg" alt="" /><span class="music-record__label">BHARASENA · SIDE A</span></div><span class="music-tonearm"></span></div>
-      <div><p class="music-artist">BUDI DOREMI</p><h2 id="music-title">Lagu untuk<br /><em>malam ini.</em></h2><p class="music-intro__note">Pilih lagu. Nikmati ceritanya.</p></div>
+      <div><p class="music-artist">BUDI DOREMI</p><h2 id="music-title">Lagu untuk<br /><em>malam ini.</em></h2><p class="music-intro__note">Pilih lagu yang ingin kamu dengarkan.</p></div>
     </div>
     <div class="music-list-heading"><span>PILIHAN LAGU</span><span>04 TRACKS</span></div>
     <div class="music-tracks" role="group" aria-label="Lagu Budi Doremi">
@@ -172,7 +172,11 @@ export function initMusic() {
       status.textContent = sourceCheck ? 'Memeriksa ketersediaan audio…' : 'Rekaman lagu ini belum tersedia.';
       return;
     }
-    if (index === selectedIndex) return;
+    if (index === selectedIndex) {
+      if (audio.paused) play();
+      else audio.pause();
+      return;
+    }
     selectedIndex = index;
     const track = tracks[index];
     choices.forEach((item, itemIndex) => item.setAttribute('aria-pressed', String(itemIndex === index)));
@@ -244,4 +248,5 @@ export function initMusic() {
       sourceCheck = checkSources().finally(() => { sourceCheck = null; });
     }
   });
+  panel.showPopover();
 }
