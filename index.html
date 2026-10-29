@@ -228,6 +228,24 @@
     <nav class="mobile-dock" aria-label="Akses cepat"><a href="#rundown">Rundown</a><a href="#info-peserta">Info</a><a href="#undangan">Undangan</a><a href="#proposal">Proposal</a><a href="#dinding-pesan">Pesan</a></nav>
     <footer class="site-footer"><span>BHARASENA © 2026</span><span>Batalyon Bhara Arsa Nawasena</span><a href="#hero">Kembali ke awal</a></footer>
 
+    <dialog id="info-letter-dialog" class="letter-dialog" aria-labelledby="info-letter-title">
+      <div class="letter-dialog-stage">
+        <span class="letter-bottle" aria-hidden="true"><span class="letter-bottle-cork"></span></span>
+        <article class="letter-scroll">
+          <div class="letter-roll letter-roll-top" aria-hidden="true"></div>
+          <div class="letter-paper">
+            <button type="button" class="letter-dialog-close" aria-label="Tutup surat">×</button>
+            <p class="letter-kicker" data-info-kicker></p>
+            <h2 id="info-letter-title"></h2>
+            <span class="letter-divider" aria-hidden="true">✦</span>
+            <div class="letter-body" data-info-body></div>
+            <a class="letter-map-link" data-info-map href="https://maps.app.goo.gl/XGUJMNvkwBCmNSDWA?g_st=ac" target="_blank" rel="noopener noreferrer" hidden>Buka lokasi di Google Maps</a>
+            <p class="letter-signoff">Dengan hangat,<br><strong>Panitia BHARASENA</strong></p>
+          </div>
+          <div class="letter-roll letter-roll-bottom" aria-hidden="true"></div>
+        </article>
+      </div>
+    </dialog>
     <dialog id="busana-dialog" class="busana-dialog" aria-labelledby="busana-summary-title">
       <button type="button" class="busana-close" aria-label="Tutup busana acara">×</button>
       <div class="busana-summary">

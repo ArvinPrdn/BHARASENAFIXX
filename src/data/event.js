@@ -17,10 +17,10 @@ export const EVENT = {
   start: '2026-12-11T16:00:00+07:00',
   end: '2026-12-13T22:00:00+07:00',
   timePlaceholder: true,
-  venue: null,
+  venue: 'SMA Negeri 2 Taruna Bhayangkara Jawa Timur, Jl. Pandan, Desa Kembiritan, Kecamatan Genteng, Kabupaten Banyuwangi.',
   artistAt: null,
   dressCode: null,
-  admission: null,
+  admission: 'Hadir untuk seluruh anggota SMAN 2 Taruna Bhayangkara dan tamu tertentu yang diundang. Parkir dan konsumsi tersedia. Yang wajib dibawa: menyusul. Tiket/kartu identitas/undangan: menyusul. Aturan masuk, keterlambatan, dan barang terlarang: menyusul.',
   contact: null,
   showPlaceholderHints: false,
 };

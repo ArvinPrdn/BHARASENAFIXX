@@ -673,6 +673,73 @@ function initRundown() {
 function initEnvelopes() {
   const cards = $$('.envelope[data-envelope]');
 
+
+  const infoDialog = $('#info-letter-dialog');
+  const infoCards = new Set();
+  if (infoDialog) {
+    let activeInfoCard = null;
+    let closingInfo = false;
+    const closeInfo = async () => {
+      if (closingInfo || !infoDialog.open) return;
+      closingInfo = true;
+      if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        const animation = $('.letter-scroll', infoDialog).animate([
+          { transform: 'rotate(-1deg) scaleY(1)', opacity: 1, offset: 0 },
+          { transform: 'rotate(-1deg) scaleY(.12)', opacity: 1, offset: .78 },
+          { transform: 'rotate(-1deg) scaleY(.035)', opacity: 0, offset: 1 },
+        ], { duration: 520, easing: 'cubic-bezier(.65,0,.35,1)', fill: 'forwards' });
+        try { await animation.finished; } catch { /* Close even if the animation is interrupted. */ }
+        infoDialog.close();
+        animation.cancel();
+      } else infoDialog.close();
+      closingInfo = false;
+    };
+    $('.letter-dialog-close', infoDialog).addEventListener('click', closeInfo);
+    infoDialog.addEventListener('cancel', (event) => { event.preventDefault(); closeInfo(); });
+    infoDialog.addEventListener('click', (event) => {
+      if (event.target === infoDialog || event.target.classList.contains('letter-dialog-stage')) closeInfo();
+    });
+    infoDialog.addEventListener('close', () => {
+      document.body.classList.remove('busana-open');
+      activeInfoCard?.setAttribute('aria-expanded', 'false');
+      activeInfoCard?.focus();
+    });
+    cards.forEach((card) => {
+      const venue = ['lokasi', 'venue'].includes(card.dataset.envelope);
+      const admission = ['masuk', 'admission'].includes(card.dataset.envelope);
+      if (!venue && !admission) return;
+      infoCards.add(card);
+      const title = venue ? 'Tempat acara' : 'Ketentuan masuk';
+      const body = $('.envelope-body p', card);
+      const content = card.classList.contains('is-open') && body.textContent.trim() ? body.textContent.trim() : venue ? EVENT.venue : EVENT.admission;
+      body.textContent = content;
+      card.classList.remove('is-sealed');
+      card.classList.add('is-open');
+      card.setAttribute('role', 'button');
+      card.setAttribute('tabindex', '0');
+      card.setAttribute('aria-label', `Buka surat ${title}`);
+      card.setAttribute('aria-haspopup', 'dialog');
+      card.setAttribute('aria-controls', 'info-letter-dialog');
+      card.setAttribute('aria-expanded', 'false');
+      $('.envelope-bottom > span:first-child', card).textContent = 'TERBUKA';
+      const openInfo = () => {
+        activeInfoCard = card;
+        $('[data-info-kicker]', infoDialog).textContent = `${venue ? '01 / LOKASI' : '02 / AKSES'} · SURAT BHARASENA`;
+        $('#info-letter-title', infoDialog).textContent = title;
+        $('[data-info-body]', infoDialog).textContent = content;
+        $('[data-info-map]', infoDialog).hidden = !venue;
+        $('.letter-paper', infoDialog).scrollTop = 0;
+        infoDialog.showModal();
+        document.body.classList.add('busana-open');
+        card.setAttribute('aria-expanded', 'true');
+      };
+      card.addEventListener('click', openInfo);
+      card.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openInfo(); }
+      });
+    });
+  }
+
   const busanaCard = cards.find((card) => ['busana', 'dress-code'].includes(card.dataset.envelope));
   const busanaDialog = $('#busana-dialog');
   if (busanaCard && busanaDialog) {
@@ -771,7 +838,7 @@ function initEnvelopes() {
       const ids = { lokasi: 'venue', masuk: 'admission', busana: 'dress-code', terbaru: 'updates' };
       const data = envelopes.find((item) => item.id === (ids[card.dataset.envelope] || card.dataset.envelope)) || envelopes[index];
       if (!data) return;
-      if (card === busanaCard) return;
+      if (card === busanaCard || infoCards.has(card)) return;
       const field = { venue: EVENT.venue, admission: EVENT.admission, 'dress-code': EVENT.dressCode }[data.id];
       const resolved = field && !data.body ? { ...data, body: field, placeholder: false } : data;
       const open = getEnvelopeState(resolved, now) === 'open';
@@ -786,7 +853,7 @@ function initEnvelopes() {
   }
   cards.forEach((card) => {
     card.addEventListener('click', () => {
-      if (card === busanaCard || !card.classList.contains('is-sealed')) return;
+      if (card === busanaCard || infoCards.has(card) || !card.classList.contains('is-sealed')) return;
       card.classList.remove('is-jolted');
       void card.offsetWidth;
       card.classList.add('is-jolted');
