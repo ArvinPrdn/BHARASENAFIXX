@@ -682,6 +682,17 @@ function initEnvelopes() {
     busanaCard.setAttribute('aria-haspopup', 'dialog');
     busanaCard.setAttribute('aria-controls', 'busana-dialog');
     busanaCard.setAttribute('aria-expanded', 'false');
+    let jerseySleeve = 'short';
+    let jerseyView = 'front';
+    const updateJersey = () => {
+      const image = $('#jersey-main', busanaDialog);
+      image.src = `assets/jersey/${jerseySleeve}-${jerseyView}.webp`;
+      image.alt = `Jersey BHARASENA VI lengan ${jerseySleeve === 'short' ? 'pendek' : 'panjang'}, tampak ${jerseyView === 'front' ? 'depan' : 'belakang'}`;
+      $$('[data-jersey-sleeve]', busanaDialog).forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.jerseySleeve === jerseySleeve)));
+      $$('[data-jersey-view]', busanaDialog).forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.jerseyView === jerseyView)));
+    };
+    $$('[data-jersey-sleeve]', busanaDialog).forEach((button) => button.addEventListener('click', () => { jerseySleeve = button.dataset.jerseySleeve; updateJersey(); }));
+    $$('[data-jersey-view]', busanaDialog).forEach((button) => button.addEventListener('click', () => { jerseyView = button.dataset.jerseyView; updateJersey(); }));
     const openBusana = () => {
       busanaDialog.showModal();
       busanaCard.setAttribute('aria-expanded', 'true');

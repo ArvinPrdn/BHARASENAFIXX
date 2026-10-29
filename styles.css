@@ -726,19 +726,33 @@ img { max-width: 100%; }
   .proposal-stamp { width: 76px; height: 76px; right: 24px; top: -24px; font-size: 7px; }
   .proposal-stamp strong { font-size: 21px; }
 }
+/* Editorial jersey catalogue */
 .busana-open { overflow: hidden; }
-.busana-dialog { width: min(900px, calc(100% - 28px)); max-height: 88svh; padding: 42px; border: 1px solid #ab8a58; color: #efe1c6; background: #201714; overflow-y: auto; }
-.busana-dialog::backdrop { background: #090605d9; backdrop-filter: blur(7px); }
-.busana-close { position: sticky; top: 0; float: right; width: 40px; height: 40px; border: 1px solid #b59968; background: #201714; color: #efe1c6; font-size: 25px; cursor: pointer; z-index: 1; }
-.busana-dialog h2 { font: 42px Georgia, serif; margin: 18px 0; }
-.busana-intro { font-size: 14px; line-height: 1.9; color: #d4c2a7; }
-.busana-jersey-heading { margin-top: 30px; padding-top: 22px; border-top: 1px solid #b5996840; }
-.busana-jersey-heading h3 { font: 26px Georgia, serif; margin: 0 0 10px; }
-.busana-jersey-heading p, .busana-source { font-size: 12px; line-height: 1.7; color: #bba68a; }
-.busana-jerseys { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 24px; }
-.busana-jerseys figure { margin: 0; padding: 18px 12px; border: 1px solid #b5996838; background: #f0e7d7; color: #38291f; }
-.busana-views { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.busana-views img { display: block; width: 100%; height: 230px; object-fit: contain; }
-.busana-views span { display: block; text-align: center; font-size: 10px; margin-top: 10px; color: #75634b; }
-.busana-jerseys figcaption { text-align: center; font: 19px Georgia, serif; margin-top: 20px; }
-@media (max-width: 620px) { .busana-dialog { padding: 24px 18px; } .busana-dialog h2 { font-size: 34px; } .busana-jerseys { grid-template-columns: 1fr; } .busana-views img { height: 210px; } }
+.busana-dialog { width: min(1040px, calc(100% - 28px)); max-height: 90svh; padding: 0; border: 1px solid #a5834f70; background: #171110; color: var(--ivory); overflow: auto; }
+.busana-dialog::backdrop { background: #090607dc; backdrop-filter: blur(9px); }
+.busana-close { position: absolute; top: 16px; right: 16px; z-index: 3; width: 36px; height: 36px; border: 1px solid #c6aa7a50; border-radius: 50%; background: #171110; color: var(--champagne); font-size: 22px; }
+.busana-layout { display: grid; grid-template-columns: 1fr 1fr; }
+.busana-showcase { position: relative; min-width: 0; padding: 28px 28px 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: radial-gradient(ellipse at 50% 45%, #8b6550 0, #5b3935 40%, #301d20 78%); overflow: hidden; }
+.busana-showcase-top { width: 100%; display: flex; justify-content: space-between; font-size: 9px; letter-spacing: 2px; color: #e5cda4; }
+.busana-watermark { position: absolute; font: 400 390px/1 var(--display); color: #f5dcaa0e; pointer-events: none; }
+#jersey-main { position: relative; width: 100%; height: 420px; object-fit: contain; margin: 20px 0 10px; filter: drop-shadow(0 22px 18px #10050766); }
+.busana-view-picker { display: flex; padding: 4px; gap: 4px; border: 1px solid #d9c3a04a; border-radius: 30px; background: #140b0d50; position: relative; }
+.busana-view-picker button { border: 0; border-radius: 24px; padding: 8px 20px; background: transparent; color: #d8c6af; font-size: 11px; }
+.busana-view-picker button[aria-pressed="true"] { background: #dfc59b; color: #2a1916; }
+.busana-showcase-note { font-size: 8px; letter-spacing: 3px; color: #d2b99c; margin: 22px 0 0; }
+.busana-editorial { padding: 45px 36px 24px; min-width: 0; }
+.busana-editorial .scene-kicker { font-size: 9px; letter-spacing: 2px; padding-right: 20px; }
+.busana-dialog h2 { font: 400 45px/1.08 var(--display); letter-spacing: -1px; margin: 20px 0 16px; }
+.busana-dialog h2 em { color: var(--champagne); font-weight: 400; }
+.busana-deck { font-size: 12px; line-height: 1.8; color: #bdafa3; }
+.busana-sleeve-picker { display: flex; gap: 8px; margin: 22px 0 30px; }
+.busana-sleeve-picker button { flex: 1; padding: 11px 8px; border: 1px solid #d9c3a038; background: transparent; color: #c4b7a5; font-size: 11px; }
+.busana-sleeve-picker button[aria-pressed="true"] { border-color: #cbaa73; color: #f2dfbd; background: #d9c3a00d; }
+.busana-guide h3 { font-size: 9px; font-weight: 500; letter-spacing: 2px; text-transform: uppercase; margin: 0 0 8px; color: #bca786; }
+.busana-guide-row { display: flex; gap: 18px; border-top: 1px solid #d9c3a020; padding: 14px 0; }
+.busana-guide-row > span { flex: 0 0 29px; font: 27px/1 var(--display); color: #d5bb91; text-align: center; }
+.busana-guide-row small { display: block; font: 8px var(--body); letter-spacing: 2px; margin-top: 5px; }
+.busana-guide-row h4 { margin: 0 0 5px; font-size: 12px; font-weight: 500; }
+.busana-guide-row p { margin: 0; font-size: 11px; line-height: 1.7; color: #b3a598; }
+.busana-source { font-size: 9px; color: #998979; margin-top: 20px; }
+@media (max-width: 680px) { .busana-layout { grid-template-columns: 1fr; } .busana-showcase { padding: 24px 22px 20px; } #jersey-main { height: 310px; margin: 16px 0 6px; } .busana-editorial { padding: 26px 24px; } .busana-dialog h2 { font-size: 39px; } .busana-showcase-top { padding-right: 26px; } }
