@@ -801,3 +801,25 @@ img { max-width: 100%; }
 }
 @media (prefers-reduced-motion: reduce) { .letter-scroll { animation: none !important; transform: none !important; } }
 
+/* Personal invitation: printed cream card and patterned burgundy envelope. */
+.invite-card-wrap { position: relative; width: min(100%, 440px); padding: 0 12px 22px; container-type: inline-size; }
+.invite-envelope { position: absolute; inset: 32% -8px 0; transform: rotate(-5deg); border: 1px solid #9d7453; background-color: #4c1d26; background-image: repeating-linear-gradient(45deg, transparent 0 20px, #cfac7014 21px, transparent 22px 42px), repeating-linear-gradient(-45deg, transparent 0 20px, #cfac7014 21px, transparent 22px 42px); box-shadow: 0 25px 60px #0006; }
+.invite-card { aspect-ratio: 3/4; padding: 8cqw 7cqw 7cqw; border: 0; outline: 0; color: #392b23; background: radial-gradient(#a8864520 .7px, transparent .7px), #eee4ce; background-size: 5px 5px; box-shadow: 0 15px 40px #0006; }
+.invite-card::before { inset: 12px; border: 1px solid #ac8a4f; }
+.invite-card::after { content: ''; position: absolute; inset: 17px; border: 1px solid #ac8a4f60; pointer-events: none; }
+.invite-corner { position: absolute; width: 15cqw; height: 15cqw; background: url('assets/invitation-corner.svg') center/contain no-repeat; pointer-events: none; }
+.corner-tl { top: 21px; left: 21px; }.corner-tr { top: 21px; right: 21px; transform: rotate(90deg); }.corner-bl { bottom: 21px; left: 21px; transform: rotate(-90deg); }.corner-br { bottom: 21px; right: 21px; transform: rotate(180deg); }
+.card-crest { width: 20cqw; height: 20cqw; object-fit: contain; }
+.card-top { margin-top: 3cqw; font: 500 5.2cqw/1 var(--display); letter-spacing: .18em; color: #392b23; }
+.card-battalion { margin-top: 2cqw; font-size: 1.8cqw; letter-spacing: .2em; }
+.card-ornament { display: flex; align-items: center; gap: 12px; width: 65%; height: auto; margin: 5cqw 0; border: 0; border-radius: 0; transform: none; color: #a5864e; font-size: 3cqw; }
+.card-ornament::before, .card-ornament::after { content: ''; height: 1px; background: #b9996060; flex: 1; }
+.card-greeting { font: 400 2.4cqw/1.5 var(--body); margin: 0; color: #76624b; }
+.invite-card strong { width: 100%; min-height: 12cqw; display: flex; align-items: center; justify-content: center; font: italic 500 7.3cqw/1.15 var(--display); margin: 2cqw 0 3cqw; color: #392b23; }
+.card-message { max-width: 100%; font: 400 3cqw/1.7 Georgia, serif; color: #76624b; }
+.card-date { width: 80%; border-top: 1px solid #b9996050; border-bottom: 1px solid #b9996050; padding: 3.5cqw 0; margin: 5cqw 0 4cqw; font-size: 2.6cqw; letter-spacing: .15em; color: #392b23; font-weight: 400; }
+.card-signature { margin: 0 0 2cqw; font: italic 3.5cqw/1.5 Georgia, serif; color: #392b23; }
+.invite-card small { margin: 0; font-size: 1.9cqw; line-height: 1.9; letter-spacing: .12em; }
+.invite-wax { position: absolute; right: -14px; bottom: 0; width: 58px; height: 58px; display: grid; place-items: center; border: 3px double #b58a53; border-radius: 50%; background: #6a2832; color: #d8b579; font: 18px Georgia, serif; transform: rotate(10deg); box-shadow: 0 5px 15px #0005; }
+@media (max-width: 620px) { .invite-card-wrap { width: min(100%, 390px); } .invite-wax { right: -4px; width: 48px; height: 48px; } }
+

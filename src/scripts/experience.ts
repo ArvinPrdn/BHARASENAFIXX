@@ -994,74 +994,66 @@ function initCard() {
 
   async function makeCard() {
     await document.fonts?.ready;
+    const loadImage = (src) => new Promise((resolve, reject) => {
+      const image = new Image();
+      image.onload = () => resolve(image);
+      image.onerror = () => reject(new Error('Gambar undangan tidak dapat dimuat.'));
+      image.src = src;
+    });
+    const guest = name || 'Nama Anda';
+    const [crest, corner] = await Promise.all([
+      loadImage('assets/batalyon/bhara-arsa-nawasena.png'),
+      loadImage('assets/invitation-corner.svg'),
+    ]);
     const canvas = document.createElement('canvas');
     canvas.width = 1080;
-    canvas.height = 1920;
+    canvas.height = 1440;
     const ctx = canvas.getContext('2d');
     const w = canvas.width, h = canvas.height;
-    ctx.fillStyle = '#0d0709';
+    ctx.fillStyle = '#eee4ce';
     ctx.fillRect(0, 0, w, h);
-    const glow = ctx.createRadialGradient(w * 0.5, h * 0.42, 80, w * 0.5, h * 0.42, 950);
-    glow.addColorStop(0, '#57202a');
-    glow.addColorStop(0.48, '#240c13');
-    glow.addColorStop(1, '#0d0709');
-    ctx.fillStyle = glow;
-    ctx.fillRect(0, 0, w, h);
-    const foil = ctx.createLinearGradient(120, 0, 930, 0);
-    [['0', '#8a6a2f'], ['0.28', '#e9d49a'], ['0.51', '#fff4c9'], ['0.75', '#b88a3e'], ['1', '#6e4f1e']]
-      .forEach(([at, color]) => foil.addColorStop(Number(at), color));
-    ctx.strokeStyle = foil;
-    ctx.lineWidth = 3;
-    ctx.strokeRect(54, 54, w - 108, h - 108);
-    ctx.strokeRect(74, 74, w - 148, h - 148);
-    ctx.fillStyle = foil;
-    ctx.textAlign = 'center';
-    ctx.font = '600 32px "Hanken Grotesk", sans-serif';
-    ctx.fillText('PROM NIGHT BATALYON 6', w / 2, 215);
-    ctx.font = '600 118px "Bodoni Moda", Georgia, serif';
-    ctx.fillText('BHARASENA', w / 2, 385);
-    ctx.fillStyle = '#f3ead8';
-    ctx.font = '400 46px "Hanken Grotesk", sans-serif';
-    ctx.fillText('Satu angkatan. Banyak cerita.', w / 2, 492);
-    ctx.strokeStyle = '#b88a3e';
+    ctx.fillStyle = '#a8864520';
+    for (let x = 0; x < w; x += 12) {
+      for (let y = 0; y < h; y += 12) { ctx.beginPath(); ctx.arc(x, y, 1.3, 0, Math.PI * 2); ctx.fill(); }
+    }
+    ctx.strokeStyle = '#ac8a4f';
     ctx.lineWidth = 2;
-    ctx.beginPath(); ctx.moveTo(220, 560); ctx.lineTo(860, 560); ctx.stroke();
-    ctx.fillStyle = '#d9c3a0';
-    ctx.font = '400 35px "Hanken Grotesk", sans-serif';
-    ctx.fillText('Undangan untuk', w / 2, 730);
-    ctx.fillStyle = foil;
-    ctx.font = '84px "Pinyon Script", "Bodoni Moda", Georgia, serif';
-    const guest = name || 'Anda';
-    let fontSize = 84;
-    while (ctx.measureText(guest).width > 790 && fontSize > 42) {
-      fontSize -= 2;
-      ctx.font = `${fontSize}px "Pinyon Script", "Bodoni Moda", Georgia, serif`;
+    ctx.strokeRect(30, 30, w - 60, h - 60);
+    ctx.strokeStyle = '#ac8a4f60';
+    ctx.strokeRect(42, 42, w - 84, h - 84);
+    [[52,52,0],[w-52,52,Math.PI/2],[w-52,h-52,Math.PI],[52,h-52,-Math.PI/2]].forEach(([x,y,angle]) => {
+      ctx.save(); ctx.translate(x,y); ctx.rotate(angle); ctx.drawImage(corner,0,0,155,155); ctx.restore();
+    });
+    ctx.drawImage(crest, w/2-105, 90, 210, 210);
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#392b23';
+    ctx.font = '500 60px "Bodoni Moda", Georgia, serif';
+    ctx.fillText('BHARASENA',w/2,380);
+    ctx.font = '400 22px "Hanken Grotesk", sans-serif';
+    ctx.fillText('B H A R A  A R S A  N A W A S E N A',w/2,425);
+    ctx.strokeStyle = '#b9996060';
+    ctx.beginPath(); ctx.moveTo(260,495); ctx.lineTo(480,495); ctx.moveTo(600,495); ctx.lineTo(820,495); ctx.stroke();
+    ctx.fillStyle = '#a5864e'; ctx.font = '32px Georgia'; ctx.fillText('✦',w/2,507);
+    ctx.fillStyle = '#76624b'; ctx.font = '400 25px "Hanken Grotesk", sans-serif';
+    ctx.fillText('Dengan hangat kami mengundang',w/2,580);
+    ctx.fillStyle = '#392b23';
+    let fontSize = 86;
+    ctx.font = `italic ${fontSize}px "Bodoni Moda", Georgia, serif`;
+    while (ctx.measureText(guest).width > 830 && fontSize > 24) {
+      fontSize -= 2; ctx.font = `italic ${fontSize}px "Bodoni Moda", Georgia, serif`;
     }
-    ctx.fillText(guest, w / 2, 890);
-    ctx.fillStyle = '#f3ead8';
-    ctx.font = '400 38px "Hanken Grotesk", sans-serif';
-    ctx.fillText('11—13 DESEMBER 2026', w / 2, 1125);
-    ctx.font = '400 30px "Hanken Grotesk", sans-serif';
-    ctx.fillText(EVENT.venue || 'Lokasi akan diumumkan', w / 2, 1190);
-    ctx.strokeStyle = '#8a6a2f';
-    ctx.beginPath(); ctx.moveTo(250, 1330); ctx.lineTo(830, 1330); ctx.stroke();
-    ctx.fillStyle = '#d9c3a0';
-    ctx.font = '400 30px "Hanken Grotesk", sans-serif';
-    ctx.fillText('Batalyon Bhara Arsa Nawasena', w / 2, 1450);
-    ctx.fillText('SMAN 2 Taruna Bhayangkara', w / 2, 1505);
-    ctx.fillStyle = foil;
-    ctx.font = '72px "Pinyon Script", Georgia, serif';
-    ctx.fillText('Sampai bertemu', w / 2, 1655);
-    // Deterministic fine texture avoids an extra image request.
-    let seed = 2026;
-    for (let i = 0; i < (lowEnd ? 1900 : 3500); i += 1) {
-      seed = (seed * 1664525 + 1013904223) >>> 0;
-      const x = (seed % w);
-      seed = (seed * 1664525 + 1013904223) >>> 0;
-      const y = (seed % h);
-      ctx.fillStyle = i % 3 ? 'rgba(255,244,201,0.035)' : 'rgba(0,0,0,0.06)';
-      ctx.fillRect(x, y, 1, 1);
-    }
+    ctx.fillText(guest,w/2,705);
+    ctx.fillStyle = '#76624b'; ctx.font = '400 32px Georgia, serif';
+    ctx.fillText('Menjadi bagian dari perayaan,',w/2,805);
+    ctx.fillText('pertemuan, dan kenangan yang tinggal.',w/2,855);
+    ctx.strokeStyle = '#b9996050';
+    [930,1045].forEach(y=>{ctx.beginPath();ctx.moveTo(210,y);ctx.lineTo(870,y);ctx.stroke();});
+    ctx.fillStyle = '#392b23'; ctx.font = '400 30px "Hanken Grotesk", sans-serif';
+    ctx.fillText('11 — 13 DESEMBER 2026',w/2,1000);
+    ctx.font = 'italic 38px Georgia, serif'; ctx.fillText('Sampai bertemu,',w/2,1140);
+    ctx.font = '400 22px "Hanken Grotesk", sans-serif';
+    ctx.fillText('BATALYON BHARA ARSA NAWASENA',w/2,1210);
+    ctx.fillText('SMAN 2 TARUNA BHAYANGKARA',w/2,1255);
     return new Promise((resolve) => canvas.toBlob((blob) => resolve(blob), 'image/png'));
   }
   function download(blob) {
