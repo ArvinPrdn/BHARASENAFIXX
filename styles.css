@@ -740,7 +740,7 @@ img { max-width: 100%; }
 .busana-view-picker button { border: 0; border-radius: 24px; padding: 8px 20px; background: transparent; color: #d8c6af; font-size: 11px; }
 .busana-view-picker button[aria-pressed="true"] { background: #dfc59b; color: #2a1916; }
 .busana-showcase-note { font-size: 8px; letter-spacing: 3px; color: #d2b99c; margin: 22px 0 0; }
-.busana-editorial { padding: 45px 36px 24px; min-width: 0; }
+.busana-editorial { padding: 45px 36px 24px; min-width: 0; display: flex; flex-direction: column; justify-content: center; }
 .busana-editorial .scene-kicker { font-size: 9px; letter-spacing: 2px; padding-right: 20px; }
 .busana-dialog h2 { font: 400 45px/1.08 var(--display); letter-spacing: -1px; margin: 20px 0 16px; }
 .busana-dialog h2 em { color: var(--champagne); font-weight: 400; }
