@@ -670,6 +670,40 @@ function initRundown() {
   activate(tabs.find((tab) => tab.getAttribute('aria-selected') === 'true')?.dataset.day || tabs[0].dataset.day, false, true);
 }
 
+async function rollUpLetter(dialog) {
+  const paper = $('.letter-paper', dialog);
+  if (!paper || dialog.classList.contains('is-catalogue') || reduceMotion()) {
+    dialog.close();
+    return;
+  }
+  // Clip the paper without scaling its text; move the two rollers together.
+  const travel = Math.max(0, paper.offsetHeight / 2 - 8);
+  const timing = { duration: 440, easing: 'cubic-bezier(.65,0,.35,1)', fill: 'forwards' };
+  const animations = [
+    paper.animate([
+      { clipPath: 'inset(0% 0% 0% 0%)', opacity: 1, offset: 0 },
+      { clipPath: 'inset(49% 0% 49% 0%)', opacity: 1, offset: .85 },
+      { clipPath: 'inset(50% 0% 50% 0%)', opacity: 0, offset: 1 },
+    ], timing),
+  ];
+  [['.letter-roll-top', travel], ['.letter-roll-bottom', -travel]].forEach(([selector, distance]) => {
+    const roller = $(selector, dialog);
+    if (roller) animations.push(roller.animate([
+      { transform: 'translateY(0)', opacity: 1, offset: 0 },
+      { transform: `translateY(${distance}px)`, opacity: 1, offset: .85 },
+      { transform: `translateY(${distance}px)`, opacity: 0, offset: 1 },
+    ], timing));
+  });
+  const bottle = $('.letter-bottle', dialog);
+  if (bottle) animations.push(bottle.animate([{ opacity: .62 }, { opacity: 0 }], { duration: 150, fill: 'forwards' }));
+  try { await Promise.all(animations.map((animation) => animation.finished)); }
+  catch { /* Closing must still complete if an animation is interrupted. */ }
+  finally {
+    dialog.close();
+    animations.forEach((animation) => animation.cancel());
+  }
+}
+
 function initEnvelopes() {
   const cards = $$('.envelope[data-envelope]');
 
@@ -682,16 +716,7 @@ function initEnvelopes() {
     const closeInfo = async () => {
       if (closingInfo || !infoDialog.open) return;
       closingInfo = true;
-      if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
-        const animation = $('.letter-scroll', infoDialog).animate([
-          { transform: 'rotate(-1deg) scaleY(1)', opacity: 1, offset: 0 },
-          { transform: 'rotate(-1deg) scaleY(.12)', opacity: 1, offset: .78 },
-          { transform: 'rotate(-1deg) scaleY(.035)', opacity: 0, offset: 1 },
-        ], { duration: 520, easing: 'cubic-bezier(.65,0,.35,1)', fill: 'forwards' });
-        try { await animation.finished; } catch { /* Close even if the animation is interrupted. */ }
-        infoDialog.close();
-        animation.cancel();
-      } else infoDialog.close();
+      await rollUpLetter(infoDialog);
       closingInfo = false;
     };
     $('.letter-dialog-close', infoDialog).addEventListener('click', closeInfo);
@@ -779,17 +804,7 @@ function initEnvelopes() {
     const closeBusana = async () => {
       if (closingBusana || !busanaDialog.open) return;
       closingBusana = true;
-      const scroll = $('.letter-scroll', busanaDialog);
-      if (!busanaDialog.classList.contains('is-catalogue') && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
-        const animation = scroll.animate([
-          { transform: 'rotate(-1deg) scaleY(1)', opacity: 1, offset: 0 },
-          { transform: 'rotate(-1deg) scaleY(.12)', opacity: 1, offset: .78 },
-          { transform: 'rotate(-1deg) scaleY(.035)', opacity: 0, offset: 1 },
-        ], { duration: 520, easing: 'cubic-bezier(.65,0,.35,1)', fill: 'forwards' });
-        try { await animation.finished; } catch { /* An interrupted animation should still close the letter. */ }
-        busanaDialog.close();
-        animation.cancel();
-      } else busanaDialog.close();
+      await rollUpLetter(busanaDialog);
       closingBusana = false;
     };
     const openBusana = () => {
