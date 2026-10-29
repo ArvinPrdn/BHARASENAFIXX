@@ -141,9 +141,11 @@ function rundownPanel(content, day, fallback) {
   if (!published.length) return fallback;
   const date = fallback.match(/<div class="programme-date">.*?<\/div>/su)?.[0] || '';
   const speaker = day === '11' ? fallback.match(/<!-- slot:day-one-speaker:start -->.*?<!-- slot:day-one-speaker:end -->/su)?.[0] || '' : '';
+  const dj = day === '12' ? fallback.match(/<!-- slot:day-two-dj:start -->.*?<!-- slot:day-two-dj:end -->/su)?.[0] || '' : '';
   return `${date}<div class="programme-details"><p class="programme-details__heading"><span>RUNDOWN KEGIATAN</span><small>${published.length} KEGIATAN</small></p><div class="programme-columns" aria-hidden="true"><span>JAM</span><span class="programme-columns__desktop">KEGIATAN</span><span class="programme-columns__mobile">KEGIATAN &amp; KETERANGAN</span><span class="programme-columns__desktop">KETERANGAN</span></div><div class="programme-scroll" role="region" aria-label="Rincian kegiatan ${escapeHtml(day)} Desember" tabindex="0" data-programme-scroll><ol class="programme-agenda">${published.map((item) => {
     const speakerSession = /fuadh?\s+naim/iu.test(`${item.title} ${item.description || ''}`);
-    return `<li><time class="programme-agenda__time">${escapeHtml(item.startAt || '')}</time><div><h5>${escapeHtml(item.title)}</h5><p>${escapeHtml(item.description || '')}</p></div>${speakerSession ? speaker : ''}</li>`;
+    const djSession = day === '12' && /colou?r\s*fest/iu.test(item.title) && /dj/iu.test(`${item.title} ${item.description || ''}`);
+    return `<li class="${speakerSession || djSession ? 'programme-agenda__featured' : ''}"><time class="programme-agenda__time">${escapeHtml(item.startAt || '')}</time><div><h5>${escapeHtml(item.title)}</h5><p>${escapeHtml(item.description || '')}</p></div>${speakerSession ? speaker : ''}${djSession ? dj : ''}</li>`;
   }).join('')}</ol></div><p class="programme-scroll-hint" data-programme-scroll-hint>Scroll untuk kegiatan berikutnya ↓</p></div>`;
 }
 
