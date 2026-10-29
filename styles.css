@@ -537,7 +537,7 @@ img { max-width: 100%; }
 .low-end .room-glow, .low-end .performer-beam { filter: none; }
 
 /* The gate is created only after JavaScript starts. */
-.seal-gate { position: fixed; z-index: 250; inset: 0; display: grid; place-items: center; background: rgba(10, 4, 7, .5); color: var(--ivory); }
+.seal-gate { position: fixed; z-index: 250; inset: 0; display: grid; place-items: center; background: radial-gradient(circle at 50% 43%,#32151b,#0d0709 72%); color: var(--ivory); }
 .seal-gate.is-opening { animation: gate-out .8s ease forwards; pointer-events: none; }
 .seal-gate.is-gone { display: none; }
 @keyframes gate-out { to { opacity: 0; transform: scale(1.04); visibility: hidden; } }
