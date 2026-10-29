@@ -672,6 +672,33 @@ function initRundown() {
 
 function initEnvelopes() {
   const cards = $$('.envelope[data-envelope]');
+
+  const busanaCard = cards.find((card) => ['busana', 'dress-code'].includes(card.dataset.envelope));
+  const busanaDialog = $('#busana-dialog');
+  if (busanaCard && busanaDialog) {
+    busanaCard.setAttribute('role', 'button');
+    busanaCard.setAttribute('tabindex', '0');
+    busanaCard.setAttribute('aria-label', 'Buka surat Busana acara');
+    busanaCard.setAttribute('aria-haspopup', 'dialog');
+    busanaCard.setAttribute('aria-controls', 'busana-dialog');
+    busanaCard.setAttribute('aria-expanded', 'false');
+    const openBusana = () => {
+      busanaDialog.showModal();
+      busanaCard.setAttribute('aria-expanded', 'true');
+      document.body.classList.add('busana-open');
+    };
+    busanaCard.addEventListener('click', openBusana);
+    busanaCard.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openBusana(); }
+    });
+    $('.busana-close', busanaDialog).addEventListener('click', () => busanaDialog.close());
+    busanaDialog.addEventListener('click', (event) => { if (event.target === busanaDialog) busanaDialog.close(); });
+    busanaDialog.addEventListener('close', () => {
+      document.body.classList.remove('busana-open');
+      busanaCard.setAttribute('aria-expanded', 'false');
+      busanaCard.focus();
+    });
+  }
   const performerEnvelope = $('.mini-envelope[data-envelope="performer"]');
   if (performerEnvelope) {
     performerEnvelope.setAttribute('role', 'button');
@@ -697,6 +724,7 @@ function initEnvelopes() {
       const ids = { lokasi: 'venue', masuk: 'admission', busana: 'dress-code', terbaru: 'updates' };
       const data = envelopes.find((item) => item.id === (ids[card.dataset.envelope] || card.dataset.envelope)) || envelopes[index];
       if (!data) return;
+      if (card === busanaCard) return;
       const field = { venue: EVENT.venue, admission: EVENT.admission, 'dress-code': EVENT.dressCode }[data.id];
       const resolved = field && !data.body ? { ...data, body: field, placeholder: false } : data;
       const open = getEnvelopeState(resolved, now) === 'open';
@@ -711,13 +739,19 @@ function initEnvelopes() {
   }
   cards.forEach((card) => {
     card.addEventListener('click', () => {
-      if (!card.classList.contains('is-sealed')) return;
+      if (card === busanaCard || !card.classList.contains('is-sealed')) return;
       card.classList.remove('is-jolted');
       void card.offsetWidth;
       card.classList.add('is-jolted');
       setTimeout(() => card.classList.remove('is-jolted'), 460);
     });
   });
+  if (busanaCard) {
+    busanaCard.classList.remove('is-sealed');
+    busanaCard.classList.add('is-open');
+    $('.envelope-body p', busanaCard).textContent = 'Lihat panduan busana dan desain jersey BHARASENA VI.';
+    $('.envelope-bottom > span:first-child', busanaCard).textContent = 'LIHAT BUSANA ↗';
+  }
   refresh();
   const timer = setInterval(refresh, 30_000);
   addEventListener('pagehide', () => clearInterval(timer), { once: true });
