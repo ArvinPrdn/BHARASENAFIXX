@@ -248,5 +248,8 @@ export function initMusic() {
       sourceCheck = checkSources().finally(() => { sourceCheck = null; });
     }
   });
-  panel.showPopover();
+  return () => {
+    panel.showPopover();
+    panel.querySelector('.music-close').focus();
+  };
 }

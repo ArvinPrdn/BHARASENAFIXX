@@ -294,10 +294,10 @@ function initTimeline() {
   markDirty();
 }
 
-function initSeal() {
+function initSeal(onOpened) {
   let visited = false;
   try { visited = sessionStorage.getItem('bharasena-opened') === '1'; } catch { /* private mode */ }
-  if (visited) return;
+  if (visited) { onOpened?.(); return; }
   const gate = document.createElement('div');
   gate.className = 'seal-gate';
   gate.setAttribute('role', 'dialog');
@@ -342,6 +342,7 @@ function initSeal() {
       document.body.style.overflow = previousOverflow;
       if (oldFocus instanceof HTMLElement && oldFocus !== document.body && oldFocus.isConnected) oldFocus.focus();
       else { const main = $('main'); if (main) { main.tabIndex = -1; main.focus({ preventScroll: true }); } }
+      onOpened?.();
     }, reduceMotion() ? 120 : 520);
   }
   function stopHold() {
@@ -1399,10 +1400,10 @@ function init() {
   initMessageWall();
   initCard();
   initGalleryAndFinale();
-  initMusic();
+  const openMusic = initMusic();
   initHeritage();
   initNavigation();
-  initSeal();
+  initSeal(openMusic);
 }
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, { once: true });
 else init();
