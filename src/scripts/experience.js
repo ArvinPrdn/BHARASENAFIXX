@@ -708,6 +708,23 @@ function initEnvelopes() {
       setBusanaView(false);
       $('.busana-design-link', busanaDialog).focus();
     });
+    let closingBusana = false;
+    const closeBusana = async () => {
+      if (closingBusana || !busanaDialog.open) return;
+      closingBusana = true;
+      const scroll = $('.letter-scroll', busanaDialog);
+      if (!busanaDialog.classList.contains('is-catalogue') && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        const animation = scroll.animate([
+          { transform: 'rotate(-1deg) scaleY(1)', opacity: 1, offset: 0 },
+          { transform: 'rotate(-1deg) scaleY(.12)', opacity: 1, offset: .78 },
+          { transform: 'rotate(-1deg) scaleY(.035)', opacity: 0, offset: 1 },
+        ], { duration: 520, easing: 'cubic-bezier(.65,0,.35,1)', fill: 'forwards' });
+        try { await animation.finished; } catch { /* An interrupted animation should still close the letter. */ }
+        busanaDialog.close();
+        animation.cancel();
+      } else busanaDialog.close();
+      closingBusana = false;
+    };
     const openBusana = () => {
       setBusanaView(false);
       busanaDialog.showModal();
@@ -718,8 +735,11 @@ function initEnvelopes() {
     busanaCard.addEventListener('keydown', (event) => {
       if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openBusana(); }
     });
-    $$('.busana-close', busanaDialog).forEach((button) => button.addEventListener('click', () => busanaDialog.close()));
-    busanaDialog.addEventListener('click', (event) => { if (event.target === busanaDialog) busanaDialog.close(); });
+    $$('.busana-close', busanaDialog).forEach((button) => button.addEventListener('click', closeBusana));
+    busanaDialog.addEventListener('cancel', (event) => { event.preventDefault(); closeBusana(); });
+    busanaDialog.addEventListener('click', (event) => {
+      if (event.target === busanaDialog || event.target.classList.contains('letter-dialog-stage')) closeBusana();
+    });
     busanaDialog.addEventListener('close', () => {
       document.body.classList.remove('busana-open');
       busanaCard.setAttribute('aria-expanded', 'false');
