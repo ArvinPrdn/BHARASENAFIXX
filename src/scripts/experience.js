@@ -1390,6 +1390,19 @@ function initPublishedContent() {
   }
 }
 
+function initPerformer() {
+  const stage = document.querySelector('#penampil');
+  if (!stage) return;
+  stage.querySelector('.performer-listen')?.addEventListener('click', () => {
+    document.querySelector('#audio-toggle')?.click();
+  });
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(([entry]) => {
+      stage.classList.toggle('is-on-stage', entry.isIntersecting);
+    }, { threshold: 0.05 }).observe(stage);
+  } else stage.classList.add('is-on-stage');
+}
+
 function init() {
   initPublishedContent();
   initTimeline();
@@ -1401,6 +1414,7 @@ function init() {
   initCard();
   initGalleryAndFinale();
   const openMusic = initMusic();
+  initPerformer();
   initHeritage();
   initNavigation();
   initSeal(openMusic);
