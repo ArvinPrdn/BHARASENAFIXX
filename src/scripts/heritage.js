@@ -1,15 +1,4 @@
-const symbolLights = {
-  ksatria: [50, 17, 26, 22],
-  perisai: [50, 57, 31, 33],
-  bintang: [50, 37, 23, 10],
-  matahari: [50, 57, 25, 16],
-  obor: [50, 52, 12, 20],
-  buku: [50, 70, 22, 11],
-  padi: [23, 59, 12, 29],
-  kapas: [77, 59, 13, 29],
-  tahun: [50, 80, 14, 6],
-  pita: [50, 89, 34, 12],
-};
+const symbolLights = new Set(['ksatria', 'perisai', 'bintang', 'matahari', 'obor', 'buku', 'padi', 'kapas', 'tahun', 'pita']);
 
 export function initHeritage() {
   const section = document.querySelector('#identitas');
@@ -23,15 +12,12 @@ export function initHeritage() {
   let selected = 'ksatria';
 
   function selectSymbol(key) {
-    if (!Object.hasOwn(symbolLights, key)) return;
+    if (!symbolLights.has(key)) return;
     selected = key;
     buttons.forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.symbol === key)));
     panels.forEach((panel) => { panel.hidden = panel.dataset.philosophy !== key; });
-    const [x, y, width, height] = symbolLights[key];
-    section.style.setProperty('--symbol-x', `${x}%`);
-    section.style.setProperty('--symbol-y', `${y}%`);
-    section.style.setProperty('--symbol-w', `${width}%`);
-    section.style.setProperty('--symbol-h', `${height}%`);
+    const spotlight = emblem.querySelector('.heritage-spotlight');
+    spotlight.style.setProperty('--symbol-mask', `url("assets/batalyon/highlights/${key}.svg")`);
     const panel = panels.find((item) => item.dataset.philosophy === key);
     if (panel && !reducedMotion.matches) {
       panel.animate([{ opacity: 0, transform: 'translateY(8px)' }, { opacity: 1, transform: 'translateY(0)' }], { duration: 260, easing: 'ease-out' });

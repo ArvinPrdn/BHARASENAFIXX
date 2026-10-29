@@ -797,7 +797,7 @@ function initEnvelopes() {
     busanaCard.classList.remove('is-sealed');
     busanaCard.classList.add('is-open');
     $('.envelope-body p', busanaCard).textContent = 'Lihat panduan busana dan desain jersey BHARASENA VI.';
-    $('.envelope-bottom > span:first-child', busanaCard).textContent = 'LIHAT BUSANA ↗';
+    $('.envelope-bottom > span:first-child', busanaCard).textContent = 'LIHAT BUSANA';
   }
   refresh();
   const timer = setInterval(refresh, 30_000);

@@ -198,7 +198,7 @@ img { max-width: 100%; }
 .heritage-logo { position: relative; display: block; padding: 0; width: min(100%,430px); aspect-ratio: 1; border: 0; background: transparent; transition: transform .4s ease; }
 .heritage-logo:hover { transform: translateY(-3px); }
 .heritage-logo img { display: block; width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 20px 25px rgba(0,0,0,.38)); }
-.heritage-spotlight { position: absolute; inset: 0; pointer-events: none; opacity: 0; background: radial-gradient(ellipse var(--symbol-w,26%) var(--symbol-h,22%) at var(--symbol-x,50%) var(--symbol-y,20%),rgba(255,236,155,.65),rgba(255,206,87,.18) 45%,transparent 75%); -webkit-mask: url('assets/batalyon/bhara-arsa-nawasena.png') center/contain no-repeat; mask: url('assets/batalyon/bhara-arsa-nawasena.png') center/contain no-repeat; mix-blend-mode: screen; transition: opacity .4s ease; }
+.heritage-spotlight { position: absolute; inset: 0; pointer-events: none; opacity: 0; background: rgba(255,216,91,.48); -webkit-mask: var(--symbol-mask) center/contain no-repeat; mask: var(--symbol-mask) center/contain no-repeat; mix-blend-mode: screen; transition: opacity .3s ease; }
 .heritage.is-exploring .heritage-spotlight { opacity: 1; }
 .heritage-emblem figcaption { position: relative; margin-top: 18px; text-align: center; color: var(--champagne); font-size: 10px; letter-spacing: .22em; font-weight: 600; }
 .heritage-emblem figcaption span { display: block; margin-top: 8px; color: var(--muted); font-size: 11px; letter-spacing: .02em; font-weight: 400; }
