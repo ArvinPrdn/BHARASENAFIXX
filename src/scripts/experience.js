@@ -878,17 +878,19 @@ function initCard() {
   let name = safeName(urlName || input.value);
   if (name) input.value = name;
 
-  function updateName() {
+  function updateName(normalizeInput = false) {
     const clean = safeName(input.value);
-    if (input.value !== clean) input.value = clean;
+    // Leave in-progress spaces and the caret intact while the visitor types.
+    if (normalizeInput && input.value !== clean) input.value = clean;
     name = clean;
     if (previewName) previewName.textContent = clean || 'Nama Anda';
     if (heroName) heroName.textContent = clean ? `Untuk ${clean}` : 'Untuk kamu';
     preview.setAttribute('aria-label', `Pratinjau undangan BHARASENA untuk ${clean || 'Anda'}`);
   }
-  input.addEventListener('input', updateName);
-  form?.addEventListener('submit', (event) => { event.preventDefault(); updateName(); preview.focus({ preventScroll: true }); });
-  updateName();
+  input.addEventListener('input', () => updateName());
+  input.addEventListener('blur', () => updateName(true));
+  form?.addEventListener('submit', (event) => { event.preventDefault(); updateName(true); preview.focus({ preventScroll: true }); });
+  updateName(true);
 
   const tilt = { x: 0, y: 0 };
   let target = { x: 0, y: 0 };
