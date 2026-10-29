@@ -188,7 +188,7 @@ function initTime() {
         if (liveProgress) liveProgress.style.transform = `scaleX(${progress})`;
         $$('[data-session-start]').forEach((row) => row.classList.toggle('is-current', row.dataset.sessionStart === current?.start));
       } else {
-        const label = phase === 'pasca' ? 'Rangkaian BHARASENA telah selesai.' : 'Rundown resmi akan hadir di sini.';
+        const label = phase === 'pasca' ? 'Rangkaian BHARASENA telah selesai.' : '11–13 Desember · Seluruh waktu dalam WIB.';
         if (liveStatus.textContent !== label) liveStatus.textContent = label;
         $$('[data-session-start]').forEach((row) => row.classList.remove('is-current'));
       }
@@ -517,6 +517,84 @@ function initRundown() {
   const panels = $$('.day-panel[data-day]');
   const track = $('.day-panels') || panels[0]?.parentElement;
   if (!tabs.length || !panels.length) return;
+
+  $$('.programme-details').forEach((details) => {
+    const sessionTabs = $$('[data-programme-session]', details);
+    const groups = $$('[data-programme-group]', details);
+    const scroll = $('[data-programme-scroll]', details);
+    const hint = $('[data-programme-scroll-hint]', details);
+    if (!scroll) return;
+
+    function updateScrollHint() {
+      if (!hint) return;
+      const atEnd = scroll.scrollTop + scroll.clientHeight >= scroll.scrollHeight - 3;
+      hint.textContent = atEnd ? 'Akhir sesi · Seluruh kegiatan sudah ditampilkan' : 'Scroll untuk kegiatan berikutnya ↓';
+      hint.classList.toggle('is-at-end', atEnd);
+    }
+    function selectSession(id, focus = false) {
+      sessionTabs.forEach((tab) => {
+        const selected = tab.dataset.programmeSession === id;
+        tab.setAttribute('aria-selected', String(selected));
+        tab.tabIndex = selected ? 0 : -1;
+        if (selected && focus) tab.focus();
+      });
+      groups.forEach((group) => { group.hidden = group.id !== id; });
+      scroll.scrollTop = 0;
+      updateScrollHint();
+    }
+    if (sessionTabs.length) {
+      details.classList.add('is-interactive');
+      sessionTabs.forEach((tab, index) => {
+        tab.addEventListener('click', () => selectSession(tab.dataset.programmeSession));
+        tab.addEventListener('keydown', (event) => {
+          const offset = { ArrowRight: 1, ArrowLeft: -1 }[event.key];
+          const next = event.key === 'Home' ? 0 : event.key === 'End' ? sessionTabs.length - 1
+            : offset ? (index + offset + sessionTabs.length) % sessionTabs.length : -1;
+          if (next < 0) return;
+          event.preventDefault();
+          selectSession(sessionTabs[next].dataset.programmeSession, true);
+        });
+      });
+      selectSession(sessionTabs[0].dataset.programmeSession);
+    }
+    scroll.addEventListener('scroll', updateScrollHint, { passive: true });
+    if ('ResizeObserver' in window) new ResizeObserver(updateScrollHint).observe(scroll);
+    updateScrollHint();
+  });
+
+  const spotlight = $('[data-speaker-spotlight]');
+  if (spotlight) {
+    const portrait = $('.speaker-spotlight__portrait', spotlight);
+    if (portrait && 'IntersectionObserver' in window && !reduceMotion()) {
+      spotlight.classList.add('is-reveal-ready');
+      const reveal = new IntersectionObserver((entries) => {
+        if (!entries.some((entry) => entry.isIntersecting)) return;
+        spotlight.classList.add('is-in-view');
+        reveal.disconnect();
+      }, { threshold: 0.2 });
+      reveal.observe(portrait);
+      motionQuery.addEventListener?.('change', () => {
+        if (reduceMotion()) {
+          spotlight.classList.add('is-in-view');
+          reveal.disconnect();
+        }
+      });
+    }
+    spotlight.addEventListener('pointermove', (event) => {
+      if (reduceMotion() || !finePointerQuery.matches || lowEnd) return;
+      const bounds = spotlight.getBoundingClientRect();
+      const x = clamp((event.clientX - bounds.left) / bounds.width - 0.5, -0.5, 0.5);
+      const y = clamp((event.clientY - bounds.top) / bounds.height - 0.5, -0.5, 0.5);
+      spotlight.style.setProperty('--speaker-x', `${(x * 9).toFixed(2)}px`);
+      spotlight.style.setProperty('--speaker-y', `${(y * 7).toFixed(2)}px`);
+    });
+    const resetSpotlight = () => {
+      spotlight.style.removeProperty('--speaker-x');
+      spotlight.style.removeProperty('--speaker-y');
+    };
+    spotlight.addEventListener('pointerleave', resetSpotlight);
+    motionQuery.addEventListener?.('change', resetSpotlight);
+  }
 
   const timeLabel = (iso) => new Intl.DateTimeFormat('id-ID', {
     timeZone: EVENT.tz, hour: '2-digit', minute: '2-digit', hourCycle: 'h23',

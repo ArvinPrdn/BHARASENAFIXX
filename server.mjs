@@ -99,7 +99,10 @@ function publicPage(request, session = null) {
   html = html.replace(/<!-- slot:envelopes:start -->.*?<!-- slot:envelopes:end -->/su, envelopeGrid(content));
   html = html.replace(/<!-- slot:messages:start -->.*?<!-- slot:messages:end -->/su, messageWall(messages));
   html = html.replace(/<!-- slot:contact:start -->.*?<!-- slot:contact:end -->/su, contactSlot(content.event));
-  for (const day of ['11', '12', '13']) html = html.replace(new RegExp(`(<section class="day-panel" id="panel-${day}"[^>]*>).*?(<\\/section>)`, 'su'), `$1${rundownPanel(content, day)}$2`);
+  for (const day of ['11', '12', '13']) {
+    html = html.replace(new RegExp(`(<section class="day-panel" id="panel-${day}"[^>]*>)(.*?)(<\\/section>)`, 'su'),
+      (_match, opening, fallback, closing) => `${opening}${rundownPanel(content, day, fallback)}${closing}`);
+  }
   html = html.replace(/<!-- slot:gallery:start -->.*?<!-- slot:gallery:end -->/su, gallerySlot(content.gallery));
   html = html.replaceAll('src="src/scripts/experience.ts"', 'src="src/scripts/experience.js"');
   return html;
@@ -111,7 +114,7 @@ function readFileSyncSafe(path) {
 
 function liveStrip(content) {
   const known = content.rundown.filter((item) => !item.isPlaceholder);
-  const text = known.length ? 'Rundown resmi aktif.' : 'Rundown resmi akan hadir di sini.';
+  const text = known.length ? 'Rundown resmi aktif.' : '11–13 Desember · Seluruh waktu dalam WIB.';
   return `<div class="live-strip" id="live-status" aria-live="polite"><span class="live-lamp" aria-hidden="true"></span><span data-live-status>${escapeHtml(text)}</span><span class="live-progress" data-live-progress aria-hidden="true"><span class="live-progress__fill" aria-hidden="true"></span></span></div>`;
 }
 
@@ -132,12 +135,16 @@ function contactSlot(event) {
   return `<!-- slot:contact:start --><p class="contact-note" data-dynamic="contact">${escapeHtml(text)}</p><!-- slot:contact:end -->`;
 }
 
-function rundownPanel(content, day) {
+function rundownPanel(content, day, fallback) {
   const rows = content.rundown.filter((item) => item.day.endsWith(`-${day}`));
-  const roman = { '11': 'I', '12': 'II', '13': 'III' }[day] || day;
   const published = rows.filter((item) => !item.isPlaceholder);
-  if (!published.length) return `<div class="schedule-locked"><span aria-hidden="true">${roman}</span><div><h3>Rundown sedang disiapkan</h3><p>Jam dan urutan kegiatan akan tampil setelah dikonfirmasi panitia.</p></div></div>`;
-  return `<ol class="schedule-list">${published.map((item) => `<li><time>${escapeHtml(item.startAt || '')}</time><div><h3>${escapeHtml(item.title)}</h3><p>${escapeHtml(item.description || '')}</p></div></li>`).join('')}</ol>`;
+  if (!published.length) return fallback;
+  const date = fallback.match(/<div class="programme-date">.*?<\/div>/su)?.[0] || '';
+  const speaker = day === '11' ? fallback.match(/<!-- slot:day-one-speaker:start -->.*?<!-- slot:day-one-speaker:end -->/su)?.[0] || '' : '';
+  return `${date}<div class="programme-details"><p class="programme-details__heading"><span>RUNDOWN KEGIATAN</span><small>${published.length} KEGIATAN</small></p><div class="programme-columns" aria-hidden="true"><span>JAM</span><span class="programme-columns__desktop">KEGIATAN</span><span class="programme-columns__mobile">KEGIATAN &amp; KETERANGAN</span><span class="programme-columns__desktop">KETERANGAN</span></div><div class="programme-scroll" role="region" aria-label="Rincian kegiatan ${escapeHtml(day)} Desember" tabindex="0" data-programme-scroll><ol class="programme-agenda">${published.map((item) => {
+    const speakerSession = /fuadh?\s+naim/iu.test(`${item.title} ${item.description || ''}`);
+    return `<li><time class="programme-agenda__time">${escapeHtml(item.startAt || '')}</time><div><h5>${escapeHtml(item.title)}</h5><p>${escapeHtml(item.description || '')}</p></div>${speakerSession ? speaker : ''}</li>`;
+  }).join('')}</ol></div><p class="programme-scroll-hint" data-programme-scroll-hint>Scroll untuk kegiatan berikutnya ↓</p></div>`;
 }
 
 function gallerySlot(items) {
