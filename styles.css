@@ -732,6 +732,15 @@ img { max-width: 100%; }
 .busana-dialog::backdrop { background: #090607dc; backdrop-filter: blur(9px); }
 .busana-close { position: absolute; top: 16px; right: 16px; z-index: 3; width: 36px; height: 36px; border: 1px solid #c6aa7a50; border-radius: 50%; background: #171110; color: var(--champagne); font-size: 22px; }
 .busana-layout { display: grid; grid-template-columns: 1fr 1fr; }
+.busana-layout[hidden], .busana-summary[hidden] { display: none; }
+.busana-dialog:not(.is-catalogue) { width: min(620px, calc(100% - 28px)); background: #e0c68f; color: #4d3525; }
+.busana-summary { padding: 48px 42px 36px; background: repeating-linear-gradient(0deg, #704e1d03 0 1px, transparent 1px 4px); }
+.busana-summary .scene-kicker { color: #795b2e; }
+.busana-summary > p:not(.scene-kicker) { font-size: 15px; line-height: 1.9; }
+.busana-summary .busana-signoff { margin-top: 32px; font-size: 12px !important; }
+.busana-design-link { margin-top: 20px; width: 100%; display: flex; justify-content: space-between; gap: 18px; padding: 15px 18px; background: #3b2420; color: #f2deb5; border: 1px solid #6a4430; font-size: 12px; text-align: left; }
+.busana-back { align-self: flex-start; margin-bottom: 28px; padding: 0; color: #c6ad87; background: transparent; border: 0; font-size: 10px; }
+@media (max-width: 620px) { .busana-summary { padding: 45px 25px 28px; } }
 .busana-showcase { position: relative; min-width: 0; padding: 28px 28px 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: radial-gradient(ellipse at 50% 45%, #8b6550 0, #5b3935 40%, #301d20 78%); overflow: hidden; }
 .busana-showcase-top { width: 100%; display: flex; justify-content: space-between; font-size: 9px; letter-spacing: 2px; color: #e5cda4; }
 .busana-watermark { position: absolute; font: 400 390px/1 var(--display); color: #f5dcaa0e; pointer-events: none; }

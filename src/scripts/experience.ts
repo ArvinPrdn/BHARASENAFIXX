@@ -693,7 +693,23 @@ function initEnvelopes() {
     };
     $$('[data-jersey-sleeve]', busanaDialog).forEach((button) => button.addEventListener('click', () => { jerseySleeve = button.dataset.jerseySleeve; updateJersey(); }));
     $$('[data-jersey-view]', busanaDialog).forEach((button) => button.addEventListener('click', () => { jerseyView = button.dataset.jerseyView; updateJersey(); }));
+    const setBusanaView = (design) => {
+      $('.busana-summary', busanaDialog).hidden = design;
+      $('.busana-layout', busanaDialog).hidden = !design;
+      busanaDialog.classList.toggle('is-catalogue', design);
+      busanaDialog.setAttribute('aria-labelledby', design ? 'busana-title' : 'busana-summary-title');
+      busanaDialog.scrollTop = 0;
+    };
+    $('.busana-design-link', busanaDialog).addEventListener('click', () => {
+      setBusanaView(true);
+      $('.busana-back', busanaDialog).focus();
+    });
+    $('.busana-back', busanaDialog).addEventListener('click', () => {
+      setBusanaView(false);
+      $('.busana-design-link', busanaDialog).focus();
+    });
     const openBusana = () => {
+      setBusanaView(false);
       busanaDialog.showModal();
       busanaCard.setAttribute('aria-expanded', 'true');
       document.body.classList.add('busana-open');
