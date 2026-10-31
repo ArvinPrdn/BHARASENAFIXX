@@ -39,15 +39,9 @@ const currentTime = () => new Date(Date.now() + clockOffset);
 const eventStartMeta = document.querySelector('meta[name="event-start"]')?.getAttribute('content');
 const eventEndMeta = document.querySelector('meta[name="event-end"]')?.getAttribute('content');
 const eventVenueMeta = document.querySelector('meta[name="event-venue"]')?.getAttribute('content');
-const eventMapsMeta = document.querySelector('meta[name="event-maps"]')?.getAttribute('content');
-const eventContactMeta = document.querySelector('meta[name="event-contact"]')?.getAttribute('content');
-const eventInstagramMeta = document.querySelector('meta[name="event-instagram"]')?.getAttribute('content');
 if (eventStartMeta) EVENT.start = eventStartMeta;
 if (eventEndMeta) EVENT.end = eventEndMeta;
 if (eventVenueMeta) EVENT.venue = eventVenueMeta || null;
-if (eventMapsMeta) EVENT.mapsUrl = eventMapsMeta || null;
-if (eventContactMeta) EVENT.contact = eventContactMeta || null;
-if (eventInstagramMeta) EVENT.instagram = eventInstagramMeta || null;
 
 // All continuous visual work shares one frame loop. Hidden tabs schedule none.
 const frameTasks = new Set();
@@ -194,7 +188,7 @@ function initTime() {
         if (liveProgress) liveProgress.style.transform = `scaleX(${progress})`;
         $$('[data-session-start]').forEach((row) => row.classList.toggle('is-current', row.dataset.sessionStart === current?.start));
       } else {
-        const label = phase === 'pasca' ? 'Rangkaian BHARASENA telah selesai.' : 'Rundown resmi akan hadir di sini.';
+        const label = phase === 'pasca' ? 'Rangkaian BHARASENA telah selesai.' : '11–13 Desember · Seluruh waktu dalam WIB.';
         if (liveStatus.textContent !== label) liveStatus.textContent = label;
         $$('[data-session-start]').forEach((row) => row.classList.remove('is-current'));
       }
@@ -212,7 +206,7 @@ function initTimeline() {
   const scenes = $$('.scene[data-scene]');
   const hero = $('.hero');
   const heroLayers = hero ? $$('[data-depth]', hero) : [];
-  let parallaxLayers = $$('[data-parallax-depth]');
+  const parallaxLayers = () => $$('[data-parallax-depth]');
   const clock = $('.scene-clock');
   const dots = $$('.scene-dot');
   const navigationLinks = $$('.header-nav a[href^="#"], .mobile-dock a[href^="#"]');
@@ -252,36 +246,23 @@ function initTimeline() {
       const heroRect = hero.getBoundingClientRect();
       if (heroRect.bottom >= 0 && heroRect.top <= innerHeight) {
         const heroProgress = clamp(-heroRect.top / Math.max(1, heroRect.height), 0, 1);
-        const heroAmplitude = lowEnd ? (mobileQuery.matches ? 110 : 240) : (mobileQuery.matches ? 180 : 360);
         heroLayers.forEach((layer) => {
           const depth = clamp(Number(layer.dataset.depth) || 0.03, -0.2, 0.2);
-          layer.style.setProperty('--parallax-scroll', `${(heroProgress * depth * heroAmplitude).toFixed(2)}px`);
+          layer.style.setProperty('--parallax-scroll', `${(heroProgress * depth * (mobileQuery.matches ? 95 : 180)).toFixed(2)}px`);
         });
-      } else {
-        heroLayers.forEach((layer) => layer.style.setProperty('--parallax-scroll', '0px'));
       }
-    } else {
-      heroLayers.forEach((layer) => layer.style.setProperty('--parallax-scroll', '0px'));
     }
-    if (!reduceMotion()) {
-      parallaxLayers = $$('[data-parallax-depth]');
-      const amplitude = lowEnd ? (mobileQuery.matches ? 140 : 260) : (mobileQuery.matches ? 260 : 520);
-      parallaxLayers.forEach((layer) => {
-        const scene = layer.closest('.scene');
-        if (!scene) return;
-        const rect = scene.getBoundingClientRect();
-        if (rect.bottom < -50 || rect.top > innerHeight + 50) {
-          layer.style.setProperty('--parallax-offset', '0px');
-          return;
-        }
-        const center = rect.top + rect.height / 2;
-        const progress = clamp((innerHeight * 0.5 - center) / Math.max(innerHeight, rect.height), -1, 1);
-        const depth = clamp(Number(layer.dataset.parallaxDepth) || 0.05, -0.2, 0.2);
-        layer.style.setProperty('--parallax-offset', `${(progress * depth * amplitude).toFixed(2)}px`);
-      });
-    } else {
-      parallaxLayers.forEach((layer) => layer.style.setProperty('--parallax-offset', '0px'));
-    }
+    const sceneAmplitude = lowEnd ? 54 : 104;
+    parallaxLayers().forEach((layer) => {
+      const scene = layer.closest('.scene');
+      if (!scene) return;
+      const rect = scene.getBoundingClientRect();
+      if (rect.bottom < -innerHeight * 0.15 || rect.top > innerHeight * 1.15) return;
+      const progress = clamp((innerHeight - rect.top) / (innerHeight + rect.height), 0, 1);
+      const depth = clamp(Number(layer.dataset.parallaxDepth) || 0, -0.2, 0.2);
+      const offset = (progress - 0.5) * depth * sceneAmplitude;
+      layer.style.setProperty('--parallax-offset', `${offset.toFixed(2)}px`);
+    });
     const minutes = Math.round(t * 360);
     const hours = 18 + Math.floor(minutes / 60);
     const label = `${String(hours).padStart(2, '0')}.${String(minutes % 60).padStart(2, '0')}`;
@@ -313,16 +294,22 @@ function initTimeline() {
   dots.forEach((dot, index) => {
     if (dot.tagName !== 'A') dot.addEventListener('click', () => scenes[index]?.scrollIntoView({ behavior: reduceMotion() ? 'instant' : 'smooth' }));
   });
+  document.addEventListener('keydown', (event) => {
+    if (!['PageDown', 'PageUp', 'ArrowDown', 'ArrowUp'].includes(event.key)) return;
+    if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey || $('.seal-gate')) return;
+    if (event.target.closest?.('input, textarea, select, button, a, [contenteditable="true"], dialog')) return;
+    const next = clamp(activeIndex + (event.key.endsWith('Down') ? 1 : -1), 0, scenes.length - 1);
+    if (next === activeIndex || !scenes[next]) return;
+    event.preventDefault();
+    scenes[next].scrollIntoView({ behavior: reduceMotion() ? 'instant' : 'smooth' });
+  });
   markDirty();
 }
 
-function initSeal() {
+function initSeal(onOpened) {
   let visited = false;
   try { visited = sessionStorage.getItem('bharasena-opened') === '1'; } catch { /* private mode */ }
-  if (visited) {
-    root.classList.add('is-entered');
-    return;
-  }
+  if (visited) { onOpened?.(); return; }
   const gate = document.createElement('div');
   gate.className = 'seal-gate';
   gate.setAttribute('role', 'dialog');
@@ -359,16 +346,15 @@ function initSeal() {
     if (closing) return;
     closing = true;
     holding = false;
-    document.dispatchEvent(new Event('bharasena:entered'));
     try { sessionStorage.setItem('bharasena-opened', '1'); } catch { /* private mode */ }
     gate.classList.add('is-opening');
     setTimeout(() => {
       gate.remove();
-      root.classList.add('is-entered');
       siblings.forEach((child, i) => { child.inert = previousInert[i]; });
       document.body.style.overflow = previousOverflow;
       if (oldFocus instanceof HTMLElement && oldFocus !== document.body && oldFocus.isConnected) oldFocus.focus();
       else { const main = $('main'); if (main) { main.tabIndex = -1; main.focus({ preventScroll: true }); } }
+      onOpened?.();
     }, reduceMotion() ? 120 : 520);
   }
   function stopHold() {
@@ -401,9 +387,6 @@ function initSeal() {
     return true;
   });
   hold.addEventListener('pointerdown', startHold);
-  hold.addEventListener('pointerup', () => {
-    if (closing) document.dispatchEvent(new Event('bharasena:resume-audio'));
-  });
   ['pointerup', 'pointercancel', 'pointerleave'].forEach((name) => hold.addEventListener(name, stopHold));
   hold.addEventListener('keydown', (event) => {
     if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); startHold(event); }
@@ -439,7 +422,7 @@ function initHero() {
   let crystalCount = 0;
 
   function setPointer(event) {
-    if (usingGyro || reduceMotion() || !finePointerQuery.matches || lowEnd) return;
+    if (usingGyro || reduceMotion()) return;
     const box = hero.getBoundingClientRect();
     pointerTarget = {
       x: clamp(((event.clientX - box.left) / box.width - 0.5) * 2, -1, 1),
@@ -548,6 +531,84 @@ function initRundown() {
   const track = $('.day-panels') || panels[0]?.parentElement;
   if (!tabs.length || !panels.length) return;
 
+  $$('.programme-details').forEach((details) => {
+    const sessionTabs = $$('[data-programme-session]', details);
+    const groups = $$('[data-programme-group]', details);
+    const scroll = $('[data-programme-scroll]', details);
+    const hint = $('[data-programme-scroll-hint]', details);
+    if (!scroll) return;
+
+    function updateScrollHint() {
+      if (!hint) return;
+      const atEnd = scroll.scrollTop + scroll.clientHeight >= scroll.scrollHeight - 3;
+      hint.textContent = atEnd ? 'Akhir sesi · Seluruh kegiatan sudah ditampilkan' : 'Scroll untuk kegiatan berikutnya ↓';
+      hint.classList.toggle('is-at-end', atEnd);
+    }
+    function selectSession(id, focus = false) {
+      sessionTabs.forEach((tab) => {
+        const selected = tab.dataset.programmeSession === id;
+        tab.setAttribute('aria-selected', String(selected));
+        tab.tabIndex = selected ? 0 : -1;
+        if (selected && focus) tab.focus();
+      });
+      groups.forEach((group) => { group.hidden = group.id !== id; });
+      scroll.scrollTop = 0;
+      updateScrollHint();
+    }
+    if (sessionTabs.length) {
+      details.classList.add('is-interactive');
+      sessionTabs.forEach((tab, index) => {
+        tab.addEventListener('click', () => selectSession(tab.dataset.programmeSession));
+        tab.addEventListener('keydown', (event) => {
+          const offset = { ArrowRight: 1, ArrowLeft: -1 }[event.key];
+          const next = event.key === 'Home' ? 0 : event.key === 'End' ? sessionTabs.length - 1
+            : offset ? (index + offset + sessionTabs.length) % sessionTabs.length : -1;
+          if (next < 0) return;
+          event.preventDefault();
+          selectSession(sessionTabs[next].dataset.programmeSession, true);
+        });
+      });
+      selectSession(sessionTabs[0].dataset.programmeSession);
+    }
+    scroll.addEventListener('scroll', updateScrollHint, { passive: true });
+    if ('ResizeObserver' in window) new ResizeObserver(updateScrollHint).observe(scroll);
+    updateScrollHint();
+  });
+
+  const spotlight = $('[data-speaker-spotlight]');
+  if (spotlight) {
+    const portrait = $('.speaker-spotlight__portrait', spotlight);
+    if (portrait && 'IntersectionObserver' in window && !reduceMotion()) {
+      spotlight.classList.add('is-reveal-ready');
+      const reveal = new IntersectionObserver((entries) => {
+        if (!entries.some((entry) => entry.isIntersecting)) return;
+        spotlight.classList.add('is-in-view');
+        reveal.disconnect();
+      }, { threshold: 0.2 });
+      reveal.observe(portrait);
+      motionQuery.addEventListener?.('change', () => {
+        if (reduceMotion()) {
+          spotlight.classList.add('is-in-view');
+          reveal.disconnect();
+        }
+      });
+    }
+    spotlight.addEventListener('pointermove', (event) => {
+      if (reduceMotion() || !finePointerQuery.matches || lowEnd) return;
+      const bounds = spotlight.getBoundingClientRect();
+      const x = clamp((event.clientX - bounds.left) / bounds.width - 0.5, -0.5, 0.5);
+      const y = clamp((event.clientY - bounds.top) / bounds.height - 0.5, -0.5, 0.5);
+      spotlight.style.setProperty('--speaker-x', `${(x * 9).toFixed(2)}px`);
+      spotlight.style.setProperty('--speaker-y', `${(y * 7).toFixed(2)}px`);
+    });
+    const resetSpotlight = () => {
+      spotlight.style.removeProperty('--speaker-x');
+      spotlight.style.removeProperty('--speaker-y');
+    };
+    spotlight.addEventListener('pointerleave', resetSpotlight);
+    motionQuery.addEventListener?.('change', resetSpotlight);
+  }
+
   const timeLabel = (iso) => new Intl.DateTimeFormat('id-ID', {
     timeZone: EVENT.tz, hour: '2-digit', minute: '2-digit', hourCycle: 'h23',
   }).format(new Date(iso));
@@ -622,57 +683,163 @@ function initRundown() {
   activate(tabs.find((tab) => tab.getAttribute('aria-selected') === 'true')?.dataset.day || tabs[0].dataset.day, false, true);
 }
 
+async function rollUpLetter(dialog) {
+  const paper = $('.letter-paper', dialog);
+  if (!paper || dialog.classList.contains('is-catalogue') || reduceMotion()) {
+    dialog.close();
+    return;
+  }
+  // Clip the paper without scaling its text; move the two rollers together.
+  const travel = Math.max(0, paper.offsetHeight / 2 - 8);
+  const timing = { duration: 440, easing: 'cubic-bezier(.65,0,.35,1)', fill: 'forwards' };
+  const animations = [
+    paper.animate([
+      { clipPath: 'inset(0% 0% 0% 0%)', opacity: 1, offset: 0 },
+      { clipPath: 'inset(49% 0% 49% 0%)', opacity: 1, offset: .85 },
+      { clipPath: 'inset(50% 0% 50% 0%)', opacity: 0, offset: 1 },
+    ], timing),
+  ];
+  [['.letter-roll-top', travel], ['.letter-roll-bottom', -travel]].forEach(([selector, distance]) => {
+    const roller = $(selector, dialog);
+    if (roller) animations.push(roller.animate([
+      { transform: 'translateY(0)', opacity: 1, offset: 0 },
+      { transform: `translateY(${distance}px)`, opacity: 1, offset: .85 },
+      { transform: `translateY(${distance}px)`, opacity: 0, offset: 1 },
+    ], timing));
+  });
+  const bottle = $('.letter-bottle', dialog);
+  if (bottle) animations.push(bottle.animate([{ opacity: .62 }, { opacity: 0 }], { duration: 150, fill: 'forwards' }));
+  try { await Promise.all(animations.map((animation) => animation.finished)); }
+  catch { /* Closing must still complete if an animation is interrupted. */ }
+  finally {
+    dialog.close();
+    animations.forEach((animation) => animation.cancel());
+  }
+}
+
 function initEnvelopes() {
   const cards = $$('.envelope[data-envelope]');
-  const letterDialog = $('#letter-dialog');
-  const letterTitle = letterDialog && $('[data-letter-title]', letterDialog);
-  const letterKicker = letterDialog && $('[data-letter-kicker]', letterDialog);
-  const letterBody = letterDialog && $('[data-letter-body]', letterDialog);
-  const letterMap = letterDialog && $('[data-letter-map]', letterDialog);
-  const letterClose = letterDialog && $('.letter-dialog-close', letterDialog);
-  let activeCard = null;
-  let previouslyFocused = null;
 
-  function closeLetter() {
-    if (!letterDialog) return;
-    letterDialog.close?.();
-    letterDialog.removeAttribute('open');
-    document.body.classList.remove('letter-open');
-    activeCard?.setAttribute('aria-expanded', 'false');
-    const returnTarget = previouslyFocused;
-    activeCard = null;
-    previouslyFocused = null;
-    if (returnTarget && document.contains(returnTarget)) requestAnimationFrame(() => returnTarget.focus());
+
+  const infoDialog = $('#info-letter-dialog');
+  const infoCards = new Set();
+  if (infoDialog) {
+    let activeInfoCard = null;
+    let closingInfo = false;
+    const closeInfo = async () => {
+      if (closingInfo || !infoDialog.open) return;
+      closingInfo = true;
+      await rollUpLetter(infoDialog);
+      closingInfo = false;
+    };
+    $('.letter-dialog-close', infoDialog).addEventListener('click', closeInfo);
+    infoDialog.addEventListener('cancel', (event) => { event.preventDefault(); closeInfo(); });
+    infoDialog.addEventListener('click', (event) => {
+      if (event.target === infoDialog || event.target.classList.contains('letter-dialog-stage')) closeInfo();
+    });
+    infoDialog.addEventListener('close', () => {
+      document.body.classList.remove('busana-open');
+      activeInfoCard?.setAttribute('aria-expanded', 'false');
+      activeInfoCard?.focus();
+    });
+    cards.forEach((card) => {
+      const venue = ['lokasi', 'venue'].includes(card.dataset.envelope);
+      const admission = ['masuk', 'admission'].includes(card.dataset.envelope);
+      if (!venue && !admission) return;
+      infoCards.add(card);
+      const title = venue ? 'Tempat acara' : 'Ketentuan masuk';
+      const body = $('.envelope-body p', card);
+      const content = card.classList.contains('is-open') && body.textContent.trim() ? body.textContent.trim() : venue ? EVENT.venue : EVENT.admission;
+      body.textContent = content;
+      card.classList.remove('is-sealed');
+      card.classList.add('is-open');
+      card.setAttribute('role', 'button');
+      card.setAttribute('tabindex', '0');
+      card.setAttribute('aria-label', `Buka surat ${title}`);
+      card.setAttribute('aria-haspopup', 'dialog');
+      card.setAttribute('aria-controls', 'info-letter-dialog');
+      card.setAttribute('aria-expanded', 'false');
+      $('.envelope-bottom > span:first-child', card).textContent = 'TERBUKA';
+      const openInfo = () => {
+        activeInfoCard = card;
+        $('[data-info-kicker]', infoDialog).textContent = `${venue ? '01 / LOKASI' : '02 / AKSES'} · SURAT BHARASENA`;
+        $('#info-letter-title', infoDialog).textContent = title;
+        $('[data-info-body]', infoDialog).textContent = content;
+        $('[data-info-map]', infoDialog).hidden = !venue;
+        $('.letter-paper', infoDialog).scrollTop = 0;
+        infoDialog.showModal();
+        document.body.classList.add('busana-open');
+        card.setAttribute('aria-expanded', 'true');
+      };
+      card.addEventListener('click', openInfo);
+      card.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openInfo(); }
+      });
+    });
   }
 
-  function openLetter(card) {
-    if (!letterDialog || !letterTitle || !letterBody) return;
-    const title = $('.envelope-body h3', card)?.textContent?.trim() || 'Surat BHARASENA';
-    const label = $('.envelope-top > span', card)?.textContent?.trim() || 'INFORMASI';
-    let bodyText = $('.envelope-body p', card)?.textContent?.trim() || 'Informasi resmi segera dibuka.';
-    const mapMatch = bodyText.match(/https?:\/\/maps\.app\.goo\.gl\/[^\s]+/u);
-    bodyText = bodyText.replace(/\s*·?\s*Google Maps:\s*https?:\/\/maps\.app\.goo\.gl\/[^\s]+/u, '').trim();
-    if (letterKicker) letterKicker.textContent = `${label} · SURAT BHARASENA`;
-    letterTitle.textContent = title;
-    letterBody.textContent = bodyText;
-    if (letterMap) {
-      letterMap.hidden = !mapMatch;
-      if (mapMatch) letterMap.href = mapMatch[0];
-    }
-    previouslyFocused = document.activeElement;
-    activeCard?.setAttribute('aria-expanded', 'false');
-    activeCard = card;
-    card.setAttribute('aria-expanded', 'true');
-    document.body.classList.add('letter-open');
-    if (typeof letterDialog.showModal === 'function') letterDialog.showModal();
-    else letterDialog.setAttribute('open', '');
-    letterClose?.focus();
-  }
-
-  if (letterDialog) {
-    letterClose?.addEventListener('click', closeLetter);
-    letterDialog.addEventListener('cancel', (event) => { event.preventDefault(); closeLetter(); });
-    letterDialog.addEventListener('click', (event) => { if (event.target === letterDialog) closeLetter(); });
+  const busanaCard = cards.find((card) => ['busana', 'dress-code'].includes(card.dataset.envelope));
+  const busanaDialog = $('#busana-dialog');
+  if (busanaCard && busanaDialog) {
+    busanaCard.setAttribute('role', 'button');
+    busanaCard.setAttribute('tabindex', '0');
+    busanaCard.setAttribute('aria-label', 'Buka surat Busana acara');
+    busanaCard.setAttribute('aria-haspopup', 'dialog');
+    busanaCard.setAttribute('aria-controls', 'busana-dialog');
+    busanaCard.setAttribute('aria-expanded', 'false');
+    let jerseySleeve = 'short';
+    let jerseyView = 'front';
+    const updateJersey = () => {
+      const image = $('#jersey-main', busanaDialog);
+      image.src = `assets/jersey/${jerseySleeve}-${jerseyView}.webp`;
+      image.alt = `Jersey BHARASENA VI lengan ${jerseySleeve === 'short' ? 'pendek' : 'panjang'}, tampak ${jerseyView === 'front' ? 'depan' : 'belakang'}`;
+      $$('[data-jersey-sleeve]', busanaDialog).forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.jerseySleeve === jerseySleeve)));
+      $$('[data-jersey-view]', busanaDialog).forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.jerseyView === jerseyView)));
+    };
+    $$('[data-jersey-sleeve]', busanaDialog).forEach((button) => button.addEventListener('click', () => { jerseySleeve = button.dataset.jerseySleeve; updateJersey(); }));
+    $$('[data-jersey-view]', busanaDialog).forEach((button) => button.addEventListener('click', () => { jerseyView = button.dataset.jerseyView; updateJersey(); }));
+    const setBusanaView = (design) => {
+      $('.busana-summary', busanaDialog).hidden = design;
+      $('.busana-layout', busanaDialog).hidden = !design;
+      busanaDialog.classList.toggle('is-catalogue', design);
+      busanaDialog.setAttribute('aria-labelledby', design ? 'busana-title' : 'busana-summary-title');
+      busanaDialog.scrollTop = 0;
+    };
+    $('.busana-design-link', busanaDialog).addEventListener('click', () => {
+      setBusanaView(true);
+      $('.busana-back', busanaDialog).focus();
+    });
+    $('.busana-back', busanaDialog).addEventListener('click', () => {
+      setBusanaView(false);
+      $('.busana-design-link', busanaDialog).focus();
+    });
+    let closingBusana = false;
+    const closeBusana = async () => {
+      if (closingBusana || !busanaDialog.open) return;
+      closingBusana = true;
+      await rollUpLetter(busanaDialog);
+      closingBusana = false;
+    };
+    const openBusana = () => {
+      setBusanaView(false);
+      busanaDialog.showModal();
+      busanaCard.setAttribute('aria-expanded', 'true');
+      document.body.classList.add('busana-open');
+    };
+    busanaCard.addEventListener('click', openBusana);
+    busanaCard.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openBusana(); }
+    });
+    $$('.busana-close', busanaDialog).forEach((button) => button.addEventListener('click', closeBusana));
+    busanaDialog.addEventListener('cancel', (event) => { event.preventDefault(); closeBusana(); });
+    busanaDialog.addEventListener('click', (event) => {
+      if (event.target === busanaDialog || event.target.classList.contains('letter-dialog-stage')) closeBusana();
+    });
+    busanaDialog.addEventListener('close', () => {
+      document.body.classList.remove('busana-open');
+      busanaCard.setAttribute('aria-expanded', 'false');
+      busanaCard.focus();
+    });
   }
   const performerEnvelope = $('.mini-envelope[data-envelope="performer"]');
   if (performerEnvelope) {
@@ -699,12 +866,13 @@ function initEnvelopes() {
       const ids = { lokasi: 'venue', masuk: 'admission', busana: 'dress-code', terbaru: 'updates' };
       const data = envelopes.find((item) => item.id === (ids[card.dataset.envelope] || card.dataset.envelope)) || envelopes[index];
       if (!data) return;
+      if (card === busanaCard || infoCards.has(card)) return;
       const field = { venue: EVENT.venue, admission: EVENT.admission, 'dress-code': EVENT.dressCode }[data.id];
       const resolved = field && !data.body ? { ...data, body: field, placeholder: false } : data;
       const open = getEnvelopeState(resolved, now) === 'open';
       card.classList.toggle('is-open', open);
       card.classList.toggle('is-sealed', !open);
-      card.dataset.contentState = open ? 'open' : 'sealed';
+      card.setAttribute('aria-expanded', String(open));
       const body = $('[data-envelope-body]', card) || $('.envelope-body p', card);
       if (body) body.textContent = open ? resolved.body : 'Informasi resmi segera dibuka.';
       const status = $('[data-envelope-status]', card) || $('.envelope-bottom > span:first-child', card);
@@ -712,12 +880,20 @@ function initEnvelopes() {
     });
   }
   cards.forEach((card) => {
-    if (!card.hasAttribute('data-letter-card')) return;
-    card.addEventListener('click', () => openLetter(card));
-    card.addEventListener('keydown', (event) => {
-      if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openLetter(card); }
+    card.addEventListener('click', () => {
+      if (card === busanaCard || infoCards.has(card) || !card.classList.contains('is-sealed')) return;
+      card.classList.remove('is-jolted');
+      void card.offsetWidth;
+      card.classList.add('is-jolted');
+      setTimeout(() => card.classList.remove('is-jolted'), 460);
     });
   });
+  if (busanaCard) {
+    busanaCard.classList.remove('is-sealed');
+    busanaCard.classList.add('is-open');
+    $('.envelope-body p', busanaCard).textContent = 'Lihat panduan busana dan desain jersey BHARASENA VI.';
+    $('.envelope-bottom > span:first-child', busanaCard).textContent = 'LIHAT BUSANA';
+  }
   refresh();
   const timer = setInterval(refresh, 30_000);
   addEventListener('pagehide', () => clearInterval(timer), { once: true });
@@ -845,12 +1021,7 @@ function initMessageWall() {
       const approved = payload?.message && (payload.message.approved === true || payload.message.status === 'approved');
       if (approved) {
         const card = renderMessage(payload.message);
-        if (card && list) {
-          empty?.setAttribute('hidden', '');
-          list.prepend(card);
-          card.classList.add('is-new');
-          window.setTimeout(() => card.classList.remove('is-new'), 700);
-        }
+        if (card && list) { empty?.setAttribute('hidden', ''); list.prepend(card); }
       }
       form.reset();
       updateCount();
@@ -883,33 +1054,27 @@ function initCard() {
   let name = safeName(urlName || input.value);
   if (name) input.value = name;
 
-  function updateName() {
+  function updateName(normalizeInput = false) {
     const clean = safeName(input.value);
-    if (input.value !== clean) input.value = clean;
+    // Leave in-progress spaces and the caret intact while the visitor types.
+    if (normalizeInput && input.value !== clean) input.value = clean;
     name = clean;
     if (previewName) previewName.textContent = clean || 'Nama Anda';
     if (heroName) heroName.textContent = clean ? `Untuk ${clean}` : 'Untuk kamu';
     preview.setAttribute('aria-label', `Pratinjau undangan BHARASENA untuk ${clean || 'Anda'}`);
   }
-  input.addEventListener('input', updateName);
-  form?.addEventListener('submit', (event) => {
-    event.preventDefault();
-    updateName();
-    preview.classList.remove('is-updated');
-    void preview.offsetWidth;
-    preview.classList.add('is-updated');
-    window.setTimeout(() => preview.classList.remove('is-updated'), 900);
-    preview.focus({ preventScroll: true });
-  });
-  updateName();
+  input.addEventListener('input', () => updateName());
+  input.addEventListener('blur', () => updateName(true));
+  form?.addEventListener('submit', (event) => { event.preventDefault(); updateName(true); preview.focus({ preventScroll: true }); });
+  updateName(true);
 
   const tilt = { x: 0, y: 0 };
   let target = { x: 0, y: 0 };
   preview.addEventListener('pointermove', (event) => {
     if (reduceMotion()) return;
     const rect = preview.getBoundingClientRect();
-    target.x = clamp(((event.clientY - rect.top) / rect.height - 0.5) * -6, -3, 3);
-    target.y = clamp(((event.clientX - rect.left) / rect.width - 0.5) * 6, -3, 3);
+    target.x = clamp(((event.clientY - rect.top) / rect.height - 0.5) * -12, -6, 6);
+    target.y = clamp(((event.clientX - rect.left) / rect.width - 0.5) * 12, -6, 6);
     requestFrame();
   }, { passive: true });
   preview.addEventListener('pointerleave', () => { target = { x: 0, y: 0 }; requestFrame(); });
@@ -924,74 +1089,66 @@ function initCard() {
 
   async function makeCard() {
     await document.fonts?.ready;
+    const loadImage = (src) => new Promise((resolve, reject) => {
+      const image = new Image();
+      image.onload = () => resolve(image);
+      image.onerror = () => reject(new Error('Gambar undangan tidak dapat dimuat.'));
+      image.src = src;
+    });
+    const guest = name || 'Nama Anda';
+    const [crest, corner] = await Promise.all([
+      loadImage('assets/batalyon/bhara-arsa-nawasena.png'),
+      loadImage('assets/invitation-corner.svg'),
+    ]);
     const canvas = document.createElement('canvas');
     canvas.width = 1080;
-    canvas.height = 1920;
+    canvas.height = 1440;
     const ctx = canvas.getContext('2d');
     const w = canvas.width, h = canvas.height;
-    ctx.fillStyle = '#0d0709';
+    ctx.fillStyle = '#eee4ce';
     ctx.fillRect(0, 0, w, h);
-    const glow = ctx.createRadialGradient(w * 0.5, h * 0.42, 80, w * 0.5, h * 0.42, 950);
-    glow.addColorStop(0, '#57202a');
-    glow.addColorStop(0.48, '#240c13');
-    glow.addColorStop(1, '#0d0709');
-    ctx.fillStyle = glow;
-    ctx.fillRect(0, 0, w, h);
-    const foil = ctx.createLinearGradient(120, 0, 930, 0);
-    [['0', '#8a6a2f'], ['0.28', '#e9d49a'], ['0.51', '#fff4c9'], ['0.75', '#b88a3e'], ['1', '#6e4f1e']]
-      .forEach(([at, color]) => foil.addColorStop(Number(at), color));
-    ctx.strokeStyle = foil;
-    ctx.lineWidth = 3;
-    ctx.strokeRect(54, 54, w - 108, h - 108);
-    ctx.strokeRect(74, 74, w - 148, h - 148);
-    ctx.fillStyle = foil;
-    ctx.textAlign = 'center';
-    ctx.font = '600 32px "Hanken Grotesk", sans-serif';
-    ctx.fillText('PROM NIGHT BATALYON 6', w / 2, 215);
-    ctx.font = '600 118px "Bodoni Moda", Georgia, serif';
-    ctx.fillText('BHARASENA', w / 2, 385);
-    ctx.fillStyle = '#f3ead8';
-    ctx.font = '400 46px "Hanken Grotesk", sans-serif';
-    ctx.fillText('Satu angkatan. Banyak cerita.', w / 2, 492);
-    ctx.strokeStyle = '#b88a3e';
+    ctx.fillStyle = '#a8864520';
+    for (let x = 0; x < w; x += 12) {
+      for (let y = 0; y < h; y += 12) { ctx.beginPath(); ctx.arc(x, y, 1.3, 0, Math.PI * 2); ctx.fill(); }
+    }
+    ctx.strokeStyle = '#ac8a4f';
     ctx.lineWidth = 2;
-    ctx.beginPath(); ctx.moveTo(220, 560); ctx.lineTo(860, 560); ctx.stroke();
-    ctx.fillStyle = '#d9c3a0';
-    ctx.font = '400 35px "Hanken Grotesk", sans-serif';
-    ctx.fillText('Undangan untuk', w / 2, 730);
-    ctx.fillStyle = foil;
-    ctx.font = '84px "Pinyon Script", "Bodoni Moda", Georgia, serif';
-    const guest = name || 'Anda';
-    let fontSize = 84;
-    while (ctx.measureText(guest).width > 790 && fontSize > 42) {
-      fontSize -= 2;
-      ctx.font = `${fontSize}px "Pinyon Script", "Bodoni Moda", Georgia, serif`;
+    ctx.strokeRect(30, 30, w - 60, h - 60);
+    ctx.strokeStyle = '#ac8a4f60';
+    ctx.strokeRect(42, 42, w - 84, h - 84);
+    [[52,52,0],[w-52,52,Math.PI/2],[w-52,h-52,Math.PI],[52,h-52,-Math.PI/2]].forEach(([x,y,angle]) => {
+      ctx.save(); ctx.translate(x,y); ctx.rotate(angle); ctx.drawImage(corner,0,0,155,155); ctx.restore();
+    });
+    ctx.drawImage(crest, w/2-105, 90, 210, 210);
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#392b23';
+    ctx.font = '500 60px "Bodoni Moda", Georgia, serif';
+    ctx.fillText('BHARASENA',w/2,380);
+    ctx.font = '400 22px "Hanken Grotesk", sans-serif';
+    ctx.fillText('B H A R A  A R S A  N A W A S E N A',w/2,425);
+    ctx.strokeStyle = '#b9996060';
+    ctx.beginPath(); ctx.moveTo(260,495); ctx.lineTo(480,495); ctx.moveTo(600,495); ctx.lineTo(820,495); ctx.stroke();
+    ctx.fillStyle = '#a5864e'; ctx.font = '32px Georgia'; ctx.fillText('✦',w/2,507);
+    ctx.fillStyle = '#76624b'; ctx.font = '400 25px "Hanken Grotesk", sans-serif';
+    ctx.fillText('Dengan hangat kami mengundang',w/2,580);
+    ctx.fillStyle = '#392b23';
+    let fontSize = 86;
+    ctx.font = `italic ${fontSize}px "Bodoni Moda", Georgia, serif`;
+    while (ctx.measureText(guest).width > 830 && fontSize > 24) {
+      fontSize -= 2; ctx.font = `italic ${fontSize}px "Bodoni Moda", Georgia, serif`;
     }
-    ctx.fillText(guest, w / 2, 890);
-    ctx.fillStyle = '#f3ead8';
-    ctx.font = '400 38px "Hanken Grotesk", sans-serif';
-    ctx.fillText('11—13 DESEMBER 2026', w / 2, 1125);
-    ctx.font = '400 30px "Hanken Grotesk", sans-serif';
-    ctx.fillText(EVENT.venue || 'Lokasi akan diumumkan', w / 2, 1190);
-    ctx.strokeStyle = '#8a6a2f';
-    ctx.beginPath(); ctx.moveTo(250, 1330); ctx.lineTo(830, 1330); ctx.stroke();
-    ctx.fillStyle = '#d9c3a0';
-    ctx.font = '400 30px "Hanken Grotesk", sans-serif';
-    ctx.fillText('Batalyon Bhara Arsa Nawasena', w / 2, 1450);
-    ctx.fillText('SMAN 2 Taruna Bhayangkara', w / 2, 1505);
-    ctx.fillStyle = foil;
-    ctx.font = '72px "Pinyon Script", Georgia, serif';
-    ctx.fillText('Sampai bertemu', w / 2, 1655);
-    // Deterministic fine texture avoids an extra image request.
-    let seed = 2026;
-    for (let i = 0; i < (lowEnd ? 1900 : 3500); i += 1) {
-      seed = (seed * 1664525 + 1013904223) >>> 0;
-      const x = (seed % w);
-      seed = (seed * 1664525 + 1013904223) >>> 0;
-      const y = (seed % h);
-      ctx.fillStyle = i % 3 ? 'rgba(255,244,201,0.035)' : 'rgba(0,0,0,0.06)';
-      ctx.fillRect(x, y, 1, 1);
-    }
+    ctx.fillText(guest,w/2,705);
+    ctx.fillStyle = '#76624b'; ctx.font = '400 32px Georgia, serif';
+    ctx.fillText('Menjadi bagian dari perayaan,',w/2,805);
+    ctx.fillText('pertemuan, dan kenangan yang tinggal.',w/2,855);
+    ctx.strokeStyle = '#b9996050';
+    [930,1045].forEach(y=>{ctx.beginPath();ctx.moveTo(210,y);ctx.lineTo(870,y);ctx.stroke();});
+    ctx.fillStyle = '#392b23'; ctx.font = '400 30px "Hanken Grotesk", sans-serif';
+    ctx.fillText('11 — 13 DESEMBER 2026',w/2,1000);
+    ctx.font = 'italic 38px Georgia, serif'; ctx.fillText('Sampai bertemu,',w/2,1140);
+    ctx.font = '400 22px "Hanken Grotesk", sans-serif';
+    ctx.fillText('BATALYON BHARA ARSA NAWASENA',w/2,1210);
+    ctx.fillText('SMAN 2 TARUNA BHAYANGKARA',w/2,1255);
     return new Promise((resolve) => canvas.toBlob((blob) => resolve(blob), 'image/png'));
   }
   function download(blob) {
@@ -1163,7 +1320,7 @@ function initGalleryAndFinale() {
     rainRequiresFinale = requireFinale;
     resizeCanvas();
     canvas.style.display = 'block';
-    const count = lowEnd || mobileQuery.matches ? 28 : 72;
+    const count = lowEnd ? 35 : 90;
     particles = Array.from({ length: count }, () => ({
       x: Math.random() * innerWidth,
       y: -Math.random() * innerHeight,
@@ -1229,67 +1386,12 @@ function initNavigation() {
   document.addEventListener('click', (event) => { if (!nav.contains(event.target) && !button.contains(event.target)) close(); });
 }
 
-function initMotionPolish() {
-  if (!('IntersectionObserver' in window)) return;
-  const groups = $$('.about-content, .heritage-heading, .heritage-layout, .performer-layout, .programme-heading, .information-heading, .invitation-copy, .proposal-heading, .proposal-card-grid, .gallery-top, .message-wall-heading, .finale-content');
-  const items = $$('.envelope, .proposal-card');
-  const targets = [...groups, ...items];
-  if (!targets.length) return;
-  targets.forEach((element) => element.classList.add('motion-reveal'));
-  const observer = new IntersectionObserver((entries) => {
-    for (const entry of entries) {
-      if (!entry.isIntersecting) continue;
-      entry.target.classList.add('is-revealed');
-      observer.unobserve(entry.target);
-    }
-  }, { threshold: 0.08, rootMargin: '0px 0px -5% 0px' });
-  targets.forEach((element) => observer.observe(element));
-  // Keep content visible when the browser restores a page at a scrolled position.
-  if (reduceMotion()) targets.forEach((element) => element.classList.add('is-revealed'));
-}
-
-function initSubtleHover() {
-  if (!finePointerQuery.matches || reduceMotion() || lowEnd) return;
-  const targets = $$('.proposal-card, .proposal-primary, .hero-scroll, .return-link');
-  targets.forEach((element) => {
-    let frame = 0;
-    let x = 0, y = 0;
-    const strength = element.classList.contains('proposal-card') ? 3 : 4;
-    const update = () => {
-      frame = 0;
-      element.style.setProperty('--hover-x', `${x.toFixed(1)}px`);
-      element.style.setProperty('--hover-y', `${y.toFixed(1)}px`);
-    };
-    element.addEventListener('pointermove', (event) => {
-      const box = element.getBoundingClientRect();
-      x = clamp((event.clientX - box.left - box.width / 2) / box.width * strength * 2, -strength, strength);
-      y = clamp((event.clientY - box.top - box.height / 2) / box.height * strength * 2, -strength, strength);
-      if (!frame) frame = requestAnimationFrame(update);
-    }, { passive: true });
-    element.addEventListener('pointerleave', () => {
-      if (frame) cancelAnimationFrame(frame);
-      frame = 0;
-      x = 0; y = 0;
-      update();
-    });
-  });
-}
-
 function initPublishedContent() {
   if (EVENT.venue) {
     const place = $('.ticket-place strong');
     const note = $('.ticket-place > span:last-child');
     if (place) place.textContent = EVENT.venue;
-    if (note) {
-      const mapLink = $('.ticket-place a');
-      if (mapLink && EVENT.mapsUrl) {
-        mapLink.href = EVENT.mapsUrl;
-        mapLink.textContent = 'Buka Google Maps ↗';
-        note.replaceChildren(document.createTextNode('Lokasi acara · '), mapLink);
-      } else {
-        note.textContent = 'Lokasi acara';
-      }
-    }
+    if (note) note.textContent = 'Lokasi acara';
   }
   if (EVENT.artistAt) {
     const artistTime = $('.mini-envelope[data-envelope="performer"] strong');
@@ -1297,14 +1399,26 @@ function initPublishedContent() {
   }
   if (EVENT.contact) {
     const note = $('.contact-note');
-    if (note) note.textContent = `Kontak panitia: ${EVENT.contact}${EVENT.instagram ? ` · Instagram ${EVENT.instagram}` : ''}`;
+    if (note) note.textContent = `Kontak panitia: ${EVENT.contact}`;
   }
+}
+
+function initPerformer() {
+  const stage = document.querySelector('#penampil');
+  if (!stage) return;
+  stage.querySelector('.performer-listen')?.addEventListener('click', () => {
+    document.querySelector('#audio-toggle')?.click();
+  });
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(([entry]) => {
+      stage.classList.toggle('is-on-stage', entry.isIntersecting);
+    }, { threshold: 0.05 }).observe(stage);
+  } else stage.classList.add('is-on-stage');
 }
 
 function init() {
   initPublishedContent();
   initTimeline();
-  initMotionPolish();
   initHero();
   initRundown();
   initTime();
@@ -1312,11 +1426,11 @@ function init() {
   initMessageWall();
   initCard();
   initGalleryAndFinale();
-  initMusic();
+  const openMusic = initMusic();
+  initPerformer();
   initHeritage();
   initNavigation();
-  initSubtleHover();
-  initSeal();
+  initSeal(openMusic);
 }
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, { once: true });
 else init();

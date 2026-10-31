@@ -92,14 +92,17 @@ function publicPage(request, session = null) {
   const messages = getApprovedMessages(db);
   let html = readFileSyncSafe(join(root, 'index.html'));
   html = html.replace('<html lang="id">', '<html lang="id" data-rendered="server">');
-  html = html.replace('</head>', `<meta name="server-now" content="${escapeHtml(content.serverNow)}" /><meta name="event-start" content="${escapeHtml(content.event.event_start_at || '')}" /><meta name="event-end" content="${escapeHtml(content.event.event_end_at || '')}" /><meta name="event-venue" content="${escapeHtml(content.event.venue || '')}" /><meta name="event-maps" content="${escapeHtml(content.event.maps_url || '')}" /><meta name="event-contact" content="${escapeHtml(content.event.contact || '')}" /><meta name="event-instagram" content="${escapeHtml(content.event.instagram || '')}" />\n</head>`);
+  html = html.replace('</head>', `<meta name="server-now" content="${escapeHtml(content.serverNow)}" /><meta name="event-start" content="${escapeHtml(content.event.event_start_at || '')}" /><meta name="event-end" content="${escapeHtml(content.event.event_end_at || '')}" /><meta name="event-venue" content="${escapeHtml(content.event.venue || '')}" />\n</head>`);
   html = html.replace(/<!-- slot:venue:start -->.*?<!-- slot:venue:end -->/su, venueSlot(content.event));
   html = html.replace(/<!-- slot:performer-schedule:start -->.*?<!-- slot:performer-schedule:end -->/su, performerSlot(content.performers));
   html = html.replace(/<div class="live-strip" id="live-status"[^>]*>.*?<\/div>/su, liveStrip(content));
   html = html.replace(/<!-- slot:envelopes:start -->.*?<!-- slot:envelopes:end -->/su, envelopeGrid(content));
   html = html.replace(/<!-- slot:messages:start -->.*?<!-- slot:messages:end -->/su, messageWall(messages));
   html = html.replace(/<!-- slot:contact:start -->.*?<!-- slot:contact:end -->/su, contactSlot(content.event));
-  for (const day of ['11', '12', '13']) html = html.replace(new RegExp(`(<section class="day-panel" id="panel-${day}"[^>]*>).*?(<\\/section>)`, 'su'), `$1${rundownPanel(content, day)}$2`);
+  for (const day of ['11', '12', '13']) {
+    html = html.replace(new RegExp(`(<section class="day-panel" id="panel-${day}"[^>]*>)(.*?)(<\\/section>)`, 'su'),
+      (_match, opening, fallback, closing) => `${opening}${rundownPanel(content, day, fallback)}${closing}`);
+  }
   html = html.replace(/<!-- slot:gallery:start -->.*?<!-- slot:gallery:end -->/su, gallerySlot(content.gallery));
   html = html.replaceAll('src="src/scripts/experience.ts"', 'src="src/scripts/experience.js"');
   return html;
@@ -111,48 +114,39 @@ function readFileSyncSafe(path) {
 
 function liveStrip(content) {
   const known = content.rundown.filter((item) => !item.isPlaceholder);
-  const text = known.length ? 'Rundown resmi aktif.' : 'Rundown resmi akan hadir di sini.';
+  const text = known.length ? 'Rundown resmi aktif.' : '11–13 Desember · Seluruh waktu dalam WIB.';
   return `<div class="live-strip" id="live-status" aria-live="polite"><span class="live-lamp" aria-hidden="true"></span><span data-live-status>${escapeHtml(text)}</span><span class="live-progress" data-live-progress aria-hidden="true"><span class="live-progress__fill" aria-hidden="true"></span></span></div>`;
 }
 
 function venueSlot(event) {
   const venue = event.venue || 'Tempat akan diumumkan';
   const note = event.venue ? 'Lokasi acara' : 'Informasi resmi menyusul';
-  const mapsUrl = /^https?:\/\//u.test(String(event.maps_url || '')) ? String(event.maps_url) : '';
-  const mapLink = mapsUrl ? `<a href="${escapeHtml(mapsUrl)}" target="_blank" rel="noopener noreferrer">Buka Google Maps ↗</a>` : '';
-  return `<!-- slot:venue:start --><div class="event-ticket ticket-place" data-dynamic="venue"><span class="ticket-label">LOKASI</span><strong>${escapeHtml(venue)}</strong><span>${escapeHtml(note)}${mapLink ? ` · ${mapLink}` : ''}</span></div><!-- slot:venue:end -->`;
+  return `<!-- slot:venue:start --><div class="event-ticket ticket-place" data-dynamic="venue"><span class="ticket-label">LOKASI</span><strong>${escapeHtml(venue)}</strong><span>${escapeHtml(note)}</span></div><!-- slot:venue:end -->`;
 }
 
 function performerSlot(performers) {
-  const announced = performers.filter((item) => item.isAnnounced && item.scheduledAt);
-  const schedule = announced.length
-    ? announced.map((item) => `${escapeHtml(item.name)} · ${escapeHtml(item.scheduledAt)}`).join('<br />')
-    : 'Menunggu pengumuman';
-  return `<!-- slot:performer-schedule:start --><div class="mini-envelope" data-envelope="performer" data-dynamic="performer-schedule"><span class="wax-mini" aria-hidden="true"></span><span>Jadwal penampilan<br /><strong>${schedule}</strong></span></div><!-- slot:performer-schedule:end -->`;
+  const performer = performers.find((item) => item.name.toLowerCase().includes('budi')) || performers[0];
+  const schedule = performer?.scheduledAt || 'Menunggu pengumuman';
+  return `<!-- slot:performer-schedule:start --><div class="mini-envelope" data-envelope="performer" data-dynamic="performer-schedule"><span class="wax-mini" aria-hidden="true"></span><span>Jadwal penampilan<br /><strong>${escapeHtml(schedule)}</strong></span></div><!-- slot:performer-schedule:end -->`;
 }
 
 function contactSlot(event) {
-  const contact = event.contact || 'Kontak resmi panitia akan dicantumkan setelah terverifikasi.';
-  const instagram = event.instagram ? ` · Instagram ${event.instagram}` : '';
-  const text = `Kontak panitia: ${contact}${instagram}`;
+  const text = event.contact ? `Kontak panitia: ${event.contact}` : 'Kontak resmi panitia akan dicantumkan setelah terverifikasi.';
   return `<!-- slot:contact:start --><p class="contact-note" data-dynamic="contact">${escapeHtml(text)}</p><!-- slot:contact:end -->`;
 }
 
-function rundownPanel(content, day) {
+function rundownPanel(content, day, fallback) {
   const rows = content.rundown.filter((item) => item.day.endsWith(`-${day}`));
-  const roman = { '11': 'I', '12': 'II', '13': 'III' }[day] || day;
   const published = rows.filter((item) => !item.isPlaceholder);
-  if (!published.length) return `<div class="schedule-locked"><span aria-hidden="true">${roman}</span><div><h3>Rundown sedang disiapkan</h3><p>Jam dan urutan kegiatan akan tampil setelah dikonfirmasi panitia.</p></div></div>`;
-  return `<ol class="schedule-list">${published.map((item) => `<li><time datetime="${escapeHtml(item.startAt || '')}">${escapeHtml(formatScheduleTime(item.startAt, item.endAt))}</time><div><h3>${escapeHtml(item.title)}</h3><p>${escapeHtml(item.description || '')}</p></div></li>`).join('')}</ol>`;
-}
-
-function formatScheduleTime(startAt, endAt) {
-  const format = (value) => {
-    const date = new Date(value);
-    if (!Number.isFinite(date.getTime())) return value || 'Waktu menyusul';
-    return new Intl.DateTimeFormat('id-ID', { timeZone: 'Asia/Jakarta', hour: '2-digit', minute: '2-digit', hour12: false }).format(date).replace(':', '.');
-  };
-  return `${format(startAt)}–${format(endAt)}`;
+  if (!published.length) return fallback;
+  const date = fallback.match(/<div class="programme-date">.*?<\/div>/su)?.[0] || '';
+  const speaker = day === '11' ? fallback.match(/<!-- slot:day-one-speaker:start -->.*?<!-- slot:day-one-speaker:end -->/su)?.[0] || '' : '';
+  const dj = day === '12' ? fallback.match(/<!-- slot:day-two-dj:start -->.*?<!-- slot:day-two-dj:end -->/su)?.[0] || '' : '';
+  return `${date}<div class="programme-details"><p class="programme-details__heading"><span>RUNDOWN KEGIATAN</span><small>${published.length} KEGIATAN</small></p><div class="programme-columns" aria-hidden="true"><span>JAM</span><span class="programme-columns__desktop">KEGIATAN</span><span class="programme-columns__mobile">KEGIATAN &amp; KETERANGAN</span><span class="programme-columns__desktop">KETERANGAN</span></div><div class="programme-scroll" role="region" aria-label="Rincian kegiatan ${escapeHtml(day)} Desember" tabindex="0" data-programme-scroll><ol class="programme-agenda">${published.map((item) => {
+    const speakerSession = /fuadh?\s+naim/iu.test(`${item.title} ${item.description || ''}`);
+    const djSession = day === '12' && /colou?r\s*fest/iu.test(item.title) && /dj/iu.test(`${item.title} ${item.description || ''}`);
+    return `<li class="${speakerSession || djSession ? 'programme-agenda__featured' : ''}"><time class="programme-agenda__time">${escapeHtml(item.startAt || '')}</time><div><h5>${escapeHtml(item.title)}</h5><p>${escapeHtml(item.description || '')}</p></div>${speakerSession ? speaker : ''}${djSession ? dj : ''}</li>`;
+  }).join('')}</ol></div><p class="programme-scroll-hint" data-programme-scroll-hint>Scroll untuk kegiatan berikutnya ↓</p></div>`;
 }
 
 function gallerySlot(items) {
@@ -167,8 +161,7 @@ function envelopeGrid(content) {
     const open = !item.sealed && item.body;
     const text = open ? item.body : 'Informasi resmi segera dibuka.';
     const status = open ? 'Terbuka' : 'SEGEL PANITIA';
-    const state = open ? 'open' : 'sealed';
-    return `<article class="envelope ${open ? 'is-open' : 'is-sealed'}" data-envelope="${escapeHtml(item.id)}" data-letter-card data-content-state="${state}" role="button" tabindex="0" aria-haspopup="dialog" aria-expanded="false" aria-label="Buka surat ${escapeHtml(label[1])}"><div class="envelope-top"><span>${escapeHtml(label[0])}</span><span class="envelope-fold" aria-hidden="true"></span></div><div class="envelope-body"><h3>${escapeHtml(label[1])}</h3><p data-envelope-body>${escapeHtml(text)}</p></div><div class="envelope-bottom"><span data-envelope-status>${escapeHtml(status)}</span><span class="wax-mini" aria-hidden="true"></span></div></article>`;
+    return `<article class="envelope ${open ? 'is-open' : 'is-sealed'}" data-envelope="${escapeHtml(item.id)}" aria-expanded="${open}"><div class="envelope-top"><span>${escapeHtml(label[0])}</span><span class="envelope-fold" aria-hidden="true"></span></div><div class="envelope-body"><h3>${escapeHtml(label[1])}</h3><p data-envelope-body>${escapeHtml(text)}</p></div><div class="envelope-bottom"><span data-envelope-status>${escapeHtml(status)}</span><span class="wax-mini" aria-hidden="true"></span></div></article>`;
   }).join('');
   return cards;
 }
@@ -191,7 +184,7 @@ function adminPage(session = null) {
   const announcementForms = db.prepare('SELECT * FROM announcements ORDER BY created_at DESC,id DESC').all().map((item) => `<form method="post" action="/admin/announcements/${item.id}" class="admin-form"><h3>Pengumuman #${item.id}</h3><input type="hidden" name="csrf" value="${csrf}" /><label>Judul<input name="title" maxlength="120" value="${escapeHtml(item.title)}" /></label><label>Isi<textarea name="body" rows="3" maxlength="1200">${escapeHtml(item.body)}</textarea></label><label><input type="checkbox" name="published" value="1" ${item.published ? 'checked' : ''} /> Terbitkan</label><button>Simpan pengumuman</button></form>`).join('');
   const auditRows = db.prepare('SELECT action,subject,created_at FROM audit_log ORDER BY id DESC LIMIT 20').all().map((item) => `<li>${escapeHtml(item.created_at)} · ${escapeHtml(item.action)} · ${escapeHtml(item.subject)}</li>`).join('');
   const galleryForms = db.prepare('SELECT * FROM gallery ORDER BY sort_order,id').all().map((item) => `<form method="post" action="/admin/gallery/${item.id}" class="admin-form"><h3>Foto #${item.id}</h3><input type="hidden" name="csrf" value="${csrf}" />${item.published ? `<img src="/media/${encodeURIComponent(item.file_path)}" alt="${escapeHtml(item.alt)}" loading="lazy" />` : '<p>Foto tersimpan, masih tersegel dari publik.</p>'}<label>Hari/keterangan<input name="day" maxlength="40" value="${escapeHtml(item.day)}" /></label><label>Teks alternatif<textarea name="alt" rows="2" maxlength="240">${escapeHtml(item.alt)}</textarea></label><label><input type="checkbox" name="published" value="1" ${item.published ? 'checked' : ''} /> Terbitkan</label><button>Simpan foto</button></form>`).join('');
-  return `<!doctype html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Admin BHARASENA</title><link rel="stylesheet" href="/admin.css"></head><body class="admin-page"><main class="admin-shell"><div class="admin-top"><div><p class="scene-kicker">BHARASENA / PANITIA</p><h1>Ruang kendali.</h1></div><form method="post" action="/admin/logout"><button>Keluar</button></form></div><nav class="admin-jump" aria-label="Bagian panel"><a href="#pengaturan">Pengaturan</a><a href="#rundown-admin">Rundown</a><a href="#amplop-admin">Amplop</a><a href="#pengumuman-admin">Pengumuman</a><a href="#galeri-admin">Galeri</a><a href="#pesan-admin">Pesan</a></nav><section id="pengaturan"><h2>Pengaturan acara</h2><form method="post" action="/admin/settings" class="admin-form"><input type="hidden" name="csrf" value="${csrf}" />${setting('venue','Lokasi')}${setting('maps_url','Link Google Maps')}${setting('contact','Kontak panitia')}${setting('instagram','Instagram resmi')}${setting('dress_code','Aturan busana',true)}${setting('admission','Ketentuan masuk',true)}${setting('event_start_at','Jam mulai resmi (ISO 8601 + zona waktu)')}${setting('event_end_at','Jam selesai resmi (ISO 8601 + zona waktu)')}<button>Simpan pengaturan</button></form></section><section id="rundown-admin"><h2>Rundown</h2><div class="admin-grid">${rundownForms}</div></section><section id="amplop-admin"><h2>Amplop informasi</h2><div class="admin-grid">${envelopeForms}</div></section><section id="penampil-admin"><h2>Penampil</h2><div class="admin-grid">${performerForms}</div></section><section id="pengumuman-admin"><h2>Pengumuman</h2><form method="post" action="/admin/announcements" class="admin-form"><h3>Pengumuman baru</h3><input type="hidden" name="csrf" value="${csrf}" /><label>Judul<input name="title" maxlength="120" required /></label><label>Isi<textarea name="body" rows="3" maxlength="1200" required></textarea></label><label><input type="checkbox" name="published" value="1" /> Terbitkan</label><button>Tambah pengumuman</button></form><div class="admin-grid">${announcementForms}</div></section><section id="galeri-admin"><h2>Galeri</h2><form method="post" action="/admin/gallery" enctype="multipart/form-data" class="admin-form"><input type="hidden" name="csrf" value="${csrf}" /><label>Foto<input type="file" name="file" accept="image/jpeg,image/png,image/webp" required /></label><label>Hari/keterangan<input name="day" maxlength="40" required /></label><label>Teks alternatif<textarea name="alt" rows="2" maxlength="240" required></textarea></label><label><input type="checkbox" name="published" value="1" /> Terbitkan</label><button>Unggah foto</button></form><div class="admin-grid">${galleryForms}</div></section><section id="pesan-admin"><h2>Moderasi Dinding Pesan</h2><div class="admin-table-wrap"><table><thead><tr><th>Nama</th><th>Pesan</th><th>Status</th><th>Aksi</th></tr></thead><tbody>${rows || '<tr><td colspan="4">Belum ada pesan.</td></tr>'}</tbody></table></div></section><section><h2>Riwayat perubahan</h2><ol class="admin-audit">${auditRows || '<li>Belum ada perubahan.</li>'}</ol></section></main></body></html>`;
+  return `<!doctype html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Admin BHARASENA</title><link rel="stylesheet" href="/admin.css"></head><body class="admin-page"><main class="admin-shell"><div class="admin-top"><div><p class="scene-kicker">BHARASENA / PANITIA</p><h1>Ruang kendali.</h1></div><form method="post" action="/admin/logout"><button>Keluar</button></form></div><nav class="admin-jump" aria-label="Bagian panel"><a href="#pengaturan">Pengaturan</a><a href="#rundown-admin">Rundown</a><a href="#amplop-admin">Amplop</a><a href="#pengumuman-admin">Pengumuman</a><a href="#galeri-admin">Galeri</a><a href="#pesan-admin">Pesan</a></nav><section id="pengaturan"><h2>Pengaturan acara</h2><form method="post" action="/admin/settings" class="admin-form"><input type="hidden" name="csrf" value="${csrf}" />${setting('venue','Lokasi')}${setting('contact','Kontak panitia')}${setting('dress_code','Aturan busana',true)}${setting('admission','Ketentuan masuk',true)}${setting('event_start_at','Jam mulai resmi (ISO 8601 + zona waktu)')}${setting('event_end_at','Jam selesai resmi (ISO 8601 + zona waktu)')}<button>Simpan pengaturan</button></form></section><section id="rundown-admin"><h2>Rundown</h2><div class="admin-grid">${rundownForms}</div></section><section id="amplop-admin"><h2>Amplop informasi</h2><div class="admin-grid">${envelopeForms}</div></section><section id="penampil-admin"><h2>Penampil</h2><div class="admin-grid">${performerForms}</div></section><section id="pengumuman-admin"><h2>Pengumuman</h2><form method="post" action="/admin/announcements" class="admin-form"><h3>Pengumuman baru</h3><input type="hidden" name="csrf" value="${csrf}" /><label>Judul<input name="title" maxlength="120" required /></label><label>Isi<textarea name="body" rows="3" maxlength="1200" required></textarea></label><label><input type="checkbox" name="published" value="1" /> Terbitkan</label><button>Tambah pengumuman</button></form><div class="admin-grid">${announcementForms}</div></section><section id="galeri-admin"><h2>Galeri</h2><form method="post" action="/admin/gallery" enctype="multipart/form-data" class="admin-form"><input type="hidden" name="csrf" value="${csrf}" /><label>Foto<input type="file" name="file" accept="image/jpeg,image/png,image/webp" required /></label><label>Hari/keterangan<input name="day" maxlength="40" required /></label><label>Teks alternatif<textarea name="alt" rows="2" maxlength="240" required></textarea></label><label><input type="checkbox" name="published" value="1" /> Terbitkan</label><button>Unggah foto</button></form><div class="admin-grid">${galleryForms}</div></section><section id="pesan-admin"><h2>Moderasi Dinding Pesan</h2><div class="admin-table-wrap"><table><thead><tr><th>Nama</th><th>Pesan</th><th>Status</th><th>Aksi</th></tr></thead><tbody>${rows || '<tr><td colspan="4">Belum ada pesan.</td></tr>'}</tbody></table></div></section><section><h2>Riwayat perubahan</h2><ol class="admin-audit">${auditRows || '<li>Belum ada perubahan.</li>'}</ol></section></main></body></html>`;
 }
 
 async function handle(request, response) {
@@ -278,7 +271,7 @@ async function handle(request, response) {
       response.writeHead(303, { Location: '/admin', 'Cache-Control': 'no-store' }); response.end(); return;
     } catch (error) { return send(response, error.status || 400, error.message || 'Permintaan tidak valid.'); }
   }
-  if (request.method === 'GET' && path === '/sitemap.xml') return send(response, 200, `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>${escapeHtml(siteOrigin(request))}/</loc></url><url><loc>${escapeHtml(siteOrigin(request))}/galeri.html</loc></url></urlset>`, { 'Content-Type':'application/xml; charset=utf-8', 'Cache-Control':'public, max-age=3600' });
+  if (request.method === 'GET' && path === '/sitemap.xml') return send(response, 200, `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>${escapeHtml(siteOrigin(request))}/</loc></url></urlset>`, { 'Content-Type':'application/xml; charset=utf-8', 'Cache-Control':'public, max-age=3600' });
   if (request.method === 'GET' && path === '/robots.txt') return send(response, 200, `User-agent: *\nAllow: /\nDisallow: /admin\nSitemap: ${siteOrigin(request)}/sitemap.xml\n`, { 'Content-Type':'text/plain; charset=utf-8' });
 
   if (request.method === 'GET' || request.method === 'HEAD') {
@@ -286,8 +279,8 @@ async function handle(request, response) {
     const file = resolve(root, `.${requested}`);
     const assetRelative = relative(join(root, 'assets'), file);
     const publicAsset = path.startsWith('/assets/') && assetRelative && !assetRelative.startsWith('..') && !isAbsolute(assetRelative);
-    const publicFile = publicAsset || path === '/styles.css' || path === '/gallery-page.css' || path === '/galeri.html' || path === '/admin.css' || path === '/favicon.ico'
-      || path === '/src/scripts/experience.js' || path === '/src/scripts/gallery-page.js' || path === '/src/scripts/music.js' || path === '/src/scripts/heritage.js' || path === '/src/data/event.js';
+    const publicFile = publicAsset || path === '/styles.css' || path === '/admin.css' || path === '/favicon.ico'
+      || path === '/src/scripts/experience.js' || path === '/src/scripts/music.js' || path === '/src/scripts/heritage.js' || path === '/src/data/event.js';
     if (publicFile && !relative(root, file).startsWith('..') && existsSync(file) && (await stat(file)).isFile()) {
       const type = mime[extname(file).toLowerCase()] || 'application/octet-stream';
       if (type.startsWith('audio/')) return sendAudio(request, response, file, (await stat(file)).size, type);

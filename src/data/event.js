@@ -5,8 +5,7 @@
  */
 export const EVENT = {
   title: 'BHARASENA',
-  subtitle: 'As one to the light',
-  tagline: 'As one to the light',
+  subtitle: 'Prom Night Batalyon 6',
   battalion: 'Batalyon Bhara Arsa Nawasena',
   school: 'SMAN 2 Taruna Bhayangkara',
   guestArtist: 'Budi Doremi',
@@ -14,47 +13,58 @@ export const EVENT = {
   dateStart: '2026-12-11',
   dateEnd: '2026-12-13',
   dateLabel: '11–13 Desember 2026',
-  start: '2026-12-11T06:00:00+07:00',
-  end: '2026-12-13T23:00:00+07:00',
-  timePlaceholder: false,
-  venue: 'SMA Negeri 2 Taruna Bhayangkara Jawa Timur, Jl. Pandan, Desa Kembiritan, Kecamatan Genteng, Kabupaten Banyuwangi',
-  mapsUrl: 'https://maps.app.goo.gl/XGUJMNvkwBCmNSDWA?g_st=ac',
-  artistAt: 'Ust. Fuad Naim · 11 Des 20.00 · DJ Gemoy · 12 Des 07.50 · Budi Doremi · 13 Des 20.30',
-  dressCode: '11 Des: baju muslim (muslim) atau batik/bebas rapi (nonmuslim). 12 Des pagi: atasan putih polos dan bawahan training hitam; malam: seragam PDSUS berjas Taruna Bhayangkara. 13 Des: baju prom night semi PDL. Warna tambahan, aksesori terlarang, dan contoh outfit: menyusul.',
+  // The event dates are known; these opening and closing hours are examples.
+  start: '2026-12-11T16:00:00+07:00',
+  end: '2026-12-13T22:00:00+07:00',
+  timePlaceholder: true,
+  venue: 'SMA Negeri 2 Taruna Bhayangkara Jawa Timur, Jl. Pandan, Desa Kembiritan, Kecamatan Genteng, Kabupaten Banyuwangi.',
+  artistAt: null,
+  dressCode: null,
   admission: 'Hadir untuk seluruh anggota SMAN 2 Taruna Bhayangkara dan tamu tertentu yang diundang. Parkir dan konsumsi tersedia. Yang wajib dibawa: menyusul. Tiket/kartu identitas/undangan: menyusul. Aturan masuk, keterlambatan, dan barang terlarang: menyusul.',
-  contact: '+62 821-5185-9028 (Humas)',
-  instagram: '@asonetothelight_',
+  contact: null,
   showPlaceholderHints: false,
 };
 
-// Official day-level programme. More detailed session times can be added by the committee later.
+// Session titles and hours are sample data, never an announced program.
 export const rundown = [
   {
     date: '2026-12-11',
     label: '11 Desember',
     weekday: 'Jumat',
-    sessions: [{ start: '2026-12-11T06:00:00+07:00', end: '2026-12-11T22:00:00+07:00', title: 'Taruna Bakti & Istigosah', desc: 'Hari pertama Bharasena diisi dengan Taruna Bakti dan Istigosah. Penampil: Ust. Fuad Naim, pukul 20.00–selesai.', placeholder: false }],
+    sessions: [
+      { start: '2026-12-11T16:00:00+07:00', end: '2026-12-11T18:00:00+07:00', title: 'Sesi 1', desc: null, placeholder: true },
+      { start: '2026-12-11T18:00:00+07:00', end: '2026-12-11T20:00:00+07:00', title: 'Sesi 2', desc: null, placeholder: true },
+      { start: '2026-12-11T20:00:00+07:00', end: '2026-12-11T22:00:00+07:00', title: 'Sesi 3', desc: null, placeholder: true },
+    ],
   },
   {
     date: '2026-12-12',
     label: '12 Desember',
     weekday: 'Sabtu',
-    sessions: [{ start: '2026-12-12T06:00:00+07:00', end: '2026-12-12T22:00:00+07:00', title: 'Colour Festival & Malam Intimate', desc: 'Hari kedua Bharasena menghadirkan Colour Festival dan Malam Intimate. Penampil: DJ Gemoy, pukul 07.50–09.00.', placeholder: false }],
+    sessions: [
+      { start: '2026-12-12T09:00:00+07:00', end: '2026-12-12T13:00:00+07:00', title: 'Sesi 1', desc: null, placeholder: true },
+      { start: '2026-12-12T13:00:00+07:00', end: '2026-12-12T18:00:00+07:00', title: 'Sesi 2', desc: null, placeholder: true },
+      { start: '2026-12-12T18:00:00+07:00', end: '2026-12-12T22:00:00+07:00', title: 'Sesi 3', desc: null, placeholder: true },
+    ],
   },
   {
     date: '2026-12-13',
     label: '13 Desember',
     weekday: 'Minggu',
-    sessions: [{ start: '2026-12-13T19:00:00+07:00', end: '2026-12-13T23:00:00+07:00', title: 'Malam Puncak · Konser', desc: 'Penutupan Bharasena berupa malam puncak dan konser bersama Budi Doremi, pukul 20.30–selesai. Ada penampil tambahan dari para taruna.', placeholder: false }],
+    sessions: [
+      { start: '2026-12-13T09:00:00+07:00', end: '2026-12-13T13:00:00+07:00', title: 'Sesi 1', desc: null, placeholder: true },
+      { start: '2026-12-13T13:00:00+07:00', end: '2026-12-13T18:00:00+07:00', title: 'Sesi 2', desc: null, placeholder: true },
+      { start: '2026-12-13T18:00:00+07:00', end: '2026-12-13T22:00:00+07:00', title: 'Sesi 3', desc: null, placeholder: true },
+    ],
   },
 ];
 
 // Keep body null while sealed. Shipping unreleased details in a static bundle
 // would expose them regardless of what the interface displays.
 export const envelopes = [
-  { id: 'venue', title: 'Lokasi', body: `${EVENT.venue} · Google Maps: ${EVENT.mapsUrl}`, unlockAt: null, placeholder: false },
-  { id: 'admission', title: 'Ketentuan masuk', body: EVENT.admission, unlockAt: null, placeholder: false },
-  { id: 'dress-code', title: 'Busana', body: EVENT.dressCode, unlockAt: null, placeholder: false },
+  { id: 'venue', title: 'Lokasi', body: null, unlockAt: null, placeholder: true },
+  { id: 'admission', title: 'Ketentuan masuk', body: null, unlockAt: null, placeholder: true },
+  { id: 'dress-code', title: 'Busana', body: null, unlockAt: null, placeholder: true },
   { id: 'updates', title: 'Informasi terbaru', body: null, unlockAt: null, placeholder: true },
 ];
 

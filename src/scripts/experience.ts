@@ -188,7 +188,7 @@ function initTime() {
         if (liveProgress) liveProgress.style.transform = `scaleX(${progress})`;
         $$('[data-session-start]').forEach((row) => row.classList.toggle('is-current', row.dataset.sessionStart === current?.start));
       } else {
-        const label = phase === 'pasca' ? 'Rangkaian BHARASENA telah selesai.' : 'Rundown resmi akan hadir di sini.';
+        const label = phase === 'pasca' ? 'Rangkaian BHARASENA telah selesai.' : '11–13 Desember · Seluruh waktu dalam WIB.';
         if (liveStatus.textContent !== label) liveStatus.textContent = label;
         $$('[data-session-start]').forEach((row) => row.classList.remove('is-current'));
       }
@@ -206,6 +206,7 @@ function initTimeline() {
   const scenes = $$('.scene[data-scene]');
   const hero = $('.hero');
   const heroLayers = hero ? $$('[data-depth]', hero) : [];
+  const parallaxLayers = () => $$('[data-parallax-depth]');
   const clock = $('.scene-clock');
   const dots = $$('.scene-dot');
   const navigationLinks = $$('.header-nav a[href^="#"], .mobile-dock a[href^="#"]');
@@ -251,6 +252,17 @@ function initTimeline() {
         });
       }
     }
+    const sceneAmplitude = lowEnd ? 54 : 104;
+    parallaxLayers().forEach((layer) => {
+      const scene = layer.closest('.scene');
+      if (!scene) return;
+      const rect = scene.getBoundingClientRect();
+      if (rect.bottom < -innerHeight * 0.15 || rect.top > innerHeight * 1.15) return;
+      const progress = clamp((innerHeight - rect.top) / (innerHeight + rect.height), 0, 1);
+      const depth = clamp(Number(layer.dataset.parallaxDepth) || 0, -0.2, 0.2);
+      const offset = (progress - 0.5) * depth * sceneAmplitude;
+      layer.style.setProperty('--parallax-offset', `${offset.toFixed(2)}px`);
+    });
     const minutes = Math.round(t * 360);
     const hours = 18 + Math.floor(minutes / 60);
     const label = `${String(hours).padStart(2, '0')}.${String(minutes % 60).padStart(2, '0')}`;
@@ -294,10 +306,10 @@ function initTimeline() {
   markDirty();
 }
 
-function initSeal() {
+function initSeal(onOpened) {
   let visited = false;
   try { visited = sessionStorage.getItem('bharasena-opened') === '1'; } catch { /* private mode */ }
-  if (visited) return;
+  if (visited) { onOpened?.(); return; }
   const gate = document.createElement('div');
   gate.className = 'seal-gate';
   gate.setAttribute('role', 'dialog');
@@ -343,6 +355,7 @@ function initSeal() {
       document.body.style.overflow = previousOverflow;
       if (oldFocus instanceof HTMLElement && oldFocus !== document.body && oldFocus.isConnected) oldFocus.focus();
       else { const main = $('main'); if (main) { main.tabIndex = -1; main.focus({ preventScroll: true }); } }
+      onOpened?.();
     }, reduceMotion() ? 120 : 520);
   }
   function stopHold() {
@@ -522,6 +535,84 @@ function initRundown() {
   const track = $('.day-panels') || panels[0]?.parentElement;
   if (!tabs.length || !panels.length) return;
 
+  $$('.programme-details').forEach((details) => {
+    const sessionTabs = $$('[data-programme-session]', details);
+    const groups = $$('[data-programme-group]', details);
+    const scroll = $('[data-programme-scroll]', details);
+    const hint = $('[data-programme-scroll-hint]', details);
+    if (!scroll) return;
+
+    function updateScrollHint() {
+      if (!hint) return;
+      const atEnd = scroll.scrollTop + scroll.clientHeight >= scroll.scrollHeight - 3;
+      hint.textContent = atEnd ? 'Akhir sesi · Seluruh kegiatan sudah ditampilkan' : 'Scroll untuk kegiatan berikutnya ↓';
+      hint.classList.toggle('is-at-end', atEnd);
+    }
+    function selectSession(id, focus = false) {
+      sessionTabs.forEach((tab) => {
+        const selected = tab.dataset.programmeSession === id;
+        tab.setAttribute('aria-selected', String(selected));
+        tab.tabIndex = selected ? 0 : -1;
+        if (selected && focus) tab.focus();
+      });
+      groups.forEach((group) => { group.hidden = group.id !== id; });
+      scroll.scrollTop = 0;
+      updateScrollHint();
+    }
+    if (sessionTabs.length) {
+      details.classList.add('is-interactive');
+      sessionTabs.forEach((tab, index) => {
+        tab.addEventListener('click', () => selectSession(tab.dataset.programmeSession));
+        tab.addEventListener('keydown', (event) => {
+          const offset = { ArrowRight: 1, ArrowLeft: -1 }[event.key];
+          const next = event.key === 'Home' ? 0 : event.key === 'End' ? sessionTabs.length - 1
+            : offset ? (index + offset + sessionTabs.length) % sessionTabs.length : -1;
+          if (next < 0) return;
+          event.preventDefault();
+          selectSession(sessionTabs[next].dataset.programmeSession, true);
+        });
+      });
+      selectSession(sessionTabs[0].dataset.programmeSession);
+    }
+    scroll.addEventListener('scroll', updateScrollHint, { passive: true });
+    if ('ResizeObserver' in window) new ResizeObserver(updateScrollHint).observe(scroll);
+    updateScrollHint();
+  });
+
+  const spotlight = $('[data-speaker-spotlight]');
+  if (spotlight) {
+    const portrait = $('.speaker-spotlight__portrait', spotlight);
+    if (portrait && 'IntersectionObserver' in window && !reduceMotion()) {
+      spotlight.classList.add('is-reveal-ready');
+      const reveal = new IntersectionObserver((entries) => {
+        if (!entries.some((entry) => entry.isIntersecting)) return;
+        spotlight.classList.add('is-in-view');
+        reveal.disconnect();
+      }, { threshold: 0.2 });
+      reveal.observe(portrait);
+      motionQuery.addEventListener?.('change', () => {
+        if (reduceMotion()) {
+          spotlight.classList.add('is-in-view');
+          reveal.disconnect();
+        }
+      });
+    }
+    spotlight.addEventListener('pointermove', (event) => {
+      if (reduceMotion() || !finePointerQuery.matches || lowEnd) return;
+      const bounds = spotlight.getBoundingClientRect();
+      const x = clamp((event.clientX - bounds.left) / bounds.width - 0.5, -0.5, 0.5);
+      const y = clamp((event.clientY - bounds.top) / bounds.height - 0.5, -0.5, 0.5);
+      spotlight.style.setProperty('--speaker-x', `${(x * 9).toFixed(2)}px`);
+      spotlight.style.setProperty('--speaker-y', `${(y * 7).toFixed(2)}px`);
+    });
+    const resetSpotlight = () => {
+      spotlight.style.removeProperty('--speaker-x');
+      spotlight.style.removeProperty('--speaker-y');
+    };
+    spotlight.addEventListener('pointerleave', resetSpotlight);
+    motionQuery.addEventListener?.('change', resetSpotlight);
+  }
+
   const timeLabel = (iso) => new Intl.DateTimeFormat('id-ID', {
     timeZone: EVENT.tz, hour: '2-digit', minute: '2-digit', hourCycle: 'h23',
   }).format(new Date(iso));
@@ -596,8 +687,164 @@ function initRundown() {
   activate(tabs.find((tab) => tab.getAttribute('aria-selected') === 'true')?.dataset.day || tabs[0].dataset.day, false, true);
 }
 
+async function rollUpLetter(dialog) {
+  const paper = $('.letter-paper', dialog);
+  if (!paper || dialog.classList.contains('is-catalogue') || reduceMotion()) {
+    dialog.close();
+    return;
+  }
+  // Clip the paper without scaling its text; move the two rollers together.
+  const travel = Math.max(0, paper.offsetHeight / 2 - 8);
+  const timing = { duration: 440, easing: 'cubic-bezier(.65,0,.35,1)', fill: 'forwards' };
+  const animations = [
+    paper.animate([
+      { clipPath: 'inset(0% 0% 0% 0%)', opacity: 1, offset: 0 },
+      { clipPath: 'inset(49% 0% 49% 0%)', opacity: 1, offset: .85 },
+      { clipPath: 'inset(50% 0% 50% 0%)', opacity: 0, offset: 1 },
+    ], timing),
+  ];
+  [['.letter-roll-top', travel], ['.letter-roll-bottom', -travel]].forEach(([selector, distance]) => {
+    const roller = $(selector, dialog);
+    if (roller) animations.push(roller.animate([
+      { transform: 'translateY(0)', opacity: 1, offset: 0 },
+      { transform: `translateY(${distance}px)`, opacity: 1, offset: .85 },
+      { transform: `translateY(${distance}px)`, opacity: 0, offset: 1 },
+    ], timing));
+  });
+  const bottle = $('.letter-bottle', dialog);
+  if (bottle) animations.push(bottle.animate([{ opacity: .62 }, { opacity: 0 }], { duration: 150, fill: 'forwards' }));
+  try { await Promise.all(animations.map((animation) => animation.finished)); }
+  catch { /* Closing must still complete if an animation is interrupted. */ }
+  finally {
+    dialog.close();
+    animations.forEach((animation) => animation.cancel());
+  }
+}
+
 function initEnvelopes() {
   const cards = $$('.envelope[data-envelope]');
+
+
+  const infoDialog = $('#info-letter-dialog');
+  const infoCards = new Set();
+  if (infoDialog) {
+    let activeInfoCard = null;
+    let closingInfo = false;
+    const closeInfo = async () => {
+      if (closingInfo || !infoDialog.open) return;
+      closingInfo = true;
+      await rollUpLetter(infoDialog);
+      closingInfo = false;
+    };
+    $('.letter-dialog-close', infoDialog).addEventListener('click', closeInfo);
+    infoDialog.addEventListener('cancel', (event) => { event.preventDefault(); closeInfo(); });
+    infoDialog.addEventListener('click', (event) => {
+      if (event.target === infoDialog || event.target.classList.contains('letter-dialog-stage')) closeInfo();
+    });
+    infoDialog.addEventListener('close', () => {
+      document.body.classList.remove('busana-open');
+      activeInfoCard?.setAttribute('aria-expanded', 'false');
+      activeInfoCard?.focus();
+    });
+    cards.forEach((card) => {
+      const venue = ['lokasi', 'venue'].includes(card.dataset.envelope);
+      const admission = ['masuk', 'admission'].includes(card.dataset.envelope);
+      if (!venue && !admission) return;
+      infoCards.add(card);
+      const title = venue ? 'Tempat acara' : 'Ketentuan masuk';
+      const body = $('.envelope-body p', card);
+      const content = card.classList.contains('is-open') && body.textContent.trim() ? body.textContent.trim() : venue ? EVENT.venue : EVENT.admission;
+      body.textContent = content;
+      card.classList.remove('is-sealed');
+      card.classList.add('is-open');
+      card.setAttribute('role', 'button');
+      card.setAttribute('tabindex', '0');
+      card.setAttribute('aria-label', `Buka surat ${title}`);
+      card.setAttribute('aria-haspopup', 'dialog');
+      card.setAttribute('aria-controls', 'info-letter-dialog');
+      card.setAttribute('aria-expanded', 'false');
+      $('.envelope-bottom > span:first-child', card).textContent = 'TERBUKA';
+      const openInfo = () => {
+        activeInfoCard = card;
+        $('[data-info-kicker]', infoDialog).textContent = `${venue ? '01 / LOKASI' : '02 / AKSES'} · SURAT BHARASENA`;
+        $('#info-letter-title', infoDialog).textContent = title;
+        $('[data-info-body]', infoDialog).textContent = content;
+        $('[data-info-map]', infoDialog).hidden = !venue;
+        $('.letter-paper', infoDialog).scrollTop = 0;
+        infoDialog.showModal();
+        document.body.classList.add('busana-open');
+        card.setAttribute('aria-expanded', 'true');
+      };
+      card.addEventListener('click', openInfo);
+      card.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openInfo(); }
+      });
+    });
+  }
+
+  const busanaCard = cards.find((card) => ['busana', 'dress-code'].includes(card.dataset.envelope));
+  const busanaDialog = $('#busana-dialog');
+  if (busanaCard && busanaDialog) {
+    busanaCard.setAttribute('role', 'button');
+    busanaCard.setAttribute('tabindex', '0');
+    busanaCard.setAttribute('aria-label', 'Buka surat Busana acara');
+    busanaCard.setAttribute('aria-haspopup', 'dialog');
+    busanaCard.setAttribute('aria-controls', 'busana-dialog');
+    busanaCard.setAttribute('aria-expanded', 'false');
+    let jerseySleeve = 'short';
+    let jerseyView = 'front';
+    const updateJersey = () => {
+      const image = $('#jersey-main', busanaDialog);
+      image.src = `assets/jersey/${jerseySleeve}-${jerseyView}.webp`;
+      image.alt = `Jersey BHARASENA VI lengan ${jerseySleeve === 'short' ? 'pendek' : 'panjang'}, tampak ${jerseyView === 'front' ? 'depan' : 'belakang'}`;
+      $$('[data-jersey-sleeve]', busanaDialog).forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.jerseySleeve === jerseySleeve)));
+      $$('[data-jersey-view]', busanaDialog).forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.jerseyView === jerseyView)));
+    };
+    $$('[data-jersey-sleeve]', busanaDialog).forEach((button) => button.addEventListener('click', () => { jerseySleeve = button.dataset.jerseySleeve; updateJersey(); }));
+    $$('[data-jersey-view]', busanaDialog).forEach((button) => button.addEventListener('click', () => { jerseyView = button.dataset.jerseyView; updateJersey(); }));
+    const setBusanaView = (design) => {
+      $('.busana-summary', busanaDialog).hidden = design;
+      $('.busana-layout', busanaDialog).hidden = !design;
+      busanaDialog.classList.toggle('is-catalogue', design);
+      busanaDialog.setAttribute('aria-labelledby', design ? 'busana-title' : 'busana-summary-title');
+      busanaDialog.scrollTop = 0;
+    };
+    $('.busana-design-link', busanaDialog).addEventListener('click', () => {
+      setBusanaView(true);
+      $('.busana-back', busanaDialog).focus();
+    });
+    $('.busana-back', busanaDialog).addEventListener('click', () => {
+      setBusanaView(false);
+      $('.busana-design-link', busanaDialog).focus();
+    });
+    let closingBusana = false;
+    const closeBusana = async () => {
+      if (closingBusana || !busanaDialog.open) return;
+      closingBusana = true;
+      await rollUpLetter(busanaDialog);
+      closingBusana = false;
+    };
+    const openBusana = () => {
+      setBusanaView(false);
+      busanaDialog.showModal();
+      busanaCard.setAttribute('aria-expanded', 'true');
+      document.body.classList.add('busana-open');
+    };
+    busanaCard.addEventListener('click', openBusana);
+    busanaCard.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openBusana(); }
+    });
+    $$('.busana-close', busanaDialog).forEach((button) => button.addEventListener('click', closeBusana));
+    busanaDialog.addEventListener('cancel', (event) => { event.preventDefault(); closeBusana(); });
+    busanaDialog.addEventListener('click', (event) => {
+      if (event.target === busanaDialog || event.target.classList.contains('letter-dialog-stage')) closeBusana();
+    });
+    busanaDialog.addEventListener('close', () => {
+      document.body.classList.remove('busana-open');
+      busanaCard.setAttribute('aria-expanded', 'false');
+      busanaCard.focus();
+    });
+  }
   const performerEnvelope = $('.mini-envelope[data-envelope="performer"]');
   if (performerEnvelope) {
     performerEnvelope.setAttribute('role', 'button');
@@ -623,6 +870,7 @@ function initEnvelopes() {
       const ids = { lokasi: 'venue', masuk: 'admission', busana: 'dress-code', terbaru: 'updates' };
       const data = envelopes.find((item) => item.id === (ids[card.dataset.envelope] || card.dataset.envelope)) || envelopes[index];
       if (!data) return;
+      if (card === busanaCard || infoCards.has(card)) return;
       const field = { venue: EVENT.venue, admission: EVENT.admission, 'dress-code': EVENT.dressCode }[data.id];
       const resolved = field && !data.body ? { ...data, body: field, placeholder: false } : data;
       const open = getEnvelopeState(resolved, now) === 'open';
@@ -637,13 +885,19 @@ function initEnvelopes() {
   }
   cards.forEach((card) => {
     card.addEventListener('click', () => {
-      if (!card.classList.contains('is-sealed')) return;
+      if (card === busanaCard || infoCards.has(card) || !card.classList.contains('is-sealed')) return;
       card.classList.remove('is-jolted');
       void card.offsetWidth;
       card.classList.add('is-jolted');
       setTimeout(() => card.classList.remove('is-jolted'), 460);
     });
   });
+  if (busanaCard) {
+    busanaCard.classList.remove('is-sealed');
+    busanaCard.classList.add('is-open');
+    $('.envelope-body p', busanaCard).textContent = 'Lihat panduan busana dan desain jersey BHARASENA VI.';
+    $('.envelope-bottom > span:first-child', busanaCard).textContent = 'LIHAT BUSANA';
+  }
   refresh();
   const timer = setInterval(refresh, 30_000);
   addEventListener('pagehide', () => clearInterval(timer), { once: true });
@@ -804,17 +1058,19 @@ function initCard() {
   let name = safeName(urlName || input.value);
   if (name) input.value = name;
 
-  function updateName() {
+  function updateName(normalizeInput = false) {
     const clean = safeName(input.value);
-    if (input.value !== clean) input.value = clean;
+    // Leave in-progress spaces and the caret intact while the visitor types.
+    if (normalizeInput && input.value !== clean) input.value = clean;
     name = clean;
     if (previewName) previewName.textContent = clean || 'Nama Anda';
     if (heroName) heroName.textContent = clean ? `Untuk ${clean}` : 'Untuk kamu';
     preview.setAttribute('aria-label', `Pratinjau undangan BHARASENA untuk ${clean || 'Anda'}`);
   }
-  input.addEventListener('input', updateName);
-  form?.addEventListener('submit', (event) => { event.preventDefault(); updateName(); preview.focus({ preventScroll: true }); });
-  updateName();
+  input.addEventListener('input', () => updateName());
+  input.addEventListener('blur', () => updateName(true));
+  form?.addEventListener('submit', (event) => { event.preventDefault(); updateName(true); preview.focus({ preventScroll: true }); });
+  updateName(true);
 
   const tilt = { x: 0, y: 0 };
   let target = { x: 0, y: 0 };
@@ -837,74 +1093,66 @@ function initCard() {
 
   async function makeCard() {
     await document.fonts?.ready;
+    const loadImage = (src) => new Promise((resolve, reject) => {
+      const image = new Image();
+      image.onload = () => resolve(image);
+      image.onerror = () => reject(new Error('Gambar undangan tidak dapat dimuat.'));
+      image.src = src;
+    });
+    const guest = name || 'Nama Anda';
+    const [crest, corner] = await Promise.all([
+      loadImage('assets/batalyon/bhara-arsa-nawasena.png'),
+      loadImage('assets/invitation-corner.svg'),
+    ]);
     const canvas = document.createElement('canvas');
     canvas.width = 1080;
-    canvas.height = 1920;
+    canvas.height = 1440;
     const ctx = canvas.getContext('2d');
     const w = canvas.width, h = canvas.height;
-    ctx.fillStyle = '#0d0709';
+    ctx.fillStyle = '#eee4ce';
     ctx.fillRect(0, 0, w, h);
-    const glow = ctx.createRadialGradient(w * 0.5, h * 0.42, 80, w * 0.5, h * 0.42, 950);
-    glow.addColorStop(0, '#57202a');
-    glow.addColorStop(0.48, '#240c13');
-    glow.addColorStop(1, '#0d0709');
-    ctx.fillStyle = glow;
-    ctx.fillRect(0, 0, w, h);
-    const foil = ctx.createLinearGradient(120, 0, 930, 0);
-    [['0', '#8a6a2f'], ['0.28', '#e9d49a'], ['0.51', '#fff4c9'], ['0.75', '#b88a3e'], ['1', '#6e4f1e']]
-      .forEach(([at, color]) => foil.addColorStop(Number(at), color));
-    ctx.strokeStyle = foil;
-    ctx.lineWidth = 3;
-    ctx.strokeRect(54, 54, w - 108, h - 108);
-    ctx.strokeRect(74, 74, w - 148, h - 148);
-    ctx.fillStyle = foil;
-    ctx.textAlign = 'center';
-    ctx.font = '600 32px "Hanken Grotesk", sans-serif';
-    ctx.fillText('PROM NIGHT BATALYON 6', w / 2, 215);
-    ctx.font = '600 118px "Bodoni Moda", Georgia, serif';
-    ctx.fillText('BHARASENA', w / 2, 385);
-    ctx.fillStyle = '#f3ead8';
-    ctx.font = '400 46px "Hanken Grotesk", sans-serif';
-    ctx.fillText('Satu angkatan. Banyak cerita.', w / 2, 492);
-    ctx.strokeStyle = '#b88a3e';
+    ctx.fillStyle = '#a8864520';
+    for (let x = 0; x < w; x += 12) {
+      for (let y = 0; y < h; y += 12) { ctx.beginPath(); ctx.arc(x, y, 1.3, 0, Math.PI * 2); ctx.fill(); }
+    }
+    ctx.strokeStyle = '#ac8a4f';
     ctx.lineWidth = 2;
-    ctx.beginPath(); ctx.moveTo(220, 560); ctx.lineTo(860, 560); ctx.stroke();
-    ctx.fillStyle = '#d9c3a0';
-    ctx.font = '400 35px "Hanken Grotesk", sans-serif';
-    ctx.fillText('Undangan untuk', w / 2, 730);
-    ctx.fillStyle = foil;
-    ctx.font = '84px "Pinyon Script", "Bodoni Moda", Georgia, serif';
-    const guest = name || 'Anda';
-    let fontSize = 84;
-    while (ctx.measureText(guest).width > 790 && fontSize > 42) {
-      fontSize -= 2;
-      ctx.font = `${fontSize}px "Pinyon Script", "Bodoni Moda", Georgia, serif`;
+    ctx.strokeRect(30, 30, w - 60, h - 60);
+    ctx.strokeStyle = '#ac8a4f60';
+    ctx.strokeRect(42, 42, w - 84, h - 84);
+    [[52,52,0],[w-52,52,Math.PI/2],[w-52,h-52,Math.PI],[52,h-52,-Math.PI/2]].forEach(([x,y,angle]) => {
+      ctx.save(); ctx.translate(x,y); ctx.rotate(angle); ctx.drawImage(corner,0,0,155,155); ctx.restore();
+    });
+    ctx.drawImage(crest, w/2-105, 90, 210, 210);
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#392b23';
+    ctx.font = '500 60px "Bodoni Moda", Georgia, serif';
+    ctx.fillText('BHARASENA',w/2,380);
+    ctx.font = '400 22px "Hanken Grotesk", sans-serif';
+    ctx.fillText('B H A R A  A R S A  N A W A S E N A',w/2,425);
+    ctx.strokeStyle = '#b9996060';
+    ctx.beginPath(); ctx.moveTo(260,495); ctx.lineTo(480,495); ctx.moveTo(600,495); ctx.lineTo(820,495); ctx.stroke();
+    ctx.fillStyle = '#a5864e'; ctx.font = '32px Georgia'; ctx.fillText('✦',w/2,507);
+    ctx.fillStyle = '#76624b'; ctx.font = '400 25px "Hanken Grotesk", sans-serif';
+    ctx.fillText('Dengan hangat kami mengundang',w/2,580);
+    ctx.fillStyle = '#392b23';
+    let fontSize = 86;
+    ctx.font = `italic ${fontSize}px "Bodoni Moda", Georgia, serif`;
+    while (ctx.measureText(guest).width > 830 && fontSize > 24) {
+      fontSize -= 2; ctx.font = `italic ${fontSize}px "Bodoni Moda", Georgia, serif`;
     }
-    ctx.fillText(guest, w / 2, 890);
-    ctx.fillStyle = '#f3ead8';
-    ctx.font = '400 38px "Hanken Grotesk", sans-serif';
-    ctx.fillText('11—13 DESEMBER 2026', w / 2, 1125);
-    ctx.font = '400 30px "Hanken Grotesk", sans-serif';
-    ctx.fillText(EVENT.venue || 'Lokasi akan diumumkan', w / 2, 1190);
-    ctx.strokeStyle = '#8a6a2f';
-    ctx.beginPath(); ctx.moveTo(250, 1330); ctx.lineTo(830, 1330); ctx.stroke();
-    ctx.fillStyle = '#d9c3a0';
-    ctx.font = '400 30px "Hanken Grotesk", sans-serif';
-    ctx.fillText('Batalyon Bhara Arsa Nawasena', w / 2, 1450);
-    ctx.fillText('SMAN 2 Taruna Bhayangkara', w / 2, 1505);
-    ctx.fillStyle = foil;
-    ctx.font = '72px "Pinyon Script", Georgia, serif';
-    ctx.fillText('Sampai bertemu', w / 2, 1655);
-    // Deterministic fine texture avoids an extra image request.
-    let seed = 2026;
-    for (let i = 0; i < (lowEnd ? 1900 : 3500); i += 1) {
-      seed = (seed * 1664525 + 1013904223) >>> 0;
-      const x = (seed % w);
-      seed = (seed * 1664525 + 1013904223) >>> 0;
-      const y = (seed % h);
-      ctx.fillStyle = i % 3 ? 'rgba(255,244,201,0.035)' : 'rgba(0,0,0,0.06)';
-      ctx.fillRect(x, y, 1, 1);
-    }
+    ctx.fillText(guest,w/2,705);
+    ctx.fillStyle = '#76624b'; ctx.font = '400 32px Georgia, serif';
+    ctx.fillText('Menjadi bagian dari perayaan,',w/2,805);
+    ctx.fillText('pertemuan, dan kenangan yang tinggal.',w/2,855);
+    ctx.strokeStyle = '#b9996050';
+    [930,1045].forEach(y=>{ctx.beginPath();ctx.moveTo(210,y);ctx.lineTo(870,y);ctx.stroke();});
+    ctx.fillStyle = '#392b23'; ctx.font = '400 30px "Hanken Grotesk", sans-serif';
+    ctx.fillText('11 — 13 DESEMBER 2026',w/2,1000);
+    ctx.font = 'italic 38px Georgia, serif'; ctx.fillText('Sampai bertemu,',w/2,1140);
+    ctx.font = '400 22px "Hanken Grotesk", sans-serif';
+    ctx.fillText('BATALYON BHARA ARSA NAWASENA',w/2,1210);
+    ctx.fillText('SMAN 2 TARUNA BHAYANGKARA',w/2,1255);
     return new Promise((resolve) => canvas.toBlob((blob) => resolve(blob), 'image/png'));
   }
   function download(blob) {
@@ -959,6 +1207,7 @@ function initGalleryAndFinale() {
       button.type = 'button';
       button.className = 'gallery-frame';
       button.dataset.galleryIndex = String(index);
+      button.dataset.parallaxDepth = String([-0.03, -0.07, 0.05][index % 3]);
       const image = document.createElement('img');
       image.src = item.src;
       image.alt = item.alt || 'Dokumentasi BHARASENA';
@@ -1158,6 +1407,19 @@ function initPublishedContent() {
   }
 }
 
+function initPerformer() {
+  const stage = document.querySelector('#penampil');
+  if (!stage) return;
+  stage.querySelector('.performer-listen')?.addEventListener('click', () => {
+    document.querySelector('#audio-toggle')?.click();
+  });
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(([entry]) => {
+      stage.classList.toggle('is-on-stage', entry.isIntersecting);
+    }, { threshold: 0.05 }).observe(stage);
+  } else stage.classList.add('is-on-stage');
+}
+
 function init() {
   initPublishedContent();
   initTimeline();
@@ -1168,10 +1430,11 @@ function init() {
   initMessageWall();
   initCard();
   initGalleryAndFinale();
-  initMusic();
+  const openMusic = initMusic();
+  initPerformer();
   initHeritage();
   initNavigation();
-  initSeal();
+  initSeal(openMusic);
 }
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, { once: true });
 else init();
