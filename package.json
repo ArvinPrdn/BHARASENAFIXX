@@ -2,7 +2,7 @@
   "name": "bharasena-ballroom",
   "version": "0.1.0",
   "private": true,
-  "description": "Situs BHARASENA — Satu Malam di Ballroom",
+  "description": "Situs BHARASENA — Three Night in Tribrata",
   "type": "module",
   "engines": {
     "node": "24.x",

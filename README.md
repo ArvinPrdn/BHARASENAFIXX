@@ -1,7 +1,7 @@
-# BHARASENA — Satu Malam di Ballroom
+# BHARASENA — Three Night in Tribrata
 
 Situs informasi acara untuk BHARASENA. Pengalaman publik memakai bahasa Indonesia dan
-memperlakukan scroll sebagai perjalanan satu malam di ballroom: beludru gelap, foil emas,
+memperlakukan scroll sebagai perjalanan Three Night in Tribrata: beludru gelap, foil emas,
 kristal, dan lantai marmer cermin. Situs ini tidak mengumpulkan RSVP, profil peserta, atau
 data pelacakan pihak ketiga. Panel musik memakai pemutar audio lokal. Musik dapat
 tetap diputar saat panel ditutup; tekan Hentikan atau jeda pada pemutar untuk menghentikannya.

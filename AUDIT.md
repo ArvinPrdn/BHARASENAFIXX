@@ -8,7 +8,7 @@ This document describes the starting point. It does not treat the static prototy
 
 The folder is a static, client-rendered prototype. It contains `index.html`, `styles.css`, a legacy `script.js`, one JavaScript interaction module (`src/experience.js`), event constants (`src/data/event.js`), and visual assets. A TypeScript copy at `src/scripts/experience.ts` is now present, but it is not referenced by the HTML and has no TypeScript project around it. There is no Astro application, package manifest, server, database, admin route, test suite, deployment configuration, or Git repository in this folder.
 
-The visual direction is substantially aligned with “Satu Malam di Ballroom”: warm black/oxblood/champagne colours, curtains, chandelier, marble, the Budi Doremi photo, Indonesian copy, and no military or alcohol imagery. The content handoff correctly leaves venue, schedule, access, dress code, contact, and artist timing unpublished.
+The visual direction is substantially aligned with “Three Night in Tribrata”: warm black/oxblood/champagne colours, curtains, chandelier, marble, the Budi Doremi photo, Indonesian copy, and no military or alcohol imagery. The content handoff correctly leaves venue, schedule, access, dress code, contact, and artist timing unpublished.
 
 ## Evidence collected
 
