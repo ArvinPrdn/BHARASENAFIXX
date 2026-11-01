@@ -98,7 +98,6 @@ function publicPage(request, session = null) {
   html = html.replace(/<div class="live-strip" id="live-status"[^>]*>.*?<\/div>/su, liveStrip(content));
   html = html.replace(/<!-- slot:envelopes:start -->.*?<!-- slot:envelopes:end -->/su, envelopeGrid(content));
   html = html.replace(/<!-- slot:messages:start -->.*?<!-- slot:messages:end -->/su, messageWall(messages));
-  html = html.replace(/<!-- slot:contact:start -->.*?<!-- slot:contact:end -->/su, contactSlot(content.event));
   for (const day of ['11', '12', '13']) {
     html = html.replace(new RegExp(`(<section class="day-panel" id="panel-${day}"[^>]*>)(.*?)(<\\/section>)`, 'su'),
       (_match, opening, fallback, closing) => `${opening}${rundownPanel(content, day, fallback)}${closing}`);
@@ -128,11 +127,6 @@ function performerSlot(performers) {
   const performer = performers.find((item) => item.name.toLowerCase().includes('budi')) || performers[0];
   const schedule = performer?.scheduledAt || 'Menunggu pengumuman';
   return `<!-- slot:performer-schedule:start --><div class="mini-envelope" data-envelope="performer" data-dynamic="performer-schedule"><span class="wax-mini" aria-hidden="true"></span><span>Jadwal penampilan<br /><strong>${escapeHtml(schedule)}</strong></span></div><!-- slot:performer-schedule:end -->`;
-}
-
-function contactSlot(event) {
-  const text = event.contact ? `Kontak panitia: ${event.contact}` : 'Kontak resmi panitia akan dicantumkan setelah terverifikasi.';
-  return `<!-- slot:contact:start --><p class="contact-note" data-dynamic="contact">${escapeHtml(text)}</p><!-- slot:contact:end -->`;
 }
 
 function rundownPanel(content, day, fallback) {
@@ -275,7 +269,7 @@ async function handle(request, response) {
   if (request.method === 'GET' && path === '/robots.txt') return send(response, 200, `User-agent: *\nAllow: /\nDisallow: /admin\nSitemap: ${siteOrigin(request)}/sitemap.xml\n`, { 'Content-Type':'text/plain; charset=utf-8' });
 
   if (request.method === 'GET' || request.method === 'HEAD') {
-    const requested = path === '/favicon.ico' ? '/assets/favicon.svg' : path;
+    const requested = path === '/favicon.ico' ? '/assets/favicon.ico' : path;
     const file = resolve(root, `.${requested}`);
     const assetRelative = relative(join(root, 'assets'), file);
     const publicAsset = path.startsWith('/assets/') && assetRelative && !assetRelative.startsWith('..') && !isAbsolute(assetRelative);

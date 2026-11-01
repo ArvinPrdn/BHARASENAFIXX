@@ -11,6 +11,7 @@ await mkdir(join(output, 'src', 'data'), { recursive: true });
 for (const path of ['styles.css', 'galeri.html', 'gallery-page.css', 'assets', 'src/scripts/experience.js', 'src/scripts/gallery-page.js', 'src/scripts/music.js', 'src/scripts/heritage.js', 'src/data/event.js']) {
   await cp(join(root, path), join(output, path), { recursive: true });
 }
+await cp(join(root, 'assets', 'favicon.ico'), join(output, 'favicon.ico'));
 let html = await readFile(join(root, 'index.html'), 'utf8');
 html = html.replace('<html lang="id">', '<html lang="id" data-hosting="static">');
 html = html.replace('<title>BHARASENA', '<title>Bharasena');
