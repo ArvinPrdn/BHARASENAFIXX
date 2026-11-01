@@ -808,17 +808,10 @@ function initEnvelopes() {
     };
     const cancelMotions = () => motions.forEach((motion) => motion.cancel());
     const enterBusana = (design) => {
-      const view = design ? catalogue : summary;
-      animateBusana(view, [{ opacity: 0, transform: 'translateY(22px)' }, { opacity: 1, transform: 'translateY(0)' }], { duration: 560 });
-      if (design) {
-        animateBusana(image, [{ opacity: 0, transform: 'translateY(28px) rotateY(-12deg)' }, { opacity: 1, transform: 'translateY(0) rotateY(0)' }], { duration: 760 });
-        animateBusana($('.busana-editorial', busanaDialog), [{ opacity: 0, transform: 'translateX(24px)' }, { opacity: 1, transform: 'translateX(0)' }], { duration: 650, delay: 90, fill: 'backwards' });
-      } else {
-        $$('.busana-days li', busanaDialog).forEach((row, index) => {
-          animateBusana(row, [{ opacity: 0, transform: 'translateY(14px)' }, { opacity: 1, transform: 'translateY(0)' }], { duration: 480, delay: 120 + index * 85, fill: 'backwards' });
-        });
-        animateBusana($('.busana-preview__product', busanaDialog), [{ opacity: 0, transform: 'translateY(30px) rotate(5deg)' }, { opacity: 1, transform: 'translateY(0) rotate(0)' }], { duration: 800, delay: 80, fill: 'backwards' });
-      }
+      if (!design) return;
+      animateBusana(catalogue, [{ opacity: 0, transform: 'translateY(22px)' }, { opacity: 1, transform: 'translateY(0)' }], { duration: 560 });
+      animateBusana(image, [{ opacity: 0, transform: 'translateY(28px) rotateY(-12deg)' }, { opacity: 1, transform: 'translateY(0) rotateY(0)' }], { duration: 760 });
+      animateBusana($('.busana-editorial', busanaDialog), [{ opacity: 0, transform: 'translateX(24px)' }, { opacity: 1, transform: 'translateX(0)' }], { duration: 650, delay: 90, fill: 'backwards' });
     };
     const updateJersey = async (sleeve, view) => {
       const request = ++jerseyRequest;
@@ -879,9 +872,7 @@ function initEnvelopes() {
       busanaDialog.setAttribute('aria-labelledby', design ? 'busana-title' : 'busana-summary-title');
       busanaDialog.scrollTop = 0;
       enterBusana(design);
-      const quickView = $('.busana-quick-view', busanaDialog);
-      const returnControl = quickView.getClientRects().length ? quickView : $('.busana-design-link:not(.busana-quick-view)', busanaDialog);
-      (design ? $('.busana-back', busanaDialog) : returnControl).focus({ preventScroll: true });
+      (design ? $('.busana-back', busanaDialog) : $('.busana-design-link', busanaDialog)).focus({ preventScroll: design });
       switchingBusana = false;
     };
     $$('.busana-design-link', busanaDialog).forEach((button) => button.addEventListener('click', () => setBusanaView(true)));
@@ -895,8 +886,10 @@ function initEnvelopes() {
       requestedView = jerseyView;
       cancelMotions();
       image.removeAttribute('aria-busy');
-      await animateBusana(busanaDialog, [{ opacity: 1, transform: 'translateY(0)' }, { opacity: 0, transform: 'translateY(16px)' }], { duration: 220 });
-      busanaDialog.close();
+      if (busanaDialog.classList.contains('is-catalogue')) {
+        await animateBusana(busanaDialog, [{ opacity: 1, transform: 'translateY(0)' }, { opacity: 0, transform: 'translateY(16px)' }], { duration: 220 });
+        busanaDialog.close();
+      } else await rollUpLetter(busanaDialog);
       closingBusana = false;
     };
     const openBusana = () => {
@@ -906,12 +899,11 @@ function initEnvelopes() {
       switchingBusana = false;
       busanaDialog.classList.remove('is-catalogue');
       busanaDialog.setAttribute('aria-labelledby', 'busana-summary-title');
+      $('.letter-paper', busanaDialog).scrollTop = 0;
       busanaDialog.showModal();
       busanaDialog.scrollTop = 0;
       busanaCard.setAttribute('aria-expanded', 'true');
       document.body.classList.add('busana-open');
-      animateBusana(busanaDialog, [{ opacity: 0, transform: 'perspective(1200px) translateY(30px) rotateX(7deg)' }, { opacity: 1, transform: 'perspective(1200px) translateY(0) rotateX(0)' }], { duration: 650 });
-      enterBusana(false);
     };
     busanaCard.addEventListener('click', openBusana);
     busanaCard.addEventListener('keydown', (event) => {
@@ -920,7 +912,7 @@ function initEnvelopes() {
     $$('.busana-close', busanaDialog).forEach((button) => button.addEventListener('click', closeBusana));
     busanaDialog.addEventListener('cancel', (event) => { event.preventDefault(); closeBusana(); });
     busanaDialog.addEventListener('click', (event) => {
-      if (event.target === busanaDialog) closeBusana();
+      if (event.target === busanaDialog || event.target.classList.contains('letter-dialog-stage')) closeBusana();
     });
     busanaDialog.addEventListener('close', () => {
       document.body.classList.remove('busana-open');
