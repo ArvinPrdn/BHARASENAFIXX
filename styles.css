@@ -764,36 +764,37 @@ img { max-width: 100%; }
 .busana-design-link > span:last-child { font-size: 22px; font-weight: 400; transition: transform .2s ease; }
 .busana-design-link:hover { filter: brightness(1.08); box-shadow: 0 7px 24px #0006; }
 .busana-design-link:hover > span:last-child { transform: translateX(4px); }
-.busana-summary .busana-design-link { margin-top: 24px; padding: 17px 20px; border-color: #88602f99; background: linear-gradient(110deg, #cfad70, #f0dbab 58%, #dfbe85); box-shadow: 0 5px 12px #64402024, inset 0 1px 0 #fff1cb99; color: #402a19; }
-.busana-summary .busana-design-link:hover { box-shadow: 0 7px 16px #64402038, inset 0 1px 0 #fff1cb99; }
-.busana-summary .busana-design-link:focus-visible { outline-color: #53341e; }
-.busana-design-link__label { display: grid; gap: 4px; min-width: 0; }
-.busana-design-link__label strong { font-size: 15px; font-weight: 600; line-height: 1.45; letter-spacing: .01em; }
-.busana-design-link__label small { color: #725432; font-size: 11px; font-weight: 400; line-height: 1.5; }
-.busana-summary .letter-divider { margin: 24px 0 18px; }
-.busana-summary { --display: 'Bharasena Letter', Georgia, serif; --body: 'Bharasena Sans', 'Segoe UI', sans-serif; font-family: var(--body); }
-.busana-summary .letter-kicker { font-family: var(--body); font-size: 10px; font-weight: 600; letter-spacing: .18em; }
-.busana-summary .letter-paper h2 { font-family: var(--display); font-size: clamp(42px, 6vw, 72px); font-weight: 600; line-height: 1.05; letter-spacing: -.035em; }
-.busana-summary .busana-guidelines { font-family: var(--body); white-space: normal; font-size: 14px; line-height: 1.75; }
-.busana-guidelines dl { margin: 0; }
-.busana-guidelines dl > div { display: grid; grid-template-columns: 86px minmax(0, 1fr); gap: 16px; padding: 14px 0; border-bottom: 1px solid #81572e33; }
-.busana-guidelines dl > div:first-child { padding-top: 0; }
-.busana-guidelines dl > div:last-child { border-bottom: 0; padding-bottom: 0; }
-.busana-guidelines dt { padding-top: 2px; color: #704421; font-size: 12px; font-weight: 700; line-height: 1.8; }
-.busana-guidelines dd { margin: 0; color: #553a25; }
-.busana-guidelines dd p { margin: 0; }
-.busana-guidelines dd p + p { margin-top: 4px; }
-.busana-guidelines strong { color: #4b301d; font-weight: 600; }
+.letter-polished .letter-action { display: flex; align-items: center; justify-content: space-between; gap: 18px; width: 100%; min-height: 50px; border: 1px solid; border-radius: 2px; text-align: left; text-decoration: none; margin-top: 24px; padding: 17px 20px; border-color: #88602f99; background: linear-gradient(110deg, #cfad70, #f0dbab 58%, #dfbe85); box-shadow: 0 5px 12px #64402024, inset 0 1px 0 #fff1cb99; color: #402a19; }
+.letter-polished .letter-action:hover { box-shadow: 0 7px 16px #64402038, inset 0 1px 0 #fff1cb99; }
+.letter-polished .letter-action:focus-visible { outline-color: #53341e; }
+.letter-polished .letter-action > span:last-child { color: #704a25; font-size: 22px; font-weight: 400; }
+.letter-action__label { display: grid; gap: 4px; min-width: 0; }
+.letter-action__label strong { font-size: 15px; font-weight: 600; line-height: 1.45; letter-spacing: .01em; }
+.letter-action__label small { color: #725432; font-size: 11px; font-weight: 400; line-height: 1.5; }
+.letter-polished .letter-divider { margin: 24px 0 18px; }
+.letter-polished { --display: 'Bharasena Letter', Georgia, serif; --body: 'Bharasena Sans', 'Segoe UI', sans-serif; font-family: var(--body); }
+.letter-polished .letter-kicker { font-family: var(--body); font-size: 10px; font-weight: 600; letter-spacing: .18em; }
+.letter-polished .letter-paper h2 { font-family: var(--display); font-size: clamp(42px, 6vw, 72px); font-weight: 600; line-height: 1.05; letter-spacing: -.035em; }
+.letter-polished .letter-details { font-family: var(--body); white-space: normal; font-size: 14px; line-height: 1.75; }
+.letter-details dl { margin: 0; }
+.letter-details dl > div { display: grid; grid-template-columns: 86px minmax(0, 1fr); gap: 16px; padding: 14px 0; border-bottom: 1px solid #81572e33; }
+.letter-details dl > div:first-child { padding-top: 0; }
+.letter-details dl > div:last-child { border-bottom: 0; padding-bottom: 0; }
+.letter-details dt { padding-top: 2px; color: #704421; font-size: 12px; font-weight: 700; line-height: 1.8; }
+.letter-details dd { margin: 0; color: #553a25; }
+.letter-details dd p { margin: 0; }
+.letter-details dd p + p { margin-top: 4px; }
+.letter-details strong { color: #4b301d; font-weight: 600; }
 .busana-guidelines__note { margin: 18px 0 0; color: #745635; font-size: 12px; line-height: 1.7; }
-.busana-summary .letter-signoff { margin-top: 30px; font: italic 500 23px/1.4 var(--display); }
-.busana-summary .letter-signoff strong { font: 600 10px/1.7 var(--body); letter-spacing: .08em; }
+.letter-polished .letter-signoff { margin-top: 30px; font: italic 500 23px/1.4 var(--display); }
+.letter-polished .letter-signoff strong { font: 600 10px/1.7 var(--body); letter-spacing: .08em; }
 @media (max-width: 480px) {
-  .busana-guidelines dl > div { grid-template-columns: 1fr; gap: 5px; padding: 13px 0; }
-  .busana-summary .busana-guidelines { font-size: 14px; line-height: 1.7; }
-  .busana-guidelines dt { padding-top: 0; font-size: 12px; }
-  .busana-guidelines dd p + p { margin-top: 3px; }
-  .busana-summary .busana-design-link { padding: 15px 16px; gap: 12px; }
-  .busana-design-link__label strong { font-size: 14px; }
+  .letter-details dl > div { grid-template-columns: 1fr; gap: 5px; padding: 13px 0; }
+  .letter-polished .letter-details { font-size: 14px; line-height: 1.7; }
+  .letter-details dt { padding-top: 0; font-size: 12px; }
+  .letter-details dd p + p { margin-top: 3px; }
+  .letter-polished .letter-action { padding: 15px 16px; gap: 12px; }
+  .letter-action__label strong { font-size: 14px; }
 }
 .busana-layout { display: grid; grid-template-columns: 1.08fr 1fr; min-height: 650px; }
 .busana-layout[hidden], .busana-summary[hidden] { display: none; }
@@ -878,7 +879,7 @@ img { max-width: 100%; }
   .letter-paper h2 { font-size: clamp(2.8rem, 14vw, 5rem); }
   .letter-body { font-size: 16px; line-height: 1.7; }
   .busana-summary .letter-dialog-close { top: 12px; right: 12px; }
-  .busana-summary .letter-scroll { width: calc(100% - 48px); }
+  .letter-polished .letter-scroll { width: calc(100% - 48px); }
 }
 @media (prefers-reduced-motion: reduce) { .letter-scroll { animation: none !important; transform: none !important; } }
 

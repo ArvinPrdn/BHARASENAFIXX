@@ -742,6 +742,40 @@ function initEnvelopes() {
       activeInfoCard?.setAttribute('aria-expanded', 'false');
       activeInfoCard?.focus();
     });
+    const renderInfoDetails = (content, venue) => {
+      const container = $('[data-info-body]', infoDialog);
+      const list = document.createElement('dl');
+      const addDetail = (label, paragraphs) => {
+        const row = document.createElement('div');
+        const term = document.createElement('dt');
+        const description = document.createElement('dd');
+        term.textContent = label;
+        paragraphs.forEach((text) => {
+          const paragraph = document.createElement('p');
+          paragraph.textContent = text;
+          description.append(paragraph);
+        });
+        row.append(term, description);
+        list.append(row);
+      };
+      const text = String(content || '').trim();
+      if (venue) {
+        const address = text.replace(/\s*[·•]?\s*Google Maps:\s*https?:\/\/\S+/iu, '').trim();
+        const separator = address.indexOf(',');
+        if (separator > 0) {
+          addDetail('Tempat', [address.slice(0, separator).trim()]);
+          addDetail('Alamat', [address.slice(separator + 1).trim()]);
+        } else if (address) addDetail('Tempat', [address]);
+      } else {
+        const pending = [];
+        text.split(/(?<=[.!?])\s+/u).filter(Boolean).forEach((sentence) => {
+          if (/\bmenyusul\b/iu.test(sentence)) pending.push(sentence);
+          else addDetail(/parkir|konsumsi/iu.test(sentence) ? 'Fasilitas' : /hadir|peserta|tamu/iu.test(sentence) ? 'Peserta' : 'Informasi', [sentence]);
+        });
+        if (pending.length) addDetail('Menyusul', pending);
+      }
+      container.replaceChildren(list);
+    };
     cards.forEach((card) => {
       const venue = ['lokasi', 'venue'].includes(card.dataset.envelope);
       const admission = ['masuk', 'admission'].includes(card.dataset.envelope);
@@ -764,7 +798,7 @@ function initEnvelopes() {
         activeInfoCard = card;
         $('[data-info-kicker]', infoDialog).textContent = `${venue ? '01 / LOKASI' : '02 / AKSES'} · SURAT BHARASENA`;
         $('#info-letter-title', infoDialog).textContent = title;
-        $('[data-info-body]', infoDialog).textContent = content;
+        renderInfoDetails(content, venue);
         $('[data-info-map]', infoDialog).hidden = !venue;
         $('.letter-paper', infoDialog).scrollTop = 0;
         infoDialog.showModal();
