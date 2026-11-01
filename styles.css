@@ -1,3 +1,5 @@
+@font-face { font-family: 'Bharasena Letter'; font-style: normal; font-weight: 500 600; font-display: swap; src: url('assets/fonts/cormorant-garamond-latin.woff2') format('woff2'); }
+@font-face { font-family: 'Bharasena Sans'; font-style: normal; font-weight: 400 700; font-display: swap; src: url('assets/fonts/manrope-latin.woff2') format('woff2'); }
 :root {
   --ink: #0d0709;
   --oxblood: #3a0a12;
@@ -762,10 +764,37 @@ img { max-width: 100%; }
 .busana-design-link > span:last-child { font-size: 22px; font-weight: 400; transition: transform .2s ease; }
 .busana-design-link:hover { filter: brightness(1.08); box-shadow: 0 7px 24px #0006; }
 .busana-design-link:hover > span:last-child { transform: translateX(4px); }
-.busana-summary .busana-design-link { margin-top: 24px; border-color: #9d7449; background: linear-gradient(110deg, #321418, #5d2530); box-shadow: 0 6px 16px #48271430, inset 0 1px 0 #e8c38c30; color: #f6e5bf; }
-.busana-design-link__label { display: grid; gap: 5px; }
-.busana-design-link__label strong { font-size: 12px; font-weight: 700; }
-.busana-design-link__label small { color: #d0b894; font-size: 10px; font-weight: 400; }
+.busana-summary .busana-design-link { margin-top: 24px; padding: 17px 20px; border-color: #88602f99; background: linear-gradient(110deg, #cfad70, #f0dbab 58%, #dfbe85); box-shadow: 0 5px 12px #64402024, inset 0 1px 0 #fff1cb99; color: #402a19; }
+.busana-summary .busana-design-link:hover { box-shadow: 0 7px 16px #64402038, inset 0 1px 0 #fff1cb99; }
+.busana-summary .busana-design-link:focus-visible { outline-color: #53341e; }
+.busana-design-link__label { display: grid; gap: 4px; min-width: 0; }
+.busana-design-link__label strong { font-size: 15px; font-weight: 600; line-height: 1.45; letter-spacing: .01em; }
+.busana-design-link__label small { color: #725432; font-size: 11px; font-weight: 400; line-height: 1.5; }
+.busana-summary .letter-divider { margin: 24px 0 18px; }
+.busana-summary { --display: 'Bharasena Letter', Georgia, serif; --body: 'Bharasena Sans', 'Segoe UI', sans-serif; font-family: var(--body); }
+.busana-summary .letter-kicker { font-family: var(--body); font-size: 10px; font-weight: 600; letter-spacing: .18em; }
+.busana-summary .letter-paper h2 { font-family: var(--display); font-size: clamp(42px, 6vw, 72px); font-weight: 600; line-height: 1.05; letter-spacing: -.035em; }
+.busana-summary .busana-guidelines { font-family: var(--body); white-space: normal; font-size: 14px; line-height: 1.75; }
+.busana-guidelines dl { margin: 0; }
+.busana-guidelines dl > div { display: grid; grid-template-columns: 86px minmax(0, 1fr); gap: 16px; padding: 14px 0; border-bottom: 1px solid #81572e33; }
+.busana-guidelines dl > div:first-child { padding-top: 0; }
+.busana-guidelines dl > div:last-child { border-bottom: 0; padding-bottom: 0; }
+.busana-guidelines dt { padding-top: 2px; color: #704421; font-size: 12px; font-weight: 700; line-height: 1.8; }
+.busana-guidelines dd { margin: 0; color: #553a25; }
+.busana-guidelines dd p { margin: 0; }
+.busana-guidelines dd p + p { margin-top: 4px; }
+.busana-guidelines strong { color: #4b301d; font-weight: 600; }
+.busana-guidelines__note { margin: 18px 0 0; color: #745635; font-size: 12px; line-height: 1.7; }
+.busana-summary .letter-signoff { margin-top: 30px; font: italic 500 23px/1.4 var(--display); }
+.busana-summary .letter-signoff strong { font: 600 10px/1.7 var(--body); letter-spacing: .08em; }
+@media (max-width: 480px) {
+  .busana-guidelines dl > div { grid-template-columns: 1fr; gap: 5px; padding: 13px 0; }
+  .busana-summary .busana-guidelines { font-size: 14px; line-height: 1.7; }
+  .busana-guidelines dt { padding-top: 0; font-size: 12px; }
+  .busana-guidelines dd p + p { margin-top: 3px; }
+  .busana-summary .busana-design-link { padding: 15px 16px; gap: 12px; }
+  .busana-design-link__label strong { font-size: 14px; }
+}
 .busana-layout { display: grid; grid-template-columns: 1.08fr 1fr; min-height: 650px; }
 .busana-layout[hidden], .busana-summary[hidden] { display: none; }
 .busana-back { align-self: flex-start; min-height: 44px; margin: 0 0 30px; padding: 0; color: #c6ad87; background: transparent; border: 0; font-size: 11px; }

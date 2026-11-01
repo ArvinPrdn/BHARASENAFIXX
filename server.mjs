@@ -25,7 +25,7 @@ const db = seed(openDb());
 const limiter = createRateLimiter({ capacity: 4, refillMs: 15 * 60_000 });
 const loginLimiter = createRateLimiter({ capacity: 5, refillMs: 15 * 60_000 });
 
-const mime = { '.html':'text/html; charset=utf-8', '.css':'text/css; charset=utf-8', '.js':'text/javascript; charset=utf-8', '.ts':'text/plain; charset=utf-8', '.svg':'image/svg+xml', '.jpg':'image/jpeg', '.jpeg':'image/jpeg', '.png':'image/png', '.webp':'image/webp', '.avif':'image/avif', '.ico':'image/x-icon', '.mp3':'audio/mpeg', '.m4a':'audio/mp4', '.ogg':'audio/ogg', '.wav':'audio/wav', '.pdf':'application/pdf', '.json':'application/json; charset=utf-8' };
+const mime = { '.html':'text/html; charset=utf-8', '.css':'text/css; charset=utf-8', '.js':'text/javascript; charset=utf-8', '.ts':'text/plain; charset=utf-8', '.svg':'image/svg+xml', '.jpg':'image/jpeg', '.jpeg':'image/jpeg', '.png':'image/png', '.webp':'image/webp', '.avif':'image/avif', '.ico':'image/x-icon', '.woff2':'font/woff2', '.mp3':'audio/mpeg', '.m4a':'audio/mp4', '.ogg':'audio/ogg', '.wav':'audio/wav', '.pdf':'application/pdf', '.json':'application/json; charset=utf-8' };
 
 function send(response, status, body, headers = {}) {
   response.writeHead(status, { 'Content-Type': 'text/plain; charset=utf-8', ...headers });
