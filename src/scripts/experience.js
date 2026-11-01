@@ -789,42 +789,129 @@ function initEnvelopes() {
     busanaCard.setAttribute('aria-expanded', 'false');
     let jerseySleeve = 'short';
     let jerseyView = 'front';
-    const updateJersey = () => {
-      const image = $('#jersey-main', busanaDialog);
-      image.src = `assets/jersey/${jerseySleeve}-${jerseyView}.webp`;
-      image.alt = `Jersey BHARASENA VI lengan ${jerseySleeve === 'short' ? 'pendek' : 'panjang'}, tampak ${jerseyView === 'front' ? 'depan' : 'belakang'}`;
+    let requestedSleeve = jerseySleeve;
+    let requestedView = jerseyView;
+    let jerseyRequest = 0;
+    let closingBusana = false;
+    let switchingBusana = false;
+    let viewTransition = 0;
+    const motions = new Set();
+    const image = $('#jersey-main', busanaDialog);
+    const status = $('.busana-status', busanaDialog);
+    const summary = $('.busana-summary', busanaDialog);
+    const catalogue = $('.busana-layout', busanaDialog);
+    const animateBusana = (element, frames, options) => {
+      if (reduceMotion()) return Promise.resolve();
+      const motion = element.animate(frames, { easing: 'cubic-bezier(.22,1,.36,1)', ...options });
+      motions.add(motion);
+      return motion.finished.catch(() => {}).finally(() => { motions.delete(motion); motion.cancel(); });
+    };
+    const cancelMotions = () => motions.forEach((motion) => motion.cancel());
+    const enterBusana = (design) => {
+      const view = design ? catalogue : summary;
+      animateBusana(view, [{ opacity: 0, transform: 'translateY(22px)' }, { opacity: 1, transform: 'translateY(0)' }], { duration: 560 });
+      if (design) {
+        animateBusana(image, [{ opacity: 0, transform: 'translateY(28px) rotateY(-12deg)' }, { opacity: 1, transform: 'translateY(0) rotateY(0)' }], { duration: 760 });
+        animateBusana($('.busana-editorial', busanaDialog), [{ opacity: 0, transform: 'translateX(24px)' }, { opacity: 1, transform: 'translateX(0)' }], { duration: 650, delay: 90, fill: 'backwards' });
+      } else {
+        $$('.busana-days li', busanaDialog).forEach((row, index) => {
+          animateBusana(row, [{ opacity: 0, transform: 'translateY(14px)' }, { opacity: 1, transform: 'translateY(0)' }], { duration: 480, delay: 120 + index * 85, fill: 'backwards' });
+        });
+        animateBusana($('.busana-preview__product', busanaDialog), [{ opacity: 0, transform: 'translateY(30px) rotate(5deg)' }, { opacity: 1, transform: 'translateY(0) rotate(0)' }], { duration: 800, delay: 80, fill: 'backwards' });
+      }
+    };
+    const updateJersey = async (sleeve, view) => {
+      const request = ++jerseyRequest;
+      const source = `assets/jersey/${sleeve}-${view}.webp`;
+      if (source === image.getAttribute('src')) {
+        image.getAnimations().forEach((motion) => motion.cancel());
+        image.removeAttribute('aria-busy');
+        return;
+      }
+      image.setAttribute('aria-busy', 'true');
+      const nextImage = new Image();
+      nextImage.src = source;
+      try { await nextImage.decode(); }
+      catch {
+        if (request === jerseyRequest) {
+          requestedSleeve = jerseySleeve;
+          requestedView = jerseyView;
+          image.removeAttribute('aria-busy');
+          status.textContent = 'Desain belum dapat dimuat. Silakan coba lagi.';
+        }
+        return;
+      }
+      if (request !== jerseyRequest) return;
+      image.getAnimations().forEach((motion) => motion.cancel());
+      await animateBusana(image, [{ opacity: 1, transform: 'translateY(0)' }, { opacity: 0, transform: 'translateY(-10px)' }], { duration: 130 });
+      if (request !== jerseyRequest) return;
+      jerseySleeve = sleeve;
+      jerseyView = view;
+      image.src = source;
+      const caption = `Lengan ${sleeve === 'short' ? 'pendek' : 'panjang'} · Tampak ${view === 'front' ? 'depan' : 'belakang'}`;
+      image.alt = `Jersey BHARASENA VI ${caption.toLowerCase()}`;
+      image.removeAttribute('aria-busy');
       $$('[data-jersey-sleeve]', busanaDialog).forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.jerseySleeve === jerseySleeve)));
       $$('[data-jersey-view]', busanaDialog).forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.jerseyView === jerseyView)));
+      $('[data-jersey-caption]', busanaDialog).textContent = caption.toUpperCase();
+      status.textContent = caption;
+      animateBusana(image, [{ opacity: 0, transform: 'translateY(14px) rotateY(-7deg)' }, { opacity: 1, transform: 'translateY(0) rotateY(0)' }], { duration: 400 });
     };
-    $$('[data-jersey-sleeve]', busanaDialog).forEach((button) => button.addEventListener('click', () => { jerseySleeve = button.dataset.jerseySleeve; updateJersey(); }));
-    $$('[data-jersey-view]', busanaDialog).forEach((button) => button.addEventListener('click', () => { jerseyView = button.dataset.jerseyView; updateJersey(); }));
-    const setBusanaView = (design) => {
-      $('.busana-summary', busanaDialog).hidden = design;
-      $('.busana-layout', busanaDialog).hidden = !design;
+    $$('[data-jersey-sleeve]', busanaDialog).forEach((button) => button.addEventListener('click', () => {
+      requestedSleeve = button.dataset.jerseySleeve;
+      updateJersey(requestedSleeve, requestedView);
+    }));
+    $$('[data-jersey-view]', busanaDialog).forEach((button) => button.addEventListener('click', () => {
+      requestedView = button.dataset.jerseyView;
+      updateJersey(requestedSleeve, requestedView);
+    }));
+    const setBusanaView = async (design) => {
+      if (switchingBusana || closingBusana || !busanaDialog.open) return;
+      switchingBusana = true;
+      const transition = ++viewTransition;
+      cancelMotions();
+      const outgoing = design ? summary : catalogue;
+      await animateBusana(outgoing, [{ opacity: 1, transform: 'translateX(0)' }, { opacity: 0, transform: `translateX(${design ? -18 : 18}px)` }], { duration: 180 });
+      if (transition !== viewTransition || closingBusana || !busanaDialog.open) return;
+      summary.hidden = design;
+      catalogue.hidden = !design;
       busanaDialog.classList.toggle('is-catalogue', design);
       busanaDialog.setAttribute('aria-labelledby', design ? 'busana-title' : 'busana-summary-title');
       busanaDialog.scrollTop = 0;
+      enterBusana(design);
+      const quickView = $('.busana-quick-view', busanaDialog);
+      const returnControl = quickView.getClientRects().length ? quickView : $('.busana-design-link:not(.busana-quick-view)', busanaDialog);
+      (design ? $('.busana-back', busanaDialog) : returnControl).focus({ preventScroll: true });
+      switchingBusana = false;
     };
-    $('.busana-design-link', busanaDialog).addEventListener('click', () => {
-      setBusanaView(true);
-      $('.busana-back', busanaDialog).focus();
-    });
-    $('.busana-back', busanaDialog).addEventListener('click', () => {
-      setBusanaView(false);
-      $('.busana-design-link', busanaDialog).focus();
-    });
-    let closingBusana = false;
+    $$('.busana-design-link', busanaDialog).forEach((button) => button.addEventListener('click', () => setBusanaView(true)));
+    $('.busana-back', busanaDialog).addEventListener('click', () => setBusanaView(false));
     const closeBusana = async () => {
       if (closingBusana || !busanaDialog.open) return;
       closingBusana = true;
-      await rollUpLetter(busanaDialog);
+      viewTransition += 1;
+      jerseyRequest += 1;
+      requestedSleeve = jerseySleeve;
+      requestedView = jerseyView;
+      cancelMotions();
+      image.removeAttribute('aria-busy');
+      await animateBusana(busanaDialog, [{ opacity: 1, transform: 'translateY(0)' }, { opacity: 0, transform: 'translateY(16px)' }], { duration: 220 });
+      busanaDialog.close();
       closingBusana = false;
     };
     const openBusana = () => {
-      setBusanaView(false);
+      if (busanaDialog.open) return;
+      summary.hidden = false;
+      catalogue.hidden = true;
+      switchingBusana = false;
+      busanaDialog.classList.remove('is-catalogue');
+      busanaDialog.setAttribute('aria-labelledby', 'busana-summary-title');
       busanaDialog.showModal();
+      busanaDialog.scrollTop = 0;
       busanaCard.setAttribute('aria-expanded', 'true');
       document.body.classList.add('busana-open');
+      animateBusana(busanaDialog, [{ opacity: 0, transform: 'perspective(1200px) translateY(30px) rotateX(7deg)' }, { opacity: 1, transform: 'perspective(1200px) translateY(0) rotateX(0)' }], { duration: 650 });
+      enterBusana(false);
     };
     busanaCard.addEventListener('click', openBusana);
     busanaCard.addEventListener('keydown', (event) => {
@@ -833,12 +920,14 @@ function initEnvelopes() {
     $$('.busana-close', busanaDialog).forEach((button) => button.addEventListener('click', closeBusana));
     busanaDialog.addEventListener('cancel', (event) => { event.preventDefault(); closeBusana(); });
     busanaDialog.addEventListener('click', (event) => {
-      if (event.target === busanaDialog || event.target.classList.contains('letter-dialog-stage')) closeBusana();
+      if (event.target === busanaDialog) closeBusana();
     });
     busanaDialog.addEventListener('close', () => {
       document.body.classList.remove('busana-open');
+      cancelMotions();
+      switchingBusana = false;
       busanaCard.setAttribute('aria-expanded', 'false');
-      busanaCard.focus();
+      busanaCard.focus({ preventScroll: true });
     });
   }
   const performerEnvelope = $('.mini-envelope[data-envelope="performer"]');
