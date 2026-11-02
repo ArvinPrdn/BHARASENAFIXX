@@ -21,22 +21,25 @@ return {1, ARGV[1]}
 export function messageWallConfig(env = process.env) {
   let origin = '';
   let redisUrl = '';
+  // Vercel Marketplace provisions the KV_* names for Upstash connections.
+  const redisRestUrl = env.UPSTASH_REDIS_REST_URL || env.KV_REST_API_URL;
+  const redisToken = env.UPSTASH_REDIS_REST_TOKEN || env.KV_REST_API_TOKEN || '';
   try {
     const url = new URL(env.PUBLIC_ORIGIN);
     if (url.protocol === 'https:' || (env.NODE_ENV !== 'production' && ['localhost', '127.0.0.1'].includes(url.hostname))) origin = url.origin;
   } catch { /* A missing origin keeps submissions closed. */ }
   try {
-    const url = new URL(env.UPSTASH_REDIS_REST_URL);
+    const url = new URL(redisRestUrl);
     if (url.protocol === 'https:' && !url.username && !url.password && !url.search && !url.hash) redisUrl = url.origin;
   } catch { /* A missing database keeps submissions closed. */ }
   const prefix = /^[a-zA-Z0-9:_-]{1,80}$/u.test(env.MESSAGE_WALL_NAMESPACE || '') ? env.MESSAGE_WALL_NAMESPACE : 'bharasena:wall:v1';
-  const readReady = Boolean(redisUrl && env.UPSTASH_REDIS_REST_TOKEN);
+  const readReady = Boolean(redisUrl && redisToken);
   const secretReady = String(env.APP_SECRET || '').length >= 32 && !/^replace-with-/iu.test(env.APP_SECRET || '');
   const writeReady = Boolean(readReady && origin && secretReady);
   const enabled = env.MESSAGE_WALL_ENABLED === 'true' && writeReady;
   return {
     origin, redisUrl, prefix, readReady, writeReady, enabled,
-    redisToken: env.UPSTASH_REDIS_REST_TOKEN || '', secret: env.APP_SECRET || '',
+    redisToken, secret: env.APP_SECRET || '',
     botToken: env.TELEGRAM_BOT_TOKEN || '',
     // This integration intentionally sends notifications only to a private chat.
     chatId: /^[1-9]\d{0,15}$/u.test(env.TELEGRAM_CHAT_ID || '') ? env.TELEGRAM_CHAT_ID : '',

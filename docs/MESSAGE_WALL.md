@@ -75,3 +75,9 @@ Pengujian otomatis memakai mock Telegram/Redis dan tidak mengirim pesan nyata.
 Referensi: [Telegram sendMessage](https://core.telegram.org/bots/api#sendmessage),
 [Upstash REST API](https://upstash.com/docs/redis/features/restapi),
 [Vercel Node.js Functions](https://vercel.com/docs/functions/runtimes/node-js).
+
+## Kredensial Vercel Marketplace
+
+Integrasi Upstash dapat menyediakan `KV_REST_API_URL` dan `KV_REST_API_TOKEN`.
+Server menerima keduanya sebagai alternatif `UPSTASH_REDIS_REST_URL` dan
+`UPSTASH_REDIS_REST_TOKEN`. Simpan hanya di server dengan tipe Sensitive.

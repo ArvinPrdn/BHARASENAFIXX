@@ -33,6 +33,17 @@ function harness(replies: Response[], environment = env) {
 const redis = (result: unknown) => Response.json({ result });
 
 describe('online message wall', () => {
+  it('uses the Redis credentials provisioned by Vercel Marketplace', async () => {
+    const marketplaceEnv = {
+      ...env, UPSTASH_REDIS_REST_URL: '', UPSTASH_REDIS_REST_TOKEN: '',
+      KV_REST_API_URL: 'https://marketplace-redis.example', KV_REST_API_TOKEN: 'marketplace-test-token',
+    };
+    const { handle, fetchImpl } = harness([redis([])], marketplaceEnv);
+    expect(await (await handle(new Request('https://bharasena.example/api/messages'))).json()).toEqual({ enabled: true, messages: [] });
+    expect(fetchImpl.mock.calls[0]?.[0]).toBe(marketplaceEnv.KV_REST_API_URL);
+    expect(fetchImpl.mock.calls[0]?.[1]?.headers).toMatchObject({ Authorization: 'Bearer marketplace-test-token' });
+  });
+
   it('stays closed without secrets and never contacts external services', async () => {
     const { handle, fetchImpl } = harness([], { ...env, UPSTASH_REDIS_REST_TOKEN: '' });
     const response = await handle(new Request('https://bharasena.example/api/messages'));
