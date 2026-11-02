@@ -21,11 +21,14 @@ dari folder Downloads dan tersimpan di `assets/audio/`.
 ### Publikasi Vercel
 
 Proyek Vercel bernama `bharasena`; judul tab versi publik adalah **Bharasena**.
-`vercel.json` menjalankan `node scripts/build-static.mjs` dan hanya menerbitkan
-folder `public/`. Paket publik memuat tampilan, audio lokal, kartu undangan, dan
-proposal. Database lokal, konfigurasi rahasia, dan panel admin tidak dimasukkan.
-Pengiriman pesan ditandai belum dibuka pada versi statis; server lokal tetap
-menjalankan backend SQLite. Backend online memerlukan penyimpanan persisten terpisah.
+`vercel.json` menjalankan `node scripts/build-static.mjs` untuk halaman di `public/`.
+Paket publik memuat tampilan, audio lokal, kartu undangan, dan proposal. Database lokal,
+konfigurasi rahasia, dan panel admin tidak dimasukkan. Endpoint `api/messages.mjs`
+menjalankan Dinding Pesan online dengan penyimpanan Upstash Redis dan notifikasi Telegram
+opsional ke chat pribadi. Kiriman valid langsung tampil; minimal tiga kata dan maksimal
+80 karakter. Form tetap tertutup sampai environment online lengkap dan
+`MESSAGE_WALL_ENABLED=true`. Server lokal memakai SQLite dengan publikasi otomatis.
+Lihat [panduan aktivasi Dinding Pesan](docs/MESSAGE_WALL.md) untuk konfigurasi dan pemeriksaan.
 
 Untuk memeriksa paket publik sebelum deployment:
 

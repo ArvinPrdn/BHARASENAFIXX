@@ -1,5 +1,6 @@
 import { createServer } from 'node:http';
 import { sendAudio } from './src/lib/audio.mjs';
+import { messageWallConfig, notifyTelegram } from './src/lib/message-wall.mjs';
 import { randomBytes, randomUUID } from 'node:crypto';
 import { mkdir, readFile, stat, unlink, writeFile } from 'node:fs/promises';
 import { existsSync, readFileSync } from 'node:fs';
@@ -162,7 +163,7 @@ function envelopeGrid(content) {
 
 function messageWall(messages) {
   const items = messages.map((item) => `<article class="message-card"><p>${escapeHtml(item.body)}</p><footer><strong>${escapeHtml(item.nickname || 'Tamu')}</strong></footer></article>`).join('');
-  return `<div class="message-wall-layout" data-dynamic="messages"><form id="message-form" class="message-form" data-message-form novalidate><div class="message-field"><label for="message-name">Nama panggilan <span>(opsional)</span></label><input id="message-name" name="nickname" data-message-name type="text" maxlength="20" autocomplete="nickname" /></div><div class="message-field"><label for="message-body">Pesan untuk angkatan</label><textarea id="message-body" name="body" data-message-body maxlength="80" rows="4" required></textarea><small class="message-counter"><span data-message-count>0</span> / 80</small></div><div class="message-trap" aria-hidden="true"><label for="message-website">Website</label><input id="message-website" name="website" data-message-honeypot tabindex="-1" autocomplete="off" /></div><button class="message-submit" type="submit">Kirim ke dinding</button><p id="message-status" class="message-status" data-message-status role="status" aria-live="polite"></p></form><div class="message-list-wrap"><div class="message-list-heading"><span>CATATAN YANG SUDAH TIBA</span><span class="message-list-state" data-message-state>${items ? `${messages.length} PESAN TERBIT` : 'MENUNGGU PESAN'}</span></div><div class="message-list" data-messages-list aria-live="polite">${items || '<p class="message-empty" data-message-empty>Belum ada pesan yang dibuka untuk umum. Jadilah yang pertama menulis.</p>'}</div></div></div>`;
+  return `<div class="message-wall-layout" data-dynamic="messages"><form id="message-form" class="message-form" data-message-form novalidate><div class="message-field"><label for="message-name">Nama panggilan <span>(opsional)</span></label><input id="message-name" name="nickname" data-message-name type="text" maxlength="20" autocomplete="nickname" /></div><div class="message-field"><label for="message-body">Pesan untuk angkatan</label><textarea id="message-body" name="body" data-message-body aria-describedby="message-rules" maxlength="80" rows="4" required></textarea><small id="message-rules" class="message-counter">Minimal 3 kata · <span data-message-count>0</span> / 80 karakter</small></div><div class="message-trap" aria-hidden="true"><label for="message-website">Website</label><input id="message-website" name="website" data-message-honeypot tabindex="-1" autocomplete="off" /></div><button class="message-submit" type="submit">Kirim ke dinding</button><p id="message-status" class="message-status" data-message-status role="status" aria-live="polite"></p></form><div class="message-list-wrap"><div class="message-list-heading"><span>CATATAN YANG SUDAH TIBA</span><span class="message-list-state" data-message-state>${items ? `${messages.length} PESAN TERBIT` : 'MENUNGGU PESAN'}</span></div><div class="message-list" data-messages-list aria-live="polite">${items || '<p class="message-empty" data-message-empty>Belum ada pesan yang dibuka untuk umum. Jadilah yang pertama menulis.</p>'}</div></div></div>`;
 }
 
 function adminPage(session = null) {
@@ -212,8 +213,11 @@ async function handle(request, response) {
       if (!limiter.allow(dailyIpHash(ip, secret))) return json(response, 429, { error: 'Terlalu banyak percobaan. Coba lagi nanti.' });
       const valid = validateMessage(input);
       if (!valid.ok) return json(response, 400, { error: valid.reason });
-      db.prepare("INSERT INTO messages (nickname,body,status,ip_hash) VALUES (?,?, 'pending',?)").run(valid.nickname, valid.body, dailyIpHash(ip, secret));
-      return json(response, 202, { ok: true, message: 'Pesan diterima dan menunggu pemeriksaan panitia.' });
+      const saved = db.prepare("INSERT INTO messages (nickname,body,status,ip_hash) VALUES (?,?, 'approved',?)").run(valid.nickname, valid.body, dailyIpHash(ip, secret));
+      const message = db.prepare('SELECT id,nickname,body,status,created_at FROM messages WHERE id=?').get(saved.lastInsertRowid);
+      try { await notifyTelegram(messageWallConfig(), message); }
+      catch { console.error(JSON.stringify({ event: 'message_wall_notification_failed', messageId: message.id })); }
+      return json(response, 201, { ok: true, message });
     } catch (error) { return json(response, error.status || 400, { error: 'Pesan tidak dapat diproses.' }); }
   }
   if (request.method === 'GET' && path === '/admin') return send(response, 200, adminPage(getSession(db, request.headers.cookie, secret)), { 'Content-Type':'text/html; charset=utf-8', 'Cache-Control':'no-store' });
@@ -274,7 +278,7 @@ async function handle(request, response) {
     const assetRelative = relative(join(root, 'assets'), file);
     const publicAsset = path.startsWith('/assets/') && assetRelative && !assetRelative.startsWith('..') && !isAbsolute(assetRelative);
     const publicFile = publicAsset || path === '/styles.css' || path === '/admin.css' || path === '/favicon.ico'
-      || path === '/src/scripts/experience.js' || path === '/src/scripts/music.js' || path === '/src/scripts/heritage.js' || path === '/src/data/event.js';
+      || path === '/src/scripts/experience.js' || path === '/src/scripts/music.js' || path === '/src/scripts/heritage.js' || path === '/src/data/event.js' || path === '/src/data/message-rules.js';
     if (publicFile && !relative(root, file).startsWith('..') && existsSync(file) && (await stat(file)).isFile()) {
       const type = mime[extname(file).toLowerCase()] || 'application/octet-stream';
       if (type.startsWith('audio/')) return sendAudio(request, response, file, (await stat(file)).size, type);

@@ -4,6 +4,7 @@
 // @ts-nocheck
 import { initMusic } from './music.js';
 import { initHeritage } from './heritage.js';
+import { countMessageWords, MESSAGE_MIN_WORDS } from '../data/message-rules.js';
 import {
   EVENT, rundown, envelopes, gallery,
   getPhase, getCountdown, getJakartaDate,
@@ -1030,11 +1031,14 @@ function initMessageWall() {
   const empty = $('[data-message-empty]');
   const state = $('[data-message-state]');
   if (!form || !nameInput || !bodyInput) return;
-  if (root.dataset.hosting === 'static') {
+  const managedWall = root.dataset.hosting === 'static';
+  let wallEnabled = !managedWall;
+  let formStartedAt = Date.now();
+  let requestId = null;
+  if (managedWall) {
     form.querySelectorAll('input, textarea, button').forEach((control) => { control.disabled = true; });
-    if (status) status.textContent = 'Pengiriman pesan akan segera dibuka.';
-    if (state) state.textContent = 'SEGERA DIBUKA';
-    return;
+    if (status) status.textContent = 'Memeriksa ketersediaan dinding pesan…';
+    if (state) state.textContent = 'MEMUAT PESAN';
   }
 
   const clean = (value, max) => String(value || '')
@@ -1104,23 +1108,44 @@ function initMessageWall() {
       const response = await fetch('/api/messages?status=approved', {
         headers: { Accept: 'application/json' }, credentials: 'same-origin',
       });
-      if (!response.ok) return;
+      if (!response.ok) throw new Error('Feed unavailable');
       const payload = await response.json();
       const messages = Array.isArray(payload) ? payload : payload?.messages;
-      if (Array.isArray(messages)) renderMessages(messages);
-    } catch { /* The empty state is the intended offline fallback. */ }
+      if (!Array.isArray(messages)) throw new Error('Invalid feed');
+      renderMessages(messages);
+      if (managedWall) {
+        const wasEnabled = wallEnabled;
+        wallEnabled = payload?.enabled === true;
+        if (!form.hasAttribute('aria-busy')) form.querySelectorAll('input, textarea, button').forEach((control) => { control.disabled = !wallEnabled; });
+        if (!wallEnabled) {
+          setStatus('Pengiriman pesan akan segera dibuka.');
+          if (state && !messages.length) state.textContent = 'SEGERA DIBUKA';
+        } else if (!wasEnabled) {
+          formStartedAt = Date.now();
+          setStatus('Pesan yang memenuhi ketentuan langsung tampil di dinding.');
+        }
+      }
+    } catch {
+      if (managedWall && !wallEnabled) {
+        setStatus('Dinding pesan belum tersedia. Silakan kembali lagi nanti.');
+        if (state) state.textContent = 'SEGERA DIBUKA';
+      }
+    }
   }
-  bodyInput.addEventListener('input', updateCount);
+  bodyInput.addEventListener('input', () => { updateCount(); requestId = null; });
+  nameInput.addEventListener('input', () => { requestId = null; });
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
+    if (!wallEnabled || form.hasAttribute('aria-busy')) return;
     const name = clean(nameInput.value, 20);
     const body = cleanBody(bodyInput.value, 80);
     if (trap?.value) return;
-    if (body.length < 4) { setStatus('Pesanmu masih terlalu singkat.', 'error'); bodyInput.focus(); return; }
+    if (countMessageWords(body) < MESSAGE_MIN_WORDS) { setStatus(`Pesan minimal ${MESSAGE_MIN_WORDS} kata.`, 'error'); bodyInput.focus(); return; }
     const submit = $('button[type="submit"]', form);
     if (submit) submit.disabled = true;
     form.setAttribute('aria-busy', 'true');
-    setStatus('Mengirim pesan ke meja redaksi…');
+    setStatus('Mengirim pesan ke dinding…');
+    if (!requestId) requestId = globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(36).slice(2)}`;
     try {
       const csrf = $('meta[name="csrf-token"]')?.getAttribute('content') || form.dataset.csrf;
       const headers = { 'Content-Type': 'application/json', Accept: 'application/json' };
@@ -1128,7 +1153,7 @@ function initMessageWall() {
       const response = await fetch('/api/messages', {
         method: 'POST', credentials: 'same-origin',
         headers,
-        body: JSON.stringify({ nickname: name, body, website: '', formStartedAt: Date.now() - 1500 }),
+        body: JSON.stringify({ nickname: name, body, website: '', formStartedAt, requestId }),
       });
       let payload = null;
       try { payload = await response.json(); } catch { /* empty error body */ }
@@ -1139,6 +1164,8 @@ function initMessageWall() {
         if (card && list) { empty?.setAttribute('hidden', ''); list.prepend(card); }
       }
       form.reset();
+      requestId = null;
+      formStartedAt = Date.now();
       updateCount();
       setStatus(approved ? 'Pesanmu sudah tampil di dinding.' : 'Pesan diterima. Setelah disetujui panitia, pesanmu akan tampil.', 'success');
       if (state && approved) state.textContent = 'PESAN TERBARU';
@@ -1146,11 +1173,13 @@ function initMessageWall() {
       setStatus(error?.message || 'Pesan belum dapat dikirim. Coba lagi nanti.', 'error');
     } finally {
       form.removeAttribute('aria-busy');
-      if (submit) submit.disabled = false;
+      if (submit) submit.disabled = !wallEnabled;
     }
   });
   updateCount();
   loadMessages();
+  const refreshMessages = setInterval(() => { if (document.visibilityState === 'visible' && !form.hasAttribute('aria-busy')) loadMessages(); }, 30_000);
+  addEventListener('pagehide', () => clearInterval(refreshMessages), { once: true });
 }
 
 function initCard() {

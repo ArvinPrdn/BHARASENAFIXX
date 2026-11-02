@@ -232,11 +232,11 @@
 
       <section id="dinding-pesan" class="scene message-wall" data-scene="9" aria-labelledby="message-wall-title">
         <div class="scene-shape message-orbit" data-parallax-depth="0.07" aria-hidden="true"></div>
-        <div class="message-wall-heading"><p class="scene-kicker">23.40 / SURAT UNTUK KITA</p><h2 id="message-wall-title">Dinding<br /><em>pesan.</em></h2><p>Tinggalkan satu kalimat untuk angkatan. Pesan akan diperiksa panitia sebelum tampil di ballroom.</p></div>
+        <div class="message-wall-heading"><p class="scene-kicker">23.40 / SURAT UNTUK KITA</p><h2 id="message-wall-title">Dinding<br /><em>pesan.</em></h2><p>Tinggalkan satu kalimat untuk angkatan. Tulis satu kalimat untuk angkatan. Pesan yang memenuhi ketentuan akan langsung tampil di dinding.</p></div>
         <!-- slot:messages:start --><div class="message-wall-layout" data-dynamic="messages">
           <form id="message-form" class="message-form" data-message-form novalidate>
             <div class="message-field"><label for="message-name">Nama panggilan <span>(opsional)</span></label><input id="message-name" name="nickname" data-message-name type="text" maxlength="20" autocomplete="nickname" placeholder="Nama atau inisial" /></div>
-            <div class="message-field"><label for="message-body">Pesan untuk angkatan</label><textarea id="message-body" name="body" data-message-body maxlength="80" rows="5" placeholder="Tulis sesuatu yang ingin kamu abadikan…" required></textarea><small class="message-counter"><span data-message-count>0</span> / 80</small></div>
+            <div class="message-field"><label for="message-body">Pesan untuk angkatan</label><textarea id="message-body" name="body" data-message-body aria-describedby="message-rules" maxlength="80" rows="5" placeholder="Tulis sesuatu yang ingin kamu abadikan…" required></textarea><small id="message-rules" class="message-counter">Minimal 3 kata · <span data-message-count>0</span> / 80 karakter</small></div>
             <div class="message-trap" aria-hidden="true"><label for="message-website">Website</label><input id="message-website" name="website" data-message-honeypot tabindex="-1" autocomplete="off" /></div>
             <button class="message-submit" type="submit">Kirim ke meja redaksi</button>
             <p id="message-status" class="message-status" data-message-status role="status" aria-live="polite"></p>
