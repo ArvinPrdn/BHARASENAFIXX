@@ -142,6 +142,7 @@ menyatakan situs siap produksi jika salah satu pemeriksaan belum memiliki bukti.
 
 ## Lisensi aset
 
-Foto Budi Doremi di `assets/budi-doremi.jpg` berasal dari Wikimedia Commons, kredit Agnis
-Putriana, CC BY-SA 4.0. Atribusi yang terlihat pada halaman harus dipertahankan atau
-diganti dengan ketentuan dari press kit resmi panitia.
+Foto dan logo Budi Doremi menggunakan press kit resmi manajemen yang diberikan panitia.
+Sumber aset, perubahan ukuran, serta ketentuan approval materi promosi dicatat di
+[docs/OFFICIAL_ASSETS.md](docs/OFFICIAL_ASSETS.md). Hak atas materi resmi mengikuti
+ketentuan manajemen dan tidak termasuk lisensi terbuka proyek.

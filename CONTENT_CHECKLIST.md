@@ -24,7 +24,7 @@ Gunakan daftar ini sebagai handoff ke panitia. Isi hanya informasi yang sudah di
 | Pengumuman terbaru | Judul, isi singkat, tanggal berlaku, kapan diterbitkan, dan siapa yang menyetujui. |
 | Amplop informasi | Untuk lokasi, akses, busana, dan kabar: teks final serta `unlock_at` jika baru boleh dibuka pada waktu tertentu. Jangan kirim isi rahasia ke frontend sebelum waktunya. |
 | Galeri | Foto yang sudah diizinkan untuk tayang, nama fotografer/kredit, hari pengambilan, teks alternatif singkat, dan urutan foto. Hindari foto peserta yang tidak punya izin publikasi. |
-| Foto penampil | Press kit resmi beserta izin/lisensi dan kredit. Jika tidak ada, foto Wikimedia yang sekarang boleh dipakai dengan atribusi Agnis Putriana / CC BY-SA 4.0 dan keterangan edit yang terlihat. |
+| Foto penampil | Foto dan logo resmi manajemen sudah dipasang. Sumber dan ketentuan approval materi promo dicatat di [docs/OFFICIAL_ASSETS.md](docs/OFFICIAL_ASSETS.md). |
 | Identitas berbagi | Domain final, judul/deskripsi pratinjau WhatsApp, dan gambar OG 1200×630 yang disetujui panitia. |
 
 ## 3. Keputusan operasional sebelum rilis
@@ -40,4 +40,4 @@ Nama lengkap, nomor telepon, email, atau identitas peserta untuk undangan person
 
 ## Kredit foto saat ini
 
-`assets/budi-doremi.jpg` berasal dari [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Lelaki_dengan_gitar_kecil.jpg), kredit Agnis Putriana, lisensi [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/). Foto dipotong dan diolah warnanya; atribusi serta keterangan edit harus tetap terlihat selama aset ini digunakan.
+`assets/budi-doremi.jpg` menggunakan **Budor Official Photo 4.jpg** dari manajemen Budi Doremi, menggantikan foto Wikimedia sebelumnya. Logo putih menggunakan **OFFICIAL NEW LOGO BUDI DOREMI-01.png**. Detail sumber, pengolahan aset, dan ketentuan approval ada di [docs/OFFICIAL_ASSETS.md](docs/OFFICIAL_ASSETS.md).
