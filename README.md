@@ -9,12 +9,14 @@ tetap diputar saat panel ditutup; tekan Hentikan atau jeda pada pemutar untuk me
 ## Audio lokal
 
 Masukkan rekaman yang telah diizinkan untuk digunakan ke folder `assets/audio/`.
-Nama file yang didukung: `melukis-senja`, `mesin-waktu`, `tak-kan-hilang`, dan `tolong`,
+Panel berisi 11 pilihan lagu yang dinyanyikan Budi Doremi, termasuk rekaman cover
+dan penampilan live. Nama file yang didukung, sesuai urutan panel:
+`melukis-senja`, `mesin-waktu`, `tak-kan-hilang`, `tolong`, `123456`, `doremi`,
+`inikah-cinta`, `cantik`, `yang-penting-happy`, `losdol`, dan `kopi-dangdut`,
 dengan ekstensi `.mp3`, `.m4a`, `.ogg`, atau `.wav`.
-Musik mencoba mulai saat undangan dibuka. Jika browser menahan suara otomatis,
-pengunjung dapat menekan tombol play pada panel musik. Panel mendeteksi file saat dibuka. Lagu yang belum memiliki file ditandai
-“Audio belum tersedia”. Empat file audio pada salinan lokal ini disediakan pengguna
-dari folder Downloads dan tersimpan di `assets/audio/`.
+Pengunjung memilih lagu di panel untuk memulai pemutaran. Panel mendeteksi file
+saat dibuka; lagu yang belum memiliki file ditandai “Audio belum tersedia”.
+Sumber rekaman tambahan dicatat di [daftar sumber audio](docs/AUDIO_SOURCES.md).
 
 ## Status pengembangan
 

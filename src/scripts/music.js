@@ -1,8 +1,15 @@
 const tracks = [
-  { title: 'Melukis Senja', file: 'melukis-senja', note: 'Untuk saling menguatkan' },
-  { title: 'Mesin Waktu', file: 'mesin-waktu', note: 'Tentang rindu dan kenangan' },
-  { title: 'Tak Kan Hilang', file: 'tak-kan-hilang', note: 'Tentang cinta yang menetap' },
-  { title: 'Tolong', file: 'tolong', note: 'Untuk hati yang menunggu' },
+  { title: 'Melukis Senja', file: 'melukis-senja', artist: 'Budi Doremi' },
+  { title: 'Mesin Waktu', file: 'mesin-waktu', artist: 'Budi Doremi' },
+  { title: 'Takkan Hilang', file: 'tak-kan-hilang', artist: 'Budi Doremi' },
+  { title: 'Tolong', file: 'tolong', artist: 'Budi Doremi' },
+  { title: '123456', file: '123456', artist: 'Budi Doremi' },
+  { title: 'Doremi', file: 'doremi', artist: 'Budi Doremi' },
+  { title: 'Inikah Cinta', file: 'inikah-cinta', artist: 'Budi Doremi' },
+  { title: 'Cantik', file: 'cantik', artist: 'Budi Doremi' },
+  { title: 'Yang Penting Happy', file: 'yang-penting-happy', artist: 'Budi Doremi' },
+  { title: 'Los Dol', file: 'losdol', artist: 'Budi Doremi' },
+  { title: 'Kopi Dangdut', file: 'kopi-dangdut', artist: 'Budi Doremi' },
 ];
 
 export function initMusic() {
@@ -31,11 +38,11 @@ export function initMusic() {
       <div class="music-turntable" aria-hidden="true"><div class="music-record"><img src="assets/budi-doremi.jpg" alt="" /><span class="music-record__label">BHARASENA · SIDE A</span></div><span class="music-tonearm"></span></div>
       <div><p class="music-artist">BUDI DOREMI</p><h2 id="music-title">Lagu untuk<br /><em>malam ini.</em></h2><p class="music-intro__note">Pilih lagu yang ingin kamu dengarkan.</p></div>
     </div>
-    <div class="music-list-heading"><span>PILIHAN LAGU</span><span>04 TRACKS</span></div>
+    <div class="music-list-heading"><span>PILIHAN LAGU</span><span>${tracks.length} LAGU</span></div>
     <div class="music-tracks" role="group" aria-label="Lagu Budi Doremi">
-      ${tracks.map((track, index) => `<button class="music-track" type="button" data-track="${index}" aria-pressed="false" aria-label="Pilih ${track.title}">
-        <span class="music-track__number" aria-hidden="true">0${index + 1}</span>
-        <span class="music-track__copy"><strong>${track.title}</strong><small>${track.note}</small></span>
+      ${tracks.map((track, index) => `<button class="music-track" type="button" data-track="${index}" aria-pressed="false" aria-label="Pilih ${track.title} — ${track.artist}">
+        <span class="music-track__number" aria-hidden="true">${String(index + 1).padStart(2, '0')}</span>
+        <span class="music-track__copy"><strong>${track.title}</strong><small>${track.artist}</small></span>
         <span class="music-track__play" aria-hidden="true"></span>
       </button>`).join('')}
     </div>
@@ -72,7 +79,7 @@ export function initMusic() {
   const controls = document.createElement('div');
   controls.className = 'music-console';
   controls.innerHTML = `
-    <div class="music-console__heading"><div><span class="music-console__kicker">PILIHAN MALAM INI</span><strong class="music-console__title"></strong><small>Budi Doremi</small></div><span class="music-equalizer" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span></div>
+    <div class="music-console__heading"><div><span class="music-console__kicker">PILIHAN MALAM INI</span><strong class="music-console__title"></strong><small class="music-console__artist"></small></div><span class="music-equalizer" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span></div>
     <input class="music-seek music-slider" type="range" min="0" max="100" step="0.1" value="0" aria-label="Posisi lagu" disabled />
     <div class="music-console__time"><span class="music-elapsed">0:00</span><span class="music-duration">0:00</span></div>
     <div class="music-console__bottom">
@@ -182,8 +189,9 @@ export function initMusic() {
     choices.forEach((item, itemIndex) => item.setAttribute('aria-pressed', String(itemIndex === index)));
     audio.pause();
     audio.src = source;
-    audio.setAttribute('aria-label', `Putar ${track.title} — Budi Doremi`);
+    audio.setAttribute('aria-label', `Putar ${track.title} — ${track.artist}`);
     controls.querySelector('.music-console__title').textContent = track.title;
+    controls.querySelector('.music-console__artist').textContent = track.artist;
     player.replaceChildren(audio, controls);
     updateTimeline();
     status.textContent = `Pilihanmu: ${track.title}`;
@@ -227,7 +235,7 @@ export function initMusic() {
       }
       const available = sources.has(index);
       choices[index].setAttribute('aria-disabled', String(!available));
-      choices[index].querySelector('small').textContent = available ? track.note : 'Audio belum tersedia';
+      choices[index].querySelector('small').textContent = available ? track.artist : 'Audio belum tersedia';
     }));
     if (!sources.size) {
       empty.querySelector('p').textContent = 'Koleksi lagu sedang disiapkan.';
