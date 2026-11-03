@@ -657,7 +657,7 @@ function initRundown() {
       const selected = panel.dataset.day === day;
       panel.classList.toggle('is-active', selected);
       panel.hidden = !mobileQuery.matches && !selected;
-      if (selected && mobileQuery.matches && !fromSwipe) panel.scrollIntoView({ behavior: reduceMotion() ? 'instant' : 'smooth', block: 'nearest', inline: 'start' });
+      if (selected && mobileQuery.matches && !fromSwipe) track?.scrollTo({ left: panel.offsetLeft - panels[0].offsetLeft, behavior: reduceMotion() ? 'instant' : 'smooth' });
     });
   }
   function syncLayout() {
