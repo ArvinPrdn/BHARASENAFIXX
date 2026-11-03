@@ -4,6 +4,10 @@ Alamat utama: **https://www.bharasena.com/**. Domain tanpa `www` sudah mengarah
 ke alamat ini. Semua canonical, metadata sosial, data WebSite, dan sitemap memakai
 alamat yang sama, termasuk ketika kode ditayangkan pada alamat Vercel lain.
 
+Tag `google-site-verification` pada halaman utama dibuat untuk akun Google Hilman
+Ainun Naim dengan persetujuan pemilik. Jangan menghapusnya setelah verifikasi;
+Google memeriksa ulang tag tersebut untuk mempertahankan akses Search Console.
+
 ## Yang tersedia di kode
 
 - Judul dan deskripsi halaman menyebut BHARASENA, sekolah, dan tanggal acara.
