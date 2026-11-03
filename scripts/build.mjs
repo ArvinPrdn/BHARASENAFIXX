@@ -5,6 +5,8 @@ const copy = async (from, to) => { if (existsSync(from)) { await mkdir(to.substr
 await mkdir('dist', { recursive: true });
 await copy('index.html', 'dist/index.html');
 await copy('galeri.html', 'dist/galeri.html');
+await copy('robots.txt', 'dist/robots.txt');
+await copy('sitemap.xml', 'dist/sitemap.xml');
 await copy('styles.css', 'dist/styles.css');
 await copy('gallery-page.css', 'dist/gallery-page.css');
 await copy('admin.css', 'dist/admin.css');

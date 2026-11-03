@@ -114,6 +114,9 @@ hanya boleh dipakai jika reverse proxy tepercaya mengendalikan header forwarded.
 
 ## Data acara
 
+Pengaturan pencarian Google untuk domain `www.bharasena.com` dan langkah verifikasi
+Search Console ada di [docs/GOOGLE_SEARCH.md](docs/GOOGLE_SEARCH.md).
+
 Tanggal yang sudah diberikan panitia adalah 11–13 Desember 2026. Lokasi, jam, kontak,
 ketentuan masuk, dan jadwal penampil yang belum dikonfirmasi tetap berupa bidang tertutup
 di UI; jangan menggantinya dengan nama atau angka rekaan. Daftar handoff ada di
