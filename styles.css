@@ -337,6 +337,8 @@ img { max-width: 100%; }
 .speaker-spotlight.is-reveal-ready:not(.is-in-view) .speaker-spotlight__portrait { opacity: 0; transform: translateY(28px) scale(.97); filter: blur(8px); }
 .speaker-spotlight__portrait img { position: relative; z-index: 1; display: block; width: 125%; max-width: none; height: auto; margin-left: -14%; filter: saturate(.65) contrast(1.04); mask-image: linear-gradient(to bottom,#000 72%,transparent 99%); transform: translate(var(--speaker-x,0px),var(--speaker-y,0px)); transition: transform .6s cubic-bezier(.2,.7,.2,1),filter .6s; }
 .speaker-spotlight--dj .speaker-spotlight__portrait img { scale: .92; transform-origin: center bottom; }
+.speaker-spotlight--budi .speaker-spotlight__portrait { padding: 0 24px 28px; }
+.speaker-spotlight--budi .speaker-spotlight__portrait img { justify-self: center; width: 100%; max-width: 280px; margin: 0; border: 6px solid var(--champagne); filter: none; mask-image: none; box-shadow: 0 18px 45px rgba(0,0,0,.3); }
 .speaker-spotlight__halo { position: absolute; inset: 6% -12% 0 -14%; background: radial-gradient(ellipse,rgba(213,175,104,.21),transparent 66%); filter: blur(15px); }
 .speaker-spotlight__orbit { position: absolute; width: 86%; aspect-ratio: 1; top: 9%; left: 4%; border: 1px solid rgba(217,195,160,.15); border-radius: 50%; box-shadow: 0 0 45px rgba(213,175,104,.035); }
 .speaker-spotlight__orbit::after { content: ''; position: absolute; inset: 12px; border: 1px solid rgba(217,195,160,.06); border-radius: inherit; }
@@ -350,7 +352,6 @@ img { max-width: 100%; }
   .speaker-spotlight:hover .speaker-spotlight__portrait img { filter: saturate(.9) contrast(1.04); }
 }
 @media (max-width: 1000px) and (min-width: 768px) {
-  .programme-layout { grid-template-columns: 200px minmax(0,1fr); gap: 35px; }
   .speaker-spotlight { padding-left: 18px; }
   .speaker-spotlight__name { font-size: 2.5rem; }
 }
@@ -367,6 +368,7 @@ img { max-width: 100%; }
   .speaker-spotlight__note br { display: none; }
   .speaker-spotlight__portrait { justify-self: center; width: min(100%,350px); margin-top: -10px; }
   .speaker-spotlight__portrait img { width: 114%; margin-left: -7%; }
+  .speaker-spotlight--budi .speaker-spotlight__portrait { width: min(100%,250px); margin-top: 22px; padding: 0 0 28px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .speaker-spotlight *, .speaker-spotlight *::after { animation: none !important; transition: none !important; }
