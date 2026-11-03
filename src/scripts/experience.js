@@ -576,8 +576,7 @@ function initRundown() {
     updateScrollHint();
   });
 
-  const spotlight = $('[data-speaker-spotlight]');
-  if (spotlight) {
+  for (const spotlight of $$('[data-speaker-spotlight]')) {
     const portrait = $('.speaker-spotlight__portrait', spotlight);
     if (portrait && 'IntersectionObserver' in window && !reduceMotion()) {
       spotlight.classList.add('is-reveal-ready');
