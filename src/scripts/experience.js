@@ -960,7 +960,7 @@ function initEnvelopes() {
   if (performerEnvelope) {
     performerEnvelope.setAttribute('role', 'button');
     performerEnvelope.setAttribute('tabindex', '0');
-    performerEnvelope.setAttribute('aria-label', 'Jadwal penampilan Budi Doremi, menunggu pengumuman');
+    performerEnvelope.setAttribute('aria-label', `Jadwal penampilan Budi Doremi, ${$('strong', performerEnvelope).textContent.trim()}`);
     const nudge = () => {
       performerEnvelope.classList.remove('is-jolted');
       void performerEnvelope.offsetWidth;
@@ -1536,7 +1536,7 @@ function initPublishedContent() {
     if (place) place.textContent = EVENT.venue;
     if (note) note.textContent = 'Lokasi acara';
   }
-  if (EVENT.artistAt) {
+  if (EVENT.artistAt && root.dataset.rendered !== 'server') {
     const artistTime = $('.mini-envelope[data-envelope="performer"] strong');
     if (artistTime) artistTime.textContent = EVENT.artistAt;
   }

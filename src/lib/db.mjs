@@ -67,7 +67,7 @@ export function seed(db = openDb()) {
     const addPerformer = db.prepare('INSERT INTO performers (name,photo_path,scheduled_at,is_announced) VALUES (?,?,?,1)');
     addPerformer.run('Ust. Fuad Naim', '', '11 Desember 2026 · 20.00–selesai');
     addPerformer.run('DJ Gemoy', '', '12 Desember 2026 · 07.50–09.00');
-    addPerformer.run('Budi Doremi', '/assets/budi-doremi.jpg', '13 Desember 2026 · 20.30–selesai');
+    addPerformer.run('Budi Doremi', '/assets/budi-doremi.jpg', '13 Desember 2026 · 20.40–23.30 WIB');
   }
   if (!db.prepare('SELECT 1 FROM rundown LIMIT 1').get()) {
     const add = db.prepare('INSERT INTO rundown (day,start_at,end_at,title,description,is_placeholder,sort_order) VALUES (?,?,?,?,?,0,?)');
