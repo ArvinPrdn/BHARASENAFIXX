@@ -63,9 +63,9 @@ export const rundown = [
 // would expose them regardless of what the interface displays.
 export const envelopes = [
   { id: 'venue', title: 'Lokasi', body: null, unlockAt: null, placeholder: true },
+  { id: 'parking', title: 'Denah parkir', body: null, unlockAt: null, placeholder: true },
   { id: 'admission', title: 'Ketentuan masuk', body: null, unlockAt: null, placeholder: true },
   { id: 'dress-code', title: 'Busana', body: null, unlockAt: null, placeholder: true },
-  { id: 'updates', title: 'Informasi terbaru', body: null, unlockAt: null, placeholder: true },
 ];
 
 // Add photographs here once the committee provides permission and alt text.

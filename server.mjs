@@ -151,11 +151,11 @@ function gallerySlot(items) {
 }
 
 function envelopeGrid(content) {
-  const labels = { venue: ['01 / LOKASI','Tempat acara'], admission: ['02 / AKSES','Ketentuan masuk'], 'dress-code': ['03 / BUSANA','Busana acara'], updates: ['04 / KABAR','Informasi terbaru'] };
-  const cards = content.envelopes.map((item) => {
+  const labels = { venue: ['01 / LOKASI','Tempat acara'], parking: ['02 / PARKIR','Denah parkir'], admission: ['03 / AKSES','Ketentuan masuk'], 'dress-code': ['04 / BUSANA','Busana acara'] };
+  const cards = Object.keys(labels).map((id) => content.envelopes.find((item) => item.id === id)).filter(Boolean).map((item) => {
     const label = labels[item.id] || [' / INFO', item.title];
     const open = !item.sealed && item.body;
-    const text = open ? item.body : 'Informasi resmi segera dibuka.';
+    const text = open ? item.body : item.id === 'parking' ? 'Denah parkir akan segera dibuka.' : 'Informasi resmi segera dibuka.';
     const status = open ? 'Terbuka' : 'SEGEL PANITIA';
     return `<article class="envelope ${open ? 'is-open' : 'is-sealed'}" data-envelope="${escapeHtml(item.id)}" aria-expanded="${open}"><div class="envelope-top"><span>${escapeHtml(label[0])}</span><span class="envelope-fold" aria-hidden="true"></span></div><div class="envelope-body"><h3>${escapeHtml(label[1])}</h3><p data-envelope-body>${escapeHtml(text)}</p></div><div class="envelope-bottom"><span data-envelope-status>${escapeHtml(status)}</span><span class="wax-mini" aria-hidden="true"></span></div></article>`;
   }).join('');

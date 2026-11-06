@@ -800,7 +800,7 @@ function initEnvelopes() {
       $('.envelope-bottom > span:first-child', card).textContent = 'TERBUKA';
       const openInfo = () => {
         activeInfoCard = card;
-        $('[data-info-kicker]', infoDialog).textContent = `${venue ? '01 / LOKASI' : '02 / AKSES'} · SURAT BHARASENA`;
+        $('[data-info-kicker]', infoDialog).textContent = `${venue ? '01 / LOKASI' : '03 / AKSES'} · SURAT BHARASENA`;
         $('#info-letter-title', infoDialog).textContent = title;
         renderInfoDetails(content, venue);
         $('[data-info-map]', infoDialog).hidden = !venue;
@@ -982,7 +982,7 @@ function initEnvelopes() {
     if (serverRendered) return;
     const now = currentTime();
     cards.forEach((card, index) => {
-      const ids = { lokasi: 'venue', masuk: 'admission', busana: 'dress-code', terbaru: 'updates' };
+      const ids = { lokasi: 'venue', masuk: 'admission', busana: 'dress-code', parkir: 'parking' };
       const data = envelopes.find((item) => item.id === (ids[card.dataset.envelope] || card.dataset.envelope)) || envelopes[index];
       if (!data) return;
       if (card === busanaCard || infoCards.has(card)) return;
@@ -993,7 +993,7 @@ function initEnvelopes() {
       card.classList.toggle('is-sealed', !open);
       card.setAttribute('aria-expanded', String(open));
       const body = $('[data-envelope-body]', card) || $('.envelope-body p', card);
-      if (body) body.textContent = open ? resolved.body : 'Informasi resmi segera dibuka.';
+      if (body) body.textContent = open ? resolved.body : data.id === 'parking' ? 'Denah parkir akan segera dibuka.' : 'Informasi resmi segera dibuka.';
       const status = $('[data-envelope-status]', card) || $('.envelope-bottom > span:first-child', card);
       if (status) status.textContent = open ? 'Terbuka' : resolved.unlockAt && !resolved.placeholder ? 'Dibuka sesuai jadwal' : 'Segera dibuka';
     });
