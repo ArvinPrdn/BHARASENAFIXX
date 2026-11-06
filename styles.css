@@ -509,12 +509,12 @@ img { max-width: 100%; }
 .dialog-close { position: absolute; top: 5px; right: 8px; min-width: 44px; min-height: 44px; color: var(--ivory); background: transparent; border: 0; font-size: 30px; }
 .dialog-controls { display: flex; justify-content: space-between; }
 .dialog-controls button { min-width: 44px; min-height: 44px; color: var(--ivory); background: transparent; border: 1px solid var(--rule); }
-.parking-dialog__viewport { max-height: 42dvh; overflow: auto; margin-top: 20px; border: 1px solid #81572e55; background: #fff; overscroll-behavior: contain; }
-.parking-dialog__viewport img { display: block; width: 100%; max-width: none; max-height: 42dvh; height: auto; object-fit: contain; }
-.parking-dialog__viewport.is-zoomed img { width: max(200%, 1400px); max-height: none; }
+.parking-dialog__viewport { position: relative; aspect-ratio: 16 / 9; max-height: 42dvh; overflow: hidden; margin-top: 20px; border: 1px solid #81572e55; background: #fff; overscroll-behavior: contain; touch-action: pan-y; }
+.parking-dialog__viewport img { display: block; width: 100%; max-width: none; height: 100%; object-fit: contain; transform-origin: 0 0; user-select: none; -webkit-user-drag: none; }
+.parking-dialog__viewport.is-zoomed { touch-action: none; }
 .parking-dialog [data-parking-status] { color: #553a25; font-size: 13px; }
 .parking-dialog [data-parking-status]:empty { display: none; }
-.parking-dialog [data-parking-zoom]:disabled { opacity: .5; cursor: wait; }
+.parking-dialog__hint { color: #553a25; font-size: 12px; line-height: 1.6; }
 
 
 /* The message wall is a moderated guestbook, styled like a stack of ballroom cards. */

@@ -730,9 +730,6 @@ function initEnvelopes() {
   if (parkingCard && parkingDialog) {
     const viewport = $('#parking-viewport', parkingDialog);
     const image = $('[data-parking-image]', parkingDialog);
-    const zoom = $('[data-parking-zoom]', parkingDialog);
-    const zoomLabel = $('[data-parking-zoom-label]', parkingDialog);
-    const zoomIcon = $('[data-parking-zoom-icon]', parkingDialog);
     let closingParking = false;
     const closeParking = async () => {
       if (closingParking || !parkingDialog.open) return;
@@ -741,18 +738,77 @@ function initEnvelopes() {
       closingParking = false;
     };
     const status = $('[data-parking-status]', parkingDialog);
-    image.addEventListener('load', () => { status.textContent = ''; zoom.disabled = false; });
+    image.addEventListener('load', () => { status.textContent = ''; resetZoom(); });
     image.addEventListener('error', () => {
       status.textContent = 'Denah belum berhasil dimuat. Tutup lalu buka kembali, atau pilih Buka gambar penuh.';
-      zoom.disabled = true;
     });
-    const resetZoom = () => {
-      viewport.classList.remove('is-zoomed');
-      viewport.scrollTo(0, 0);
-      zoom.setAttribute('aria-pressed', 'false');
-      zoomLabel.textContent = 'Perbesar denah';
-      zoomIcon.textContent = '+';
+    let scale = 1;
+    let offsetX = 0;
+    let offsetY = 0;
+    let gesture = null;
+    const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
+    const renderMap = () => {
+      offsetX = clamp(offsetX, viewport.clientWidth * (1 - scale), 0);
+      offsetY = clamp(offsetY, viewport.clientHeight * (1 - scale), 0);
+      image.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
+      viewport.classList.toggle('is-zoomed', scale > 1);
     };
+    const resetZoom = () => { scale = 1; offsetX = 0; offsetY = 0; gesture = null; renderMap(); };
+    const touchPoint = (touches) => {
+      const bounds = viewport.getBoundingClientRect();
+      const first = touches[0];
+      const second = touches[1] || first;
+      return { x: (first.clientX + second.clientX) / 2 - bounds.left, y: (first.clientY + second.clientY) / 2 - bounds.top, distance: Math.hypot(second.clientX - first.clientX, second.clientY - first.clientY) };
+    };
+    const beginGesture = (event) => {
+      if (!event.touches.length || !image.naturalWidth) { gesture = null; return; }
+      gesture = { ...touchPoint(event.touches), scale, offsetX, offsetY, count: event.touches.length };
+      if (event.touches.length > 1 || scale > 1) event.preventDefault();
+    };
+    viewport.addEventListener('touchstart', beginGesture, { passive: false });
+    viewport.addEventListener('touchmove', (event) => {
+      if (!gesture || (!image.naturalWidth) || (event.touches.length < 2 && scale === 1)) return;
+      event.preventDefault();
+      if (event.touches.length !== gesture.count) { beginGesture(event); return; }
+      const point = touchPoint(event.touches);
+      const nextScale = event.touches.length > 1 ? clamp(gesture.scale * point.distance / Math.max(gesture.distance, 1), 1, 5) : scale;
+      const ratio = nextScale / gesture.scale;
+      offsetX = point.x - (gesture.x - gesture.offsetX) * ratio;
+      offsetY = point.y - (gesture.y - gesture.offsetY) * ratio;
+      scale = nextScale;
+      renderMap();
+    }, { passive: false });
+    viewport.addEventListener('touchend', beginGesture, { passive: false });
+    viewport.addEventListener('touchcancel', () => { gesture = null; });
+    const zoomAt = (nextScale, x, y) => {
+      if (!image.naturalWidth) return;
+      nextScale = clamp(nextScale, 1, 5);
+      const ratio = nextScale / scale;
+      offsetX = x - (x - offsetX) * ratio;
+      offsetY = y - (y - offsetY) * ratio;
+      scale = nextScale;
+      renderMap();
+    };
+    viewport.addEventListener('wheel', (event) => {
+      if (!event.ctrlKey && scale === 1) return;
+      event.preventDefault();
+      const bounds = viewport.getBoundingClientRect();
+      if (event.ctrlKey) zoomAt(scale * Math.exp(-event.deltaY * .01), event.clientX - bounds.left, event.clientY - bounds.top);
+      else { offsetX -= event.deltaX; offsetY -= event.deltaY; renderMap(); }
+    }, { passive: false });
+    viewport.addEventListener('keydown', (event) => {
+      if (['+', '=', '-', '_'].includes(event.key)) {
+        event.preventDefault();
+        zoomAt(scale * (['+', '='].includes(event.key) ? 1.25 : .8), viewport.clientWidth / 2, viewport.clientHeight / 2);
+      } else if (event.key === '0' || event.key === 'Home') { event.preventDefault(); resetZoom(); }
+      else if (scale > 1 && ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(event.key)) {
+        event.preventDefault();
+        offsetX += event.key === 'ArrowLeft' ? 40 : event.key === 'ArrowRight' ? -40 : 0;
+        offsetY += event.key === 'ArrowUp' ? 40 : event.key === 'ArrowDown' ? -40 : 0;
+        renderMap();
+      }
+    });
+    new ResizeObserver(resetZoom).observe(viewport);
     parkingCard.classList.remove('is-sealed');
     parkingCard.classList.add('is-open');
     parkingCard.setAttribute('role', 'button');
@@ -765,7 +821,6 @@ function initEnvelopes() {
     $('.envelope-bottom > span:first-child', parkingCard).textContent = 'LIHAT DENAH';
     const openParking = () => {
       resetZoom();
-      zoom.disabled = !image.complete || !image.naturalWidth;
       if (!image.getAttribute('src') || (image.complete && !image.naturalWidth)) {
         status.textContent = 'Memuat denah…';
         image.src = image.dataset.src;
@@ -788,13 +843,6 @@ function initEnvelopes() {
       document.body.classList.remove('busana-open');
       parkingCard.setAttribute('aria-expanded', 'false');
       parkingCard.focus();
-    });
-    zoom.addEventListener('click', () => {
-      const enlarged = viewport.classList.toggle('is-zoomed');
-      zoom.setAttribute('aria-pressed', String(enlarged));
-      zoomLabel.textContent = enlarged ? 'Sesuaikan denah' : 'Perbesar denah';
-      zoomIcon.textContent = enlarged ? '−' : '+';
-      viewport.scrollTo(0, 0);
     });
   }
 
