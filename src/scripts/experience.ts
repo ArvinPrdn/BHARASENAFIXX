@@ -725,6 +725,65 @@ function initEnvelopes() {
   const cards = $$('.envelope[data-envelope]');
 
 
+  const parkingCard = cards.find((card) => ['parkir', 'parking'].includes(card.dataset.envelope));
+  const parkingDialog = $('#parking-dialog');
+  if (parkingCard && parkingDialog) {
+    const viewport = $('#parking-viewport', parkingDialog);
+    const image = $('[data-parking-image]', parkingDialog);
+    const zoom = $('[data-parking-zoom]', parkingDialog);
+    const status = $('[data-parking-status]', parkingDialog);
+    image.addEventListener('load', () => { status.textContent = ''; zoom.disabled = false; });
+    image.addEventListener('error', () => {
+      status.textContent = 'Denah belum berhasil dimuat. Tutup lalu buka kembali, atau pilih Buka gambar penuh.';
+      zoom.disabled = true;
+    });
+    const resetZoom = () => {
+      viewport.classList.remove('is-zoomed');
+      viewport.scrollTo(0, 0);
+      zoom.setAttribute('aria-pressed', 'false');
+      zoom.textContent = 'Perbesar denah';
+    };
+    parkingCard.classList.remove('is-sealed');
+    parkingCard.classList.add('is-open');
+    parkingCard.setAttribute('role', 'button');
+    parkingCard.setAttribute('tabindex', '0');
+    parkingCard.setAttribute('aria-label', 'Buka denah parkir motor dan mobil');
+    parkingCard.setAttribute('aria-haspopup', 'dialog');
+    parkingCard.setAttribute('aria-controls', 'parking-dialog');
+    parkingCard.setAttribute('aria-expanded', 'false');
+    $('.envelope-body p', parkingCard).textContent = 'Lihat denah dan jalur parkir motor serta mobil.';
+    $('.envelope-bottom > span:first-child', parkingCard).textContent = 'LIHAT DENAH';
+    const openParking = () => {
+      resetZoom();
+      zoom.disabled = !image.complete || !image.naturalWidth;
+      if (!image.getAttribute('src') || (image.complete && !image.naturalWidth)) {
+        status.textContent = 'Memuat denah…';
+        image.src = image.dataset.src;
+      }
+      parkingDialog.showModal();
+      parkingCard.setAttribute('aria-expanded', 'true');
+    };
+    parkingCard.addEventListener('click', openParking);
+    parkingCard.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openParking(); }
+    });
+    $('.parking-dialog__close', parkingDialog).addEventListener('click', () => parkingDialog.close());
+    parkingDialog.addEventListener('click', (event) => { if (event.target === parkingDialog) {
+      const bounds = parkingDialog.getBoundingClientRect();
+      if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) parkingDialog.close();
+    } });
+    parkingDialog.addEventListener('close', () => {
+      parkingCard.setAttribute('aria-expanded', 'false');
+      parkingCard.focus();
+    });
+    zoom.addEventListener('click', () => {
+      const enlarged = viewport.classList.toggle('is-zoomed');
+      zoom.setAttribute('aria-pressed', String(enlarged));
+      zoom.textContent = enlarged ? 'Sesuaikan denah' : 'Perbesar denah';
+      viewport.scrollTo(0, 0);
+    });
+  }
+
   const infoDialog = $('#info-letter-dialog');
   const infoCards = new Set();
   if (infoDialog) {
@@ -985,7 +1044,7 @@ function initEnvelopes() {
       const ids = { lokasi: 'venue', masuk: 'admission', busana: 'dress-code', parkir: 'parking' };
       const data = envelopes.find((item) => item.id === (ids[card.dataset.envelope] || card.dataset.envelope)) || envelopes[index];
       if (!data) return;
-      if (card === busanaCard || infoCards.has(card)) return;
+      if (card === busanaCard || (card === parkingCard && parkingDialog) || infoCards.has(card)) return;
       const field = { venue: EVENT.venue, admission: EVENT.admission, 'dress-code': EVENT.dressCode }[data.id];
       const resolved = field && !data.body ? { ...data, body: field, placeholder: false } : data;
       const open = getEnvelopeState(resolved, now) === 'open';
@@ -1000,7 +1059,7 @@ function initEnvelopes() {
   }
   cards.forEach((card) => {
     card.addEventListener('click', () => {
-      if (card === busanaCard || infoCards.has(card) || !card.classList.contains('is-sealed')) return;
+      if (card === busanaCard || (card === parkingCard && parkingDialog) || infoCards.has(card) || !card.classList.contains('is-sealed')) return;
       card.classList.remove('is-jolted');
       void card.offsetWidth;
       card.classList.add('is-jolted');

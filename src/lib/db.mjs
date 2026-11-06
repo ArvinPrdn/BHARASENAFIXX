@@ -62,7 +62,7 @@ export function seed(db = openDb()) {
   insertEnvelope.run('venue', 'Tempat acara', 'SMA Negeri 2 Taruna Bhayangkara Jawa Timur, Jl. Pandan, Desa Kembiritan, Kecamatan Genteng, Kabupaten Banyuwangi · Google Maps: https://maps.app.goo.gl/XGUJMNvkwBCmNSDWA?g_st=ac', 0);
   insertEnvelope.run('admission', 'Ketentuan masuk', settings.admission, 0);
   insertEnvelope.run('dress-code', 'Busana acara', settings.dress_code, 0);
-  insertEnvelope.run('parking', 'Denah parkir', '', 1);
+  insertEnvelope.run('parking', 'Denah parkir', 'Lihat denah dan jalur parkir motor serta mobil.', 0);
   if (!db.prepare('SELECT 1 FROM performers LIMIT 1').get()) {
     const addPerformer = db.prepare('INSERT INTO performers (name,photo_path,scheduled_at,is_announced) VALUES (?,?,?,1)');
     addPerformer.run('Ust. Fuad Naim', '', '11 Desember 2026 · 20.00–selesai');

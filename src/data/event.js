@@ -63,7 +63,7 @@ export const rundown = [
 // would expose them regardless of what the interface displays.
 export const envelopes = [
   { id: 'venue', title: 'Lokasi', body: null, unlockAt: null, placeholder: true },
-  { id: 'parking', title: 'Denah parkir', body: null, unlockAt: null, placeholder: true },
+  { id: 'parking', title: 'Denah parkir', body: 'Lihat denah dan jalur parkir motor serta mobil.', unlockAt: null, placeholder: false },
   { id: 'admission', title: 'Ketentuan masuk', body: null, unlockAt: null, placeholder: true },
   { id: 'dress-code', title: 'Busana', body: null, unlockAt: null, placeholder: true },
 ];
