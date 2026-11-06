@@ -1,3 +1,4 @@
+import { programme } from '../data/rundown.js';
 import { DatabaseSync } from 'node:sqlite';
 import { mkdirSync, readFileSync, readdirSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
@@ -54,7 +55,7 @@ export function seed(db = openDb()) {
     instagram: '@asonetothelight_',
     dress_code: '11 Des: baju muslim (muslim) atau batik/bebas rapi (nonmuslim). 12 Des pagi: atasan putih polos dan bawahan training hitam; malam: seragam PDSUS berjas Taruna Bhayangkara. 13 Des: baju prom night semi PDL. Warna tambahan, aksesori terlarang, dan contoh outfit: menyusul.',
     admission: 'Hadir untuk seluruh anggota SMAN 2 Taruna Bhayangkara dan tamu tertentu yang diundang. Parkir dan konsumsi tersedia.',
-    event_start_at: '2026-12-11T06:00:00+07:00', event_end_at: '2026-12-13T23:00:00+07:00', location_final: '1',
+    event_start_at: '2026-12-11T06:00:00+07:00', event_end_at: '2026-12-13T22:20:00+07:00', location_final: '1',
   };
   const insertSetting = db.prepare('INSERT OR IGNORE INTO settings (key,value) VALUES (?,?)');
   for (const [key, value] of Object.entries(settings)) insertSetting.run(key, value);
@@ -65,15 +66,17 @@ export function seed(db = openDb()) {
   insertEnvelope.run('parking', 'Denah parkir', 'Lihat denah dan jalur parkir motor serta mobil.', 0);
   if (!db.prepare('SELECT 1 FROM performers LIMIT 1').get()) {
     const addPerformer = db.prepare('INSERT INTO performers (name,photo_path,scheduled_at,is_announced) VALUES (?,?,?,1)');
-    addPerformer.run('Ust. Fuad Naim', '', '11 Desember 2026 · 20.00–selesai');
     addPerformer.run('DJ Gemoy', '', '12 Desember 2026 · 07.50–09.00');
-    addPerformer.run('Budi Doremi', '/assets/budi-doremi.jpg', '13 Desember 2026 · 20.40–23.30 WIB');
+    addPerformer.run('Budi Doremi', '/assets/budi-doremi.jpg', '13 Desember 2026 · 21.05–22.15 WIB');
   }
   if (!db.prepare('SELECT 1 FROM rundown LIMIT 1').get()) {
-    const add = db.prepare('INSERT INTO rundown (day,start_at,end_at,title,description,is_placeholder,sort_order) VALUES (?,?,?,?,?,0,?)');
-    add.run('2026-12-11', '2026-12-11T06:00:00+07:00', '2026-12-11T22:00:00+07:00', 'Taruna Bakti & Istigosah', 'Hari pertama Bharasena diisi dengan Taruna Bakti dan Istigosah. Penampil: Ust. Fuad Naim, pukul 20.00–selesai.', 0);
-    add.run('2026-12-12', '2026-12-12T06:00:00+07:00', '2026-12-12T22:00:00+07:00', 'Colour Festival & Malam Intimate', 'Hari kedua Bharasena menghadirkan Colour Festival dan Malam Intimate. Penampil: DJ Gemoy, pukul 07.50–09.00.', 1);
-    add.run('2026-12-13', '2026-12-13T19:00:00+07:00', '2026-12-13T23:00:00+07:00', 'Malam Puncak · Konser', 'Penutupan Bharasena berupa malam puncak dan konser bersama Budi Doremi, pukul 20.30–selesai. Ada penampil tambahan dari para taruna.', 2);
+    const add = db.prepare('INSERT INTO rundown (day,start_at,end_at,title,description,is_placeholder,sort_order,session_group) VALUES (?,?,?,?,?,0,?,?)');
+    programme.forEach((day) => {
+      let order = 0;
+      day.groups.forEach((group) => group.rows.forEach((row) => {
+        add.run(day.date, day.date + 'T' + row.start + ':00+07:00', row.end ? day.date + 'T' + row.end + ':00+07:00' : '', row.title, row.description, order++, group.id);
+      }));
+    });
   }
   return db;
 }
@@ -105,7 +108,7 @@ export function getPublicContent(now = new Date(), db = openDb()) {
   }));
   return {
     serverNow: now.toISOString(), event,
-    rundown: db.prepare('SELECT id,day,start_at,end_at,title,description,is_placeholder FROM rundown ORDER BY day,sort_order,id').all().map((row) => row.is_placeholder ? { id: row.id, day: row.day, isPlaceholder: true } : { id: row.id, day: row.day, startAt: row.start_at, endAt: row.end_at, title: row.title, description: row.description, isPlaceholder: false }),
+    rundown: db.prepare('SELECT id,day,start_at,end_at,title,description,is_placeholder,session_group FROM rundown ORDER BY day,sort_order,id').all().map((row) => row.is_placeholder ? { id: row.id, day: row.day, isPlaceholder: true } : { id: row.id, day: row.day, startAt: row.start_at, endAt: row.end_at, sessionGroup: row.session_group, title: row.title, description: row.description, isPlaceholder: false }),
     envelopes, performers,
     announcements,
     gallery: db.prepare("SELECT id,'/media/' || file_path AS src,alt,day,sort_order FROM gallery WHERE published=1 ORDER BY sort_order,id").all(),

@@ -1,3 +1,4 @@
+import { programme } from './src/data/rundown.js';
 import { createServer } from 'node:http';
 import { sendAudio } from './src/lib/audio.mjs';
 import { messageWallConfig, notifyTelegram } from './src/lib/message-wall.mjs';
@@ -131,18 +132,32 @@ function performerSlot(performers) {
 }
 
 function rundownPanel(content, day, fallback) {
-  const rows = content.rundown.filter((item) => item.day.endsWith(`-${day}`));
-  const published = rows.filter((item) => !item.isPlaceholder);
+  const published = content.rundown.filter((item) => item.day.endsWith('-' + day) && !item.isPlaceholder);
   if (!published.length) return fallback;
   const date = fallback.match(/<div class="programme-date">.*?<\/div>/su)?.[0] || '';
-  const speaker = day === '11' ? fallback.match(/<!-- slot:day-one-speaker:start -->.*?<!-- slot:day-one-speaker:end -->/su)?.[0] || '' : '';
+  const intro = fallback.match(/<div class="day-one-intro">.*?<\/div>/su)?.[0] || '';
   const dj = day === '12' ? fallback.match(/<!-- slot:day-two-dj:start -->.*?<!-- slot:day-two-dj:end -->/su)?.[0] || '' : '';
   const artist = day === '13' ? fallback.match(/<!-- slot:day-three-artist:start -->.*?<!-- slot:day-three-artist:end -->/su)?.[0] || '' : '';
-  return `${date}${artist}<div class="programme-details"><p class="programme-details__heading"><span>RUNDOWN KEGIATAN</span><small>${published.length} KEGIATAN</small></p><div class="programme-columns" aria-hidden="true"><span>JAM</span><span class="programme-columns__desktop">KEGIATAN</span><span class="programme-columns__mobile">KEGIATAN &amp; KETERANGAN</span><span class="programme-columns__desktop">KETERANGAN</span></div><div class="programme-scroll" role="region" aria-label="Rincian kegiatan ${escapeHtml(day)} Desember" tabindex="0" data-programme-scroll><ol class="programme-agenda">${published.map((item) => {
-    const speakerSession = /fuadh?\s+naim/iu.test(`${item.title} ${item.description || ''}`);
-    const djSession = day === '12' && /colou?r\s*fest/iu.test(item.title) && /dj/iu.test(`${item.title} ${item.description || ''}`);
-    return `<li class="${speakerSession || djSession ? 'programme-agenda__featured' : ''}"><time class="programme-agenda__time">${escapeHtml(item.startAt || '')}</time><div><h5>${escapeHtml(item.title)}</h5><p>${escapeHtml(item.description || '')}</p></div>${speakerSession ? speaker : ''}${djSession ? dj : ''}</li>`;
-  }).join('')}</ol></div><p class="programme-scroll-hint" data-programme-scroll-hint>Scroll untuk kegiatan berikutnya ↓</p></div>`;
+  const definitions = programme.find((item) => item.day === day)?.groups || [];
+  const groups = [];
+  published.forEach((item) => {
+    const id = item.sessionGroup || day + '-custom';
+    let group = groups.find((entry) => entry.id === id);
+    if (!group) {
+      const definition = definitions.find((entry) => entry.id === id);
+      group = { id, label: definition?.label || 'Kegiatan', title: definition?.title || 'Rundown kegiatan', rows: [] };
+      groups.push(group);
+    }
+    group.rows.push(item);
+  });
+  const tabs = groups.length > 1 ? '<div class="programme-session-tabs" role="tablist" aria-label="Pilih sesi ' + day + ' Desember">' + groups.map((group, index) => '<button type="button" role="tab" id="session-' + escapeHtml(group.id) + '" aria-controls="programme-' + escapeHtml(group.id) + '" aria-selected="' + (index === 0) + '" tabindex="' + (index === 0 ? 0 : -1) + '" data-programme-session="programme-' + escapeHtml(group.id) + '">' + escapeHtml(group.label) + '<small>' + group.rows.length + '</small></button>').join('') + '</div>' : '';
+  const formatter = new Intl.DateTimeFormat('id-ID', { timeZone: 'Asia/Jakarta', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' });
+  const time = (value) => value && Number.isFinite(Date.parse(value)) ? formatter.format(new Date(value)).replace(':', '.') : 'selesai';
+  const body = groups.map((group) => '<div class="programme-session" id="programme-' + escapeHtml(group.id) + '" role="' + (groups.length > 1 ? 'tabpanel' : 'group') + '" aria-labelledby="programme-' + escapeHtml(group.id) + '-title" data-programme-group><h4 id="programme-' + escapeHtml(group.id) + '-title">' + escapeHtml(group.title) + '</h4><ol class="programme-agenda">' + group.rows.map((item) => {
+    const djSession = day === '12' && /colou?r\s*fest/iu.test(item.title) && /dj/iu.test(item.title);
+    return '<li' + (djSession ? ' class="programme-agenda__featured"' : '') + '><span class="programme-agenda__time">' + escapeHtml(time(item.startAt) + '–' + time(item.endAt)) + '</span><div><h5>' + escapeHtml(item.title) + '</h5><p>' + escapeHtml(item.description || '') + '</p></div>' + (djSession ? dj : '') + '</li>';
+  }).join('') + '</ol></div>').join('');
+  return date + intro + artist + '<div class="programme-details"><p class="programme-details__heading"><span>RUNDOWN KEGIATAN</span><small>' + published.length + ' KEGIATAN</small></p>' + tabs + '<div class="programme-columns" aria-hidden="true"><span>JAM</span><span class="programme-columns__desktop">KEGIATAN</span><span class="programme-columns__mobile">KEGIATAN &amp; KETERANGAN</span><span class="programme-columns__desktop">KETERANGAN</span></div><div class="programme-scroll" role="region" aria-label="Rincian kegiatan ' + day + ' Desember" tabindex="0" data-programme-scroll>' + body + '</div><p class="programme-scroll-hint" data-programme-scroll-hint>Scroll untuk kegiatan berikutnya <span aria-hidden="true">↓</span></p></div>';
 }
 
 function gallerySlot(items) {
@@ -279,7 +294,7 @@ async function handle(request, response) {
     const assetRelative = relative(join(root, 'assets'), file);
     const publicAsset = path.startsWith('/assets/') && assetRelative && !assetRelative.startsWith('..') && !isAbsolute(assetRelative);
     const publicFile = publicAsset || path === '/styles.css' || path === '/admin.css' || path === '/favicon.ico'
-      || path === '/src/scripts/experience.js' || path === '/src/scripts/music.js' || path === '/src/scripts/heritage.js' || path === '/src/data/event.js' || path === '/src/data/message-rules.js';
+      || path === '/src/scripts/experience.js' || path === '/src/scripts/music.js' || path === '/src/scripts/heritage.js' || path === '/src/data/event.js' || path === '/src/data/rundown.js' || path === '/src/data/message-rules.js';
     if (publicFile && !relative(root, file).startsWith('..') && existsSync(file) && (await stat(file)).isFile()) {
       const type = mime[extname(file).toLowerCase()] || 'application/octet-stream';
       if (type.startsWith('audio/')) return sendAudio(request, response, file, (await stat(file)).size, type);

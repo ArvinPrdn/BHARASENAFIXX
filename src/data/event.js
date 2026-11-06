@@ -1,3 +1,5 @@
+import { programme } from './rundown.js';
+
 /**
  * Public event content and time rules. An empty field means the committee has
  * not published it yet. Placeholder schedule entries exist only to exercise
@@ -13,51 +15,30 @@ export const EVENT = {
   dateStart: '2026-12-11',
   dateEnd: '2026-12-13',
   dateLabel: '11–13 Desember 2026',
-  // The event dates are known; these opening and closing hours are examples.
-  start: '2026-12-11T16:00:00+07:00',
-  end: '2026-12-13T22:00:00+07:00',
-  timePlaceholder: true,
+  start: '2026-12-11T06:00:00+07:00',
+  end: '2026-12-13T22:20:00+07:00',
+  timePlaceholder: false,
   venue: 'SMA Negeri 2 Taruna Bhayangkara Jawa Timur, Jl. Pandan, Desa Kembiritan, Kecamatan Genteng, Kabupaten Banyuwangi.',
-  artistAt: '13 Desember 2026 · 20.40–23.30 WIB',
+  artistAt: '13 Desember 2026 · 21.05–22.15 WIB',
   dressCode: null,
   admission: 'Hadir untuk seluruh anggota SMAN 2 Taruna Bhayangkara dan tamu tertentu yang diundang. Parkir dan konsumsi tersedia.',
   contact: null,
   showPlaceholderHints: false,
 };
 
-// Session titles and hours are sample data, never an announced program.
-export const rundown = [
-  {
-    date: '2026-12-11',
-    label: '11 Desember',
-    weekday: 'Jumat',
-    sessions: [
-      { start: '2026-12-11T16:00:00+07:00', end: '2026-12-11T18:00:00+07:00', title: 'Sesi 1', desc: null, placeholder: true },
-      { start: '2026-12-11T18:00:00+07:00', end: '2026-12-11T20:00:00+07:00', title: 'Sesi 2', desc: null, placeholder: true },
-      { start: '2026-12-11T20:00:00+07:00', end: '2026-12-11T22:00:00+07:00', title: 'Sesi 3', desc: null, placeholder: true },
-    ],
-  },
-  {
-    date: '2026-12-12',
-    label: '12 Desember',
-    weekday: 'Sabtu',
-    sessions: [
-      { start: '2026-12-12T09:00:00+07:00', end: '2026-12-12T13:00:00+07:00', title: 'Sesi 1', desc: null, placeholder: true },
-      { start: '2026-12-12T13:00:00+07:00', end: '2026-12-12T18:00:00+07:00', title: 'Sesi 2', desc: null, placeholder: true },
-      { start: '2026-12-12T18:00:00+07:00', end: '2026-12-12T22:00:00+07:00', title: 'Sesi 3', desc: null, placeholder: true },
-    ],
-  },
-  {
-    date: '2026-12-13',
-    label: '13 Desember',
-    weekday: 'Minggu',
-    sessions: [
-      { start: '2026-12-13T09:00:00+07:00', end: '2026-12-13T13:00:00+07:00', title: 'Sesi 1', desc: null, placeholder: true },
-      { start: '2026-12-13T13:00:00+07:00', end: '2026-12-13T18:00:00+07:00', title: 'Sesi 2', desc: null, placeholder: true },
-      { start: '2026-12-13T18:00:00+07:00', end: '2026-12-13T22:00:00+07:00', title: 'Sesi 3', desc: null, placeholder: true },
-    ],
-  },
-];
+// Keep live timing aligned with the published programme; unknown finish times stay null.
+export const rundown = programme.map((day) => ({
+  date: day.date,
+  label: day.day + ' Desember',
+  weekday: day.weekday,
+  sessions: day.groups.flatMap((group) => group.rows.map((row) => ({
+    start: day.date + 'T' + row.start + ':00+07:00',
+    end: row.end ? day.date + 'T' + row.end + ':00+07:00' : null,
+    title: row.title,
+    desc: row.description,
+    placeholder: false,
+  }))),
+}));
 
 // Keep body null while sealed. Shipping unreleased details in a static bundle
 // would expose them regardless of what the interface displays.
