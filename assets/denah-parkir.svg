@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080" role="img" aria-labelledby="map-title map-description">
+  <title id="map-title">Denah parkir BHARASENA</title>
+  <desc id="map-description">Dari Gapura Nawasena, jalur motor biru naik di sisi kiri Tribrata lalu belok kanan menuju Parkir Motor. Jalur mobil oranye memutar lewat belakang Wisma, turun di koridor kanan, lalu belok kanan menuju parkir VIP dan VVIP. Jalur berlanjut menuju Pintu Timur.</desc>
+  <defs>
+    <marker id="motor-arrow" viewBox="0 0 18 18" refX="14" refY="9" markerWidth="18" markerHeight="18" markerUnits="userSpaceOnUse" orient="auto">
+      <path d="M2 1 17 9 2 17Z" fill="#009fe3" stroke="#fff" stroke-width="1.5"/>
+    </marker>
+    <marker id="car-arrow" viewBox="0 0 18 18" refX="14" refY="9" markerWidth="18" markerHeight="18" markerUnits="userSpaceOnUse" orient="auto">
+      <path d="M2 1 17 9 2 17Z" fill="#f58320" stroke="#fff" stroke-width="1.5"/>
+    </marker>
+  </defs>
+  <g fill="none" stroke="#2c2119" stroke-width="3">
+    <rect x="405" y="81" width="1109" height="714" rx="20"/>
+    <path d="M405 129H1514"/>
+    <rect x="551" y="202" width="800" height="194"/>
+    <rect x="618" y="496" width="683" height="236" stroke-width="8"/>
+  </g>
+  <g fill="#2c2119" font-family="Arial, Helvetica, sans-serif">
+    <text x="960" y="113" text-anchor="middle" font-size="22" font-weight="700">wisma</text>
+    <text x="960" y="659" text-anchor="middle" font-size="25">tribrata</text>
+    <text x="674" y="421" text-anchor="middle" font-size="15">PARKIR MOTOR</text>
+    <text x="443" y="771" font-size="18">gapura nawasena</text>
+    <text x="1316" y="548" transform="rotate(90 1316 548)" font-size="15">PARKIR VIP</text>
+    <text x="1455" y="357" transform="rotate(90 1455 357)" font-size="15">parkiran VVIP</text>
+    <text x="1455" y="568" transform="rotate(90 1455 568)" font-size="18">lapangan panah</text>
+    <text x="1350" y="771" font-size="18">pintu timur</text>
+  </g>
+  <g fill="none" stroke-width="7" stroke-dasharray="18 12" stroke-linejoin="round">
+    <path d="M469 732V481H677V438" stroke="#009fe3"/>
+    <path d="M437 732V193H1380V433H1452M1380 433H1332V748H1396V770M1332 672H1452" stroke="#f58320"/>
+  </g>
+  <g fill="none" stroke-width="7">
+    <g stroke="#009fe3" marker-end="url(#motor-arrow)">
+      <path d="M469 628V608"/>
+      <path d="M559 481H583"/>
+      <path d="M677 455V435"/>
+    </g>
+    <g stroke="#f58320" marker-end="url(#car-arrow)">
+      <path d="M437 575V555"/>
+      <path d="M437 315V295"/>
+      <path d="M720 193H745"/>
+      <path d="M1090 193H1115"/>
+      <path d="M1380 320V343"/>
+      <path d="M1430 433H1452"/>
+      <path d="M1332 555V577"/>
+      <path d="M1430 672H1452"/>
+      <path d="M1396 754V774"/>
+    </g>
+  </g>
+  <g font-family="Arial, Helvetica, sans-serif" font-size="21" font-weight="700">
+    <rect x="765" y="832" width="631" height="123" rx="15" fill="none" stroke="#846447" stroke-opacity=".25" stroke-width="1.5"/>
+    <path d="M793 868H894" fill="none" stroke="#009fe3" stroke-width="7" stroke-dasharray="18 12" marker-end="url(#motor-arrow)"/>
+    <text x="925" y="875" fill="#0086bf">MOTOR → PARKIR MOTOR</text>
+    <path d="M793 920H894" fill="none" stroke="#f58320" stroke-width="7" stroke-dasharray="18 12" marker-end="url(#car-arrow)"/>
+    <text x="925" y="927" fill="#b95400">MOBIL → PARKIR VIP / VVIP</text>
+  </g>
+</svg>
