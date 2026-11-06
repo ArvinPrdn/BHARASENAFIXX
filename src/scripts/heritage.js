@@ -14,6 +14,52 @@ export function initHeritage() {
   symbolCount.setAttribute('aria-hidden', 'true');
   summary.append(symbolCount);
   let selected = 'ksatria';
+  let targetOpen = explorer.open;
+  let heightAnimation = null;
+  let bodyAnimation = null;
+  const body = explorer.querySelector('.heritage-explorer-body');
+
+  function syncExplorer(open) {
+    summary.setAttribute('aria-expanded', String(open));
+    emblem.setAttribute('aria-expanded', String(open));
+    explorer.classList.toggle('is-expanded', open);
+    section.classList.toggle('is-exploring', open);
+  }
+
+  function setExplorerOpen(open) {
+    const startHeight = explorer.getBoundingClientRect().height;
+    heightAnimation?.cancel();
+    bodyAnimation?.cancel();
+    heightAnimation = null;
+    targetOpen = open;
+    syncExplorer(open);
+    if (reducedMotion.matches) {
+      explorer.open = open;
+      explorer.style.removeProperty('overflow');
+      return;
+    }
+    // Keep the content rendered while the disclosure folds closed.
+    explorer.open = true;
+    if (open) selectSymbol(selected);
+    const endHeight = summary.getBoundingClientRect().height + (open ? body.getBoundingClientRect().height : 0);
+    explorer.style.overflow = 'hidden';
+    const animation = explorer.animate([
+      { height: `${startHeight}px` }, { height: `${endHeight}px` },
+    ], { duration: 360, easing: 'cubic-bezier(.22,1,.36,1)', fill: 'forwards' });
+    heightAnimation = animation;
+    bodyAnimation = body.animate(open ? [
+      { opacity: 0, transform: 'translateY(-8px)' }, { opacity: 1, transform: 'translateY(0)' },
+    ] : [{ opacity: 1 }, { opacity: 0 }], { duration: open ? 280 : 160, fill: 'forwards' });
+    animation.onfinish = () => {
+      if (heightAnimation !== animation) return;
+      explorer.open = targetOpen;
+      animation.cancel();
+      bodyAnimation?.cancel();
+      heightAnimation = null;
+      bodyAnimation = null;
+      explorer.style.removeProperty('overflow');
+    };
+  }
 
   function selectSymbol(key) {
     if (!symbolLights.has(key)) return;
@@ -41,9 +87,13 @@ export function initHeritage() {
     buttons[next].focus();
     selectSymbol(buttons[next].dataset.symbol);
   });
+  summary.addEventListener('click', (event) => {
+    event.preventDefault();
+    setExplorerOpen(!targetOpen);
+  });
   emblem.addEventListener('click', () => {
-    explorer.open = !explorer.open;
-    if (explorer.open) {
+    setExplorerOpen(!targetOpen);
+    if (targetOpen) {
       requestAnimationFrame(() => {
         summary.focus({ preventScroll: true });
         if (matchMedia('(max-width: 767px)').matches) summary.scrollIntoView({ block: 'nearest', behavior: reducedMotion.matches ? 'instant' : 'smooth' });
@@ -51,21 +101,25 @@ export function initHeritage() {
     }
   });
   explorer.addEventListener('toggle', () => {
-    emblem.setAttribute('aria-expanded', String(explorer.open));
-    section.classList.toggle('is-exploring', explorer.open);
+    if (heightAnimation) return;
+    targetOpen = explorer.open;
+    syncExplorer(targetOpen);
     if (explorer.open) selectSymbol(selected);
   });
   section.querySelector('.heritage-close')?.addEventListener('click', () => {
-    explorer.open = false;
+    setExplorerOpen(false);
     summary.focus({ preventScroll: true });
     summary.scrollIntoView({ block: 'nearest', behavior: reducedMotion.matches ? 'instant' : 'smooth' });
   });
   explorer.addEventListener('keydown', (event) => {
-    if (event.key !== 'Escape' || !explorer.open) return;
+    if (event.key !== 'Escape' || !targetOpen) return;
     event.preventDefault();
-    explorer.open = false;
+    setExplorerOpen(false);
     summary.focus();
   });
   section.classList.add('is-ready');
+  explorer.classList.add('is-enhanced');
+  reducedMotion.addEventListener('change', () => { if (heightAnimation) setExplorerOpen(targetOpen); });
+  syncExplorer(targetOpen);
   selectSymbol(selected);
 }
