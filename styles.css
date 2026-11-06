@@ -510,8 +510,8 @@ img { max-width: 100%; }
 .dialog-close { position: absolute; top: 5px; right: 8px; min-width: 44px; min-height: 44px; color: var(--ivory); background: transparent; border: 0; font-size: 30px; }
 .dialog-controls { display: flex; justify-content: space-between; }
 .dialog-controls button { min-width: 44px; min-height: 44px; color: var(--ivory); background: transparent; border: 1px solid var(--rule); }
-.parking-dialog__viewport { position: relative; aspect-ratio: 16 / 9; max-height: 42dvh; overflow: hidden; margin-top: 20px; border: 1px solid #81572e55; background: #fff; overscroll-behavior: contain; touch-action: pan-y; }
-.parking-dialog__viewport img { display: block; width: 100%; max-width: none; height: 100%; object-fit: contain; transform-origin: 0 0; user-select: none; -webkit-user-drag: none; }
+.parking-dialog__viewport { position: relative; width: min(100%, 52.5dvh); aspect-ratio: 5 / 4; overflow: hidden; margin: 20px auto 0; background: transparent; overscroll-behavior: contain; touch-action: pan-y; }
+.parking-dialog__viewport img { display: block; width: 100%; max-width: none; height: 100%; object-fit: cover; mix-blend-mode: multiply; transform-origin: 0 0; user-select: none; -webkit-user-drag: none; }
 .parking-dialog__viewport.is-zoomed { touch-action: none; }
 .parking-dialog [data-parking-status] { color: #553a25; font-size: 13px; }
 .parking-dialog [data-parking-status]:empty { display: none; }
