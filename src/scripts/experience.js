@@ -727,6 +727,15 @@ function initEnvelopes() {
     const viewport = $('#parking-viewport', parkingDialog);
     const image = $('[data-parking-image]', parkingDialog);
     const zoom = $('[data-parking-zoom]', parkingDialog);
+    const zoomLabel = $('[data-parking-zoom-label]', parkingDialog);
+    const zoomIcon = $('[data-parking-zoom-icon]', parkingDialog);
+    let closingParking = false;
+    const closeParking = async () => {
+      if (closingParking || !parkingDialog.open) return;
+      closingParking = true;
+      await rollUpLetter(parkingDialog);
+      closingParking = false;
+    };
     const status = $('[data-parking-status]', parkingDialog);
     image.addEventListener('load', () => { status.textContent = ''; zoom.disabled = false; });
     image.addEventListener('error', () => {
@@ -737,7 +746,8 @@ function initEnvelopes() {
       viewport.classList.remove('is-zoomed');
       viewport.scrollTo(0, 0);
       zoom.setAttribute('aria-pressed', 'false');
-      zoom.textContent = 'Perbesar denah';
+      zoomLabel.textContent = 'Perbesar denah';
+      zoomIcon.textContent = '+';
     };
     parkingCard.classList.remove('is-sealed');
     parkingCard.classList.add('is-open');
@@ -756,26 +766,30 @@ function initEnvelopes() {
         status.textContent = 'Memuat denah…';
         image.src = image.dataset.src;
       }
+      $('.letter-paper', parkingDialog).scrollTop = 0;
       parkingDialog.showModal();
+      document.body.classList.add('busana-open');
       parkingCard.setAttribute('aria-expanded', 'true');
     };
     parkingCard.addEventListener('click', openParking);
     parkingCard.addEventListener('keydown', (event) => {
       if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openParking(); }
     });
-    $('.parking-dialog__close', parkingDialog).addEventListener('click', () => parkingDialog.close());
-    parkingDialog.addEventListener('click', (event) => { if (event.target === parkingDialog) {
-      const bounds = parkingDialog.getBoundingClientRect();
-      if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) parkingDialog.close();
-    } });
+    $('.parking-dialog__close', parkingDialog).addEventListener('click', closeParking);
+    parkingDialog.addEventListener('cancel', (event) => { event.preventDefault(); closeParking(); });
+    parkingDialog.addEventListener('click', (event) => {
+      if (event.target === parkingDialog || event.target.classList.contains('letter-dialog-stage')) closeParking();
+    });
     parkingDialog.addEventListener('close', () => {
+      document.body.classList.remove('busana-open');
       parkingCard.setAttribute('aria-expanded', 'false');
       parkingCard.focus();
     });
     zoom.addEventListener('click', () => {
       const enlarged = viewport.classList.toggle('is-zoomed');
       zoom.setAttribute('aria-pressed', String(enlarged));
-      zoom.textContent = enlarged ? 'Sesuaikan denah' : 'Perbesar denah';
+      zoomLabel.textContent = enlarged ? 'Sesuaikan denah' : 'Perbesar denah';
+      zoomIcon.textContent = enlarged ? '−' : '+';
       viewport.scrollTo(0, 0);
     });
   }
