@@ -169,16 +169,16 @@ img { max-width: 100%; }
 .chandelier-glints use { opacity: 0; }
 .chandelier-glints g:nth-of-type(-n+2) use { opacity: .55; }
 @media (prefers-reduced-motion: no-preference) {
-  .chandelier-glints use { animation: chandelier-twinkle var(--period) var(--delay) ease-in-out infinite; }
-  .chandelier-glints g:nth-of-type(1) { --period: 4.7s; --delay: -.5s; }
-  .chandelier-glints g:nth-of-type(2) { --period: 6.1s; --delay: -4.8s; }
-  .chandelier-glints g:nth-of-type(3) { --period: 7.3s; --delay: -5s; }
-  .chandelier-glints g:nth-of-type(4) { --period: 5.3s; --delay: -4s; }
-  .chandelier-glints g:nth-of-type(5) { --period: 7.9s; --delay: -5.1s; }
-  .chandelier-glints g:nth-of-type(6) { --period: 5.9s; --delay: -4.2s; }
+  /* Six staggered glints keep the gap at 0.8s, including between cycles. */
+  .chandelier-glints use { animation: chandelier-twinkle 4.8s var(--delay, 0s) ease-in-out infinite; }
+  .chandelier-glints g:nth-of-type(2) { --delay: -3.2s; }
+  .chandelier-glints g:nth-of-type(3) { --delay: -1.6s; }
+  .chandelier-glints g:nth-of-type(4) { --delay: -.8s; }
+  .chandelier-glints g:nth-of-type(5) { --delay: -2.4s; }
+  .chandelier-glints g:nth-of-type(6) { --delay: -4s; }
   @keyframes chandelier-twinkle {
-    0%, 25%, 100% { opacity: 0; transform: scale(.5); }
-    10% { opacity: .9; transform: scale(1); }
+    0%, 15%, 100% { opacity: 0; transform: scale(.5); }
+    7% { opacity: .9; transform: scale(1); }
   }
 }
 .chandelier [data-crystal] { position: absolute; bottom: 4%; width: 40px; height: 44px; border: 0; background: transparent; border-radius: 50%; }
