@@ -64,6 +64,14 @@ document.addEventListener('visibilitychange', () => {
 });
 
 function initTime() {
+  const clock = $('.scene-clock');
+  const clockFormatter = new Intl.DateTimeFormat('id-ID', {
+    timeZone: EVENT.tz,
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hourCycle: 'h23',
+  });
   const countdown = $('#hero-countdown');
   const liveStrip = $('#live-status');
   let liveStatus = $('[data-live-status]') || liveStrip?.querySelector('span:last-child');
@@ -138,6 +146,11 @@ function initTime() {
   }
 
   function update() {
+    if (clock) {
+      const label = clockFormatter.format(new Date());
+      if (clock.textContent !== label) clock.textContent = label;
+    }
+
     const now = currentTime();
     const phase = getPhase(now);
     if (phase !== lastPhase) {
@@ -199,8 +212,8 @@ function initTime() {
   }
 
   update();
-  const timer = setInterval(update, 1000);
-  window.addEventListener('pagehide', () => clearInterval(timer), { once: true });
+  setInterval(update, 1000);
+  window.addEventListener('pageshow', update);
 }
 
 function initTimeline() {
@@ -208,7 +221,6 @@ function initTimeline() {
   const hero = $('.hero');
   const heroLayers = hero ? $$('[data-depth]', hero) : [];
   const parallaxLayers = () => $$('[data-parallax-depth]');
-  const clock = $('.scene-clock');
   const dots = $$('.scene-dot');
   const navigationLinks = $$('.header-nav a[href^="#"], .mobile-dock a[href^="#"]');
   let dirty = true;
@@ -264,10 +276,6 @@ function initTimeline() {
       const offset = (progress - 0.5) * depth * sceneAmplitude;
       layer.style.setProperty('--parallax-offset', `${offset.toFixed(2)}px`);
     });
-    const minutes = Math.round(t * 360);
-    const hours = 18 + Math.floor(minutes / 60);
-    const label = `${String(hours).padStart(2, '0')}.${String(minutes % 60).padStart(2, '0')}`;
-    if (clock && clock.textContent !== label) clock.textContent = label;
     const visualCenter = innerHeight * 0.48;
     let nearest = 0;
     let distance = Infinity;
