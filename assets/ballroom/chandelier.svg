@@ -50,5 +50,4 @@
   <g class="crystal" data-crystal="12" transform="translate(420 245) scale(.46)"><use href="#drop"/></g>
   <g class="crystal" data-crystal="13" transform="translate(470 257) scale(.5)"><use href="#drop"/></g>
   <g class="crystal" data-crystal="14" transform="translate(524 282) scale(.56)"><use href="#drop"/></g>
-  <path d="m98 356 4 11 11 4-11 4-4 11-4-11-11-4 11-4Zm549-49 3 8 8 3-8 3-3 8-3-8-8-3 8-3Z" fill="#FFF5D1" fill-opacity=".55"/>
 </svg>

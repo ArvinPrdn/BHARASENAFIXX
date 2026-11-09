@@ -165,6 +165,22 @@ img { max-width: 100%; }
 .curtain-left { left: -11%; border-radius: 0 0 44% 0; }.curtain-right { right: -11%; transform: scaleX(-1) translate3d(var(--parallax-x,0px),var(--parallax-y,0px),0); border-radius: 0 0 0 44%; }
 .chandelier { top: -7%; left: 50%; width: min(38vw, 520px); aspect-ratio: 1.2; transform: translateX(-50%) translate3d(var(--parallax-x,0px),var(--parallax-y,0px),0) rotate(var(--swing,0deg)); transform-origin: 50% -25%; pointer-events: auto; touch-action: pan-y; }
 .chandelier img { width: 100%; height: 100%; object-fit: contain; pointer-events: none; filter: drop-shadow(0 0 24px rgba(231,211,157,.35)); }
+.chandelier-glints { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.chandelier-glints use { opacity: 0; }
+.chandelier-glints g:nth-of-type(-n+2) use { opacity: .55; }
+@media (prefers-reduced-motion: no-preference) {
+  .chandelier-glints use { animation: chandelier-twinkle var(--period) var(--delay) ease-in-out infinite; }
+  .chandelier-glints g:nth-of-type(1) { --period: 4.7s; --delay: -.5s; }
+  .chandelier-glints g:nth-of-type(2) { --period: 6.1s; --delay: -4.8s; }
+  .chandelier-glints g:nth-of-type(3) { --period: 7.3s; --delay: -5s; }
+  .chandelier-glints g:nth-of-type(4) { --period: 5.3s; --delay: -4s; }
+  .chandelier-glints g:nth-of-type(5) { --period: 7.9s; --delay: -5.1s; }
+  .chandelier-glints g:nth-of-type(6) { --period: 5.9s; --delay: -4.2s; }
+  @keyframes chandelier-twinkle {
+    0%, 25%, 100% { opacity: 0; transform: scale(.5); }
+    10% { opacity: .9; transform: scale(1); }
+  }
+}
 .chandelier [data-crystal] { position: absolute; bottom: 4%; width: 40px; height: 44px; border: 0; background: transparent; border-radius: 50%; }
 .chandelier [data-crystal="1"] { left: 14%; bottom: 24%; }.chandelier [data-crystal="2"] { left: 30%; bottom: 10%; }.chandelier [data-crystal="3"] { left: 46%; bottom: 1%; }.chandelier [data-crystal="4"] { left: 62%; bottom: 10%; }.chandelier [data-crystal="5"] { left: 79%; bottom: 24%; }
 .chandelier [data-crystal].is-lit::after { content: ''; position: absolute; width: 15px; height: 15px; left: 50%; top: 50%; transform: translate(-50%,-50%); border-radius: 50%; background: #fff3c6; box-shadow: 0 0 18px 7px rgba(255,230,159,.85); }
