@@ -1,8 +1,7 @@
 import { createHmac, randomBytes, scryptSync, timingSafeEqual } from 'node:crypto';
 import { countMessageWords, MESSAGE_MIN_WORDS } from '../data/message-rules.js';
+import { containsProfanity } from './message-profanity.mjs';
 
-const blockedWords = ['anjing', 'bangsat', 'kontol', 'memek', 'ngentot', 'tolol'];
-const blockedPattern = new RegExp(`\\b(?:${blockedWords.join('|')})\\b`, 'iu');
 const linkPattern = /(?:https?:\/\/|www\.|[\w-]+\.(?:com|id|net|org|io|app|co)(?:\b|\/))/iu;
 const emailPattern = /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/iu;
 const phonePattern = /(?:\+?62|0)[\s.-]?(?:\d[\s.-]?){8,13}/u;
@@ -22,7 +21,8 @@ export function validateMessage(input) {
   if (!body || Array.from(bodyRaw).length > 80 || Array.from(nicknameRaw).length > 20) return { ok: false, reason: 'Pesan maksimal 80 karakter dan nama maksimal 20 karakter.' };
   if (countMessageWords(body) < MESSAGE_MIN_WORDS) return { ok: false, reason: `Pesan minimal ${MESSAGE_MIN_WORDS} kata.` };
   const content = `${body} ${nickname}`;
-  if (/[<>]/u.test(content) || linkPattern.test(content) || emailPattern.test(content) || phonePattern.test(content) || blockedPattern.test(content)) return { ok: false, reason: 'Pesan mengandung konten yang tidak dapat diterima.' };
+  if (/[<>]/u.test(content) || linkPattern.test(content) || emailPattern.test(content) || phonePattern.test(content)) return { ok: false, reason: 'Pesan mengandung konten yang tidak dapat diterima.' };
+  if (containsProfanity(body) || containsProfanity(nickname)) return { ok: false, reason: 'Ada kata kasar di pesan atau nama panggilan. Ubah sebelum mengirim.' };
   return { ok: true, nickname, body };
 }
 

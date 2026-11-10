@@ -70,6 +70,14 @@ describe('online message wall', () => {
     expect(countMessageWords('Sampai jumpa teman-teman')).toBe(3);
   });
 
+  it('rejects disguised profanity before publishing or notifying', async () => {
+    const { handle, fetchImpl } = harness([]);
+    const response = await handle(request({ ...body, nickname: 'j4n.c0kk' }));
+    expect(response.status).toBe(400);
+    expect(await response.json()).toEqual({ error: 'Ada kata kasar di pesan atau nama panggilan. Ubah sebelum mengirim.' });
+    expect(fetchImpl).not.toHaveBeenCalled();
+  });
+
   it('rejects cross-origin and oversized requests before storage', async () => {
     const { handle, fetchImpl } = harness([]);
     expect((await handle(request(body, { Origin: 'https://other.example' }))).status).toBe(403);
