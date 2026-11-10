@@ -1,5 +1,6 @@
 import { createHmac, randomUUID } from 'node:crypto';
 import { escapeHtml, validateMessage } from './security.mjs';
+import { containsMessageProfanity } from './message-profanity.mjs';
 
 const WINDOW_SECONDS = 15 * 60;
 const MAX_MESSAGES = 4;
@@ -85,6 +86,7 @@ function publicMessage(raw) {
   let message;
   try { message = typeof raw === 'string' ? JSON.parse(raw) : raw; } catch { return null; }
   if (!message || message.status !== 'approved' || typeof message.id !== 'string' || typeof message.body !== 'string' || typeof message.nickname !== 'string') return null;
+  if (containsMessageProfanity(message)) return null;
   return { id: message.id, nickname: message.nickname, body: message.body, status: 'approved', created_at: message.created_at };
 }
 

@@ -70,12 +70,25 @@ describe('online message wall', () => {
     expect(countMessageWords('Sampai jumpa teman-teman')).toBe(3);
   });
 
-  it('rejects disguised profanity before publishing or notifying', async () => {
+  it.each([
+    { nickname: 'j4n.c0kk' },
+    { body: 'woi babik lu' },
+  ])('rejects profanity before publishing or notifying (%o)', async (input) => {
     const { handle, fetchImpl } = harness([]);
-    const response = await handle(request({ ...body, nickname: 'j4n.c0kk' }));
+    const response = await handle(request({ ...body, ...input }));
     expect(response.status).toBe(400);
     expect(await response.json()).toEqual({ error: 'Ada kata kasar di pesan atau nama panggilan. Ubah sebelum mengirim.' });
     expect(fetchImpl).not.toHaveBeenCalled();
+  });
+
+  it('hides previously approved messages that now contain profanity', async () => {
+    const blocked = { ...approved, id: 'blocked-id', body: 'woi babik lu' };
+    const { handle } = harness([
+      redis([approved.id, blocked.id]),
+      redis([JSON.stringify(approved), JSON.stringify(blocked)]),
+    ]);
+    const response = await handle(new Request('https://bharasena.example/api/messages'));
+    expect(await response.json()).toEqual({ enabled: true, messages: [approved] });
   });
 
   it('rejects cross-origin and oversized requests before storage', async () => {

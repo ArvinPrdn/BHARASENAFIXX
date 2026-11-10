@@ -21,6 +21,8 @@ describe('security boundaries', () => {
     { body: 'Kamu itu pan\u200Btek!' },
     { body: 'Kamu itu bujang-inam!' },
     { body: 'Sampai jumpa semua!', nickname: 'kléééng' },
+    { body: 'Kamu itu naskleng!' },
+    { body: 'Sampai jumpa semua!', nickname: 'cicing' },
     { body: 'Kamu itu cukimai!' },
     { body: 'Kamu itu telaso!' },
     { body: 'Kamu itu aneuk bajeung!' },

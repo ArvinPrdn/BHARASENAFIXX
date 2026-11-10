@@ -1,6 +1,6 @@
 const blockedWords = [
   // Indonesian and common online spellings
-  'anjeng', 'anjg', 'anjing', 'anjir', 'anjrit', 'asu', 'babi', 'bacot', 'bajingan',
+  'anjeng', 'anjg', 'anjing', 'anjir', 'anjrit', 'asu', 'babi', 'babik', 'bacot', 'bajingan',
   'bangke', 'bangsat', 'bego', 'brengsek', 'dungu', 'goblok', 'goblog', 'jembot',
   'jembut', 'kampret', 'keparat', 'kntl', 'kontol', 'kontolmu', 'kontolnya', 'lonte',
   'memek', 'memekmu', 'meki', 'ngentod', 'ngentot', 'ngentotin', 'ngewe', 'pecun',
@@ -17,7 +17,7 @@ const blockedWords = [
   // Minangkabau and Batak Toba
   'anjiang', 'pantek', 'bujang inam', 'bujanginam', 'loak ma ho', 'marlonte', 'takal ulum',
   // Balinese, Madurese, Makassarese, and Acehnese
-  'basong cai', 'cicing nani', 'kleng', 'naniang', 'pantet', 'cukimai', 'patek',
+  'basong cai', 'cicing', 'kleng', 'naniang', 'naskleng', 'pantet', 'cukimai', 'patek',
   'nassundala', 'sundala', 'suntili', 'tai laso', 'telaco', 'telaso',
   'aneuk bajeung', 'aneuk ramjadah', 'arakate paleh', 'binatang paleh',
   // Other common profanity
@@ -53,6 +53,6 @@ const patterns = blockedWords.flatMap((entry) => {
 });
 const blockedPattern = new RegExp(`(?<!${wordCharacter})(?:${patterns.join('|')})(?!${wordCharacter})`, 'u');
 
-export function containsProfanity(value) {
-  return blockedPattern.test(normalize(value));
+export function containsMessageProfanity({ body, nickname }) {
+  return blockedPattern.test(normalize(body)) || blockedPattern.test(normalize(nickname));
 }

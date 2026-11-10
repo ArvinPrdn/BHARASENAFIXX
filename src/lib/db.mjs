@@ -1,4 +1,5 @@
 import { programme } from '../data/rundown.js';
+import { containsMessageProfanity } from './message-profanity.mjs';
 import { DatabaseSync } from 'node:sqlite';
 import { mkdirSync, readFileSync, readdirSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
@@ -116,7 +117,8 @@ export function getPublicContent(now = new Date(), db = openDb()) {
 }
 
 export function getApprovedMessages(db = openDb()) {
-  return db.prepare("SELECT id,nickname,body,created_at FROM messages WHERE status='approved' ORDER BY created_at DESC,id DESC LIMIT 40").all();
+  return db.prepare("SELECT id,nickname,body,created_at FROM messages WHERE status='approved' ORDER BY created_at DESC,id DESC LIMIT 40").all()
+    .filter((message) => !containsMessageProfanity(message));
 }
 
 export function dbHealth(db = openDb()) {
