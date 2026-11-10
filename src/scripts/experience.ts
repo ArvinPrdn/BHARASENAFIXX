@@ -422,6 +422,13 @@ function initSeal(onOpened) {
 function initHero() {
   const hero = $('.hero');
   if (!hero) return;
+  const tickets = $$('.event-ticket', hero);
+  for (const ticket of tickets) {
+    ticket.addEventListener('click', () => {
+      const wasPressed = ticket.getAttribute('aria-pressed') === 'true';
+      for (const item of tickets) item.setAttribute('aria-pressed', String(item === ticket && !wasPressed));
+    });
+  }
   const layers = $$('[data-depth]', hero);
   const chandelier = $('.chandelier', hero);
   const crystals = chandelier ? $$('[data-crystal]', chandelier) : [];

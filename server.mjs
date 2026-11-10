@@ -122,7 +122,7 @@ function liveStrip(content) {
 function venueSlot(event) {
   const venue = event.venue || 'Tempat akan diumumkan';
   const note = event.venue ? 'Lokasi acara' : 'Informasi resmi menyusul';
-  return `<!-- slot:venue:start --><div class="event-ticket ticket-place" data-dynamic="venue"><span class="ticket-label">LOKASI</span><strong>${escapeHtml(venue)}</strong><span>${escapeHtml(note)}</span></div><!-- slot:venue:end -->`;
+  return `<!-- slot:venue:start --><button class="event-ticket ticket-place" type="button" aria-pressed="false" data-dynamic="venue"><span class="ticket-label">LOKASI</span><strong>${escapeHtml(venue)}</strong><span>${escapeHtml(note)}</span></button><!-- slot:venue:end -->`;
 }
 
 function performerSlot(performers) {
