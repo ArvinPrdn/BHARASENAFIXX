@@ -137,12 +137,12 @@ function rundownPanel(content, day, fallback) {
   const summary = (fallback.match(/<div class="programme-summary">.*?<\/div>/su)?.[0] || '')
     .replace(/(<span data-programme-count>).*?(<\/span>)/u,
       (_match, opening, closing) => `${opening}${published.length} kegiatan${closing}`);
-  const moment = {
-    '11': { id: 'rundown-talkshow', matches: (item) => /^talkshow\s+tiga\s+agama$/iu.test(item.title.trim()) },
-    '12': { id: 'rundown-colour-festival', matches: (item) => /colou?r\s*fest/iu.test(item.title) && /dj/iu.test(item.title) },
-    '13': { id: 'rundown-konser', matches: (item) => /konser/iu.test(item.title) && /budi doremi/iu.test(item.title + ' ' + item.description) },
+  const matchesFeatured = {
+    '11': (item) => /^talkshow\s+tiga\s+agama$/iu.test(item.title.trim()),
+    '12': (item) => /colou?r\s*fest/iu.test(item.title) && /dj/iu.test(item.title),
+    '13': (item) => /konser/iu.test(item.title) && /budi doremi/iu.test(item.title + ' ' + item.description),
   }[day];
-  const featured = moment && published.find(moment.matches);
+  const featured = matchesFeatured && published.find(matchesFeatured);
   const spotlight = day !== '12' || featured
     ? fallback.match(/<!-- slot:programme-spotlight:start -->.*?<!-- slot:programme-spotlight:end -->/su)?.[0]
     : '';
@@ -171,7 +171,7 @@ function rundownPanel(content, day, fallback) {
     const id = escapeHtml(group.id);
     const title = group.title === 'Malam Puncak' ? 'Jadwal Malam Puncak' : group.title;
     const rows = group.rows.map((item) => {
-      const highlight = item === featured ? ` class="programme-agenda__featured" id="${moment.id}" tabindex="-1"` : '';
+      const highlight = item === featured ? ' class="programme-agenda__featured"' : '';
       const hours = `${time(item.startAt)}–${time(item.endAt)}`;
       return `<li${highlight}>
         <span class="programme-agenda__time">${escapeHtml(hours)}</span>
