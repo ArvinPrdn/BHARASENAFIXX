@@ -401,18 +401,6 @@ img { max-width: 100%; }
 .day-tab:focus-visible { outline-offset: -4px; }
 .day-tab__name { font: 500 clamp(1.45rem, 2.5vw, 2.1rem)/1 var(--display); }
 .day-tab__date { font-size: 13px; font-weight: 600; white-space: nowrap; }
-.programme-return { display: none; }
-.programme-layout.is-interactive .programme-return {
-  display: flex;
-  align-items: center;
-  width: fit-content;
-  min-height: 44px;
-  margin: 16px 0 0 auto;
-  color: var(--champagne);
-  font-size: 13px;
-  text-underline-offset: 4px;
-}
-.programme-return:hover { color: var(--ivory); }
 
 .day-panel {
   display: grid;
