@@ -544,9 +544,63 @@ function initHero() {
   });
 }
 
+function initProgrammePointer(scene) {
+  let pointer = null;
+  let target = null;
+  let light = null;
+
+  function clear() {
+    pointer = target = light = null;
+    scene.classList.remove('is-pointer-lit');
+  }
+
+  function queuePosition() {
+    if (!pointer) return;
+    target = null;
+    requestFrame();
+  }
+
+  scene.addEventListener('pointermove', (event) => {
+    if (event.pointerType !== 'mouse' || !finePointerQuery.matches || reduceMotion()) return;
+    pointer = { x: event.clientX, y: event.clientY };
+    queuePosition();
+  }, { passive: true });
+  scene.addEventListener('pointerleave', clear);
+  scene.addEventListener('pointercancel', clear);
+  window.addEventListener('scroll', queuePosition, { passive: true });
+  window.addEventListener('resize', queuePosition, { passive: true });
+  window.addEventListener('blur', clear);
+  finePointerQuery.addEventListener?.('change', clear);
+  motionQuery.addEventListener?.('change', clear);
+
+  addFrameTask(() => {
+    if (!pointer) return false;
+    if (!target) {
+      const bounds = scene.getBoundingClientRect();
+      const x = pointer.x - bounds.left;
+      const y = pointer.y - bounds.top;
+      if (x < 0 || x > bounds.width || y < 0 || y > bounds.height) {
+        clear();
+        return false;
+      }
+      target = { x, y };
+    }
+    if (light === target) return false;
+    light ??= target;
+    const moving = Math.abs(light.x - target.x) + Math.abs(light.y - target.y) > 1;
+    light = moving ? { x: lerp(light.x, target.x, 0.26), y: lerp(light.y, target.y, 0.26) } : target;
+    scene.style.setProperty('--programme-pointer-x', `${light.x.toFixed(1)}px`);
+    scene.style.setProperty('--programme-pointer-y', `${light.y.toFixed(1)}px`);
+    scene.classList.add('is-pointer-lit');
+    return moving;
+  });
+}
+
 function initRundown() {
   const layout = $('.programme-layout');
   if (!layout) return;
+  const scene = layout.closest('.programme');
+  if (scene) initProgrammePointer(scene);
 
   function wireTabs(tabs, panels) {
     if (!tabs.length || !panels.length) return;
