@@ -586,6 +586,19 @@ function initRundown() {
   wireTabs($$('.day-tab[data-day]', layout), panels, layout);
   layout.classList.add('is-interactive');
 
+  if ('IntersectionObserver' in window && !reduceMotion()) {
+    const lighting = new IntersectionObserver((entries) => {
+      for (const entry of entries) {
+        if (entry.intersectionRatio < 0.25) continue;
+        entry.target.classList.add('is-illuminated');
+        lighting.unobserve(entry.target);
+      }
+    }, { threshold: 0.25, rootMargin: '-76px 0px -56px' });
+    for (const highlight of $$('.speaker-spotlight, .programme-agenda__featured', layout)) {
+      lighting.observe(highlight);
+    }
+  }
+
   const timeLabel = (iso) => new Intl.DateTimeFormat('id-ID', {
     timeZone: EVENT.tz, hour: '2-digit', minute: '2-digit', hourCycle: 'h23',
   }).format(new Date(iso));
