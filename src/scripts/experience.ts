@@ -548,31 +548,27 @@ function initRundown() {
   const layout = $('.programme-layout');
   if (!layout) return;
 
-  function wireTabs(tabs, panels, restoreStart) {
+  function wireTabs(tabs, panels) {
     if (!tabs.length || !panels.length) return;
 
-    function select(tab, event) {
-      const returnToStart = event?.isTrusted && restoreStart
-        && tab.getAttribute('aria-selected') !== 'true'
-        && restoreStart.getBoundingClientRect().top < tab.parentElement.getBoundingClientRect().top - 2;
+    function select(tab) {
       tabs.forEach((item) => {
         item.setAttribute('aria-selected', String(item === tab));
         item.tabIndex = item === tab ? 0 : -1;
       });
       const id = tab.getAttribute('aria-controls');
       panels.forEach((panel) => { panel.hidden = panel.id !== id; });
-      if (returnToStart) restoreStart.scrollIntoView({ block: 'start', behavior: 'instant' });
     }
 
     tabs.forEach((tab, index) => {
-      tab.addEventListener('click', (event) => select(tab, event));
+      tab.addEventListener('click', () => select(tab));
       tab.addEventListener('keydown', (event) => {
         const direction = { ArrowRight: 1, ArrowLeft: -1 }[event.key];
         const next = event.key === 'Home' ? 0 : event.key === 'End' ? tabs.length - 1
           : direction ? (index + direction + tabs.length) % tabs.length : -1;
         if (next < 0) return;
         event.preventDefault();
-        select(tabs[next], event);
+        select(tabs[next]);
         tabs[next].focus();
       });
     });
@@ -587,7 +583,7 @@ function initRundown() {
     details.classList.add('is-interactive');
   }
 
-  wireTabs($$('.day-tab[data-day]', layout), panels, layout);
+  wireTabs($$('.day-tab[data-day]', layout), panels);
   layout.classList.add('is-interactive');
 
   if ('IntersectionObserver' in window && !reduceMotion()) {

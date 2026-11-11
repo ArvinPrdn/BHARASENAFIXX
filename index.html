@@ -178,7 +178,7 @@
           <p class="programme-calendar"><strong>11–13 Desember 2026</strong><span>Seluruh waktu dalam WIB</span></p>
         </header>
         <div class="programme-layout" data-dynamic="rundown">
-          <div class="day-tabs" role="tablist" aria-label="Pilih hari acara">
+          <div class="day-tabs" id="pilih-hari" role="tablist" aria-label="Pilih hari acara" tabindex="-1">
             <button class="day-tab" id="tab-11" data-day="11" type="button" role="tab" aria-controls="panel-11" aria-selected="true" tabindex="0">
               <span class="day-tab__name">Jumat</span><span class="day-tab__date">11 Desember</span>
             </button>
@@ -516,6 +516,7 @@
               <!-- slot:programme-spotlight:end -->
             </section>
           </div>
+          <a class="programme-return" href="#pilih-hari">Kembali ke pilihan hari</a>
         </div>
         <div class="live-strip" id="live-status" aria-live="polite"><span class="live-lamp" aria-hidden="true"></span><span data-live-status>11–13 Desember · Seluruh waktu dalam WIB.</span><span class="live-progress" aria-hidden="true"><span data-live-progress></span></span></div>
       </section>
