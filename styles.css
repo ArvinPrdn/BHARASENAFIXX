@@ -332,23 +332,6 @@ img { max-width: 100%; }
     radial-gradient(ellipse 47rem 28rem at 85% 0, rgba(215,152,91,.075), transparent),
     radial-gradient(ellipse 58rem 40rem at 12% 0, #30151d, rgba(48,21,29,.26) 56%, transparent), #120c0e;
 }
-@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
-  .programme::before {
-    content: '';
-    position: absolute;
-    z-index: -1;
-    top: 0;
-    left: 0;
-    width: min(35rem, 90vw);
-    aspect-ratio: 1.3;
-    pointer-events: none;
-    background: radial-gradient(ellipse 50% 50%, rgba(242,183,114,.19), rgba(187,106,112,.075) 52%, transparent);
-    transform: translate3d(calc(var(--programme-pointer-x, 0px) - 50%), calc(var(--programme-pointer-y, 0px) - 50%), 0);
-    opacity: 0;
-    transition: opacity .3s ease-out;
-  }
-  .programme.is-pointer-lit::before { opacity: 1; }
-}
 .programme-heading, .programme-layout { width: min(1140px, 100%); margin-inline: auto; }
 .programme-heading { display: flex; align-items: end; justify-content: space-between; gap: 24px; margin-bottom: clamp(24px, 3vw, 40px); }
 .programme-heading .scene-kicker { display: flex; align-items: center; gap: 12px; }
@@ -544,6 +527,24 @@ img { max-width: 100%; }
 .speaker-spotlight__note { margin: 8px 0 0; color: var(--muted); font-size: 13px; line-height: 1.5; }
 .speaker-spotlight__credit { margin: 7px 0 0; color: var(--muted); font-size: 11px; }
 .speaker-spotlight__credit a { display: inline-flex; align-items: center; min-height: 24px; text-underline-offset: 3px; }
+
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .programme-agenda > li::before {
+    transition: scale .22s ease-out, rotate .22s ease-out, border-radius .22s ease-out, border-color .22s ease-out, background-color .22s ease-out, box-shadow .22s ease-out;
+  }
+  .programme-agenda > li:hover::before {
+    border-radius: 2px;
+    border-color: #ddd0dc;
+    background-color: #4b3c49;
+    box-shadow: 0 0 0 2px rgba(221,208,220,.16);
+    rotate: 45deg;
+    scale: 1.35;
+  }
+  .programme-agenda__time { transition: color .22s ease-out; }
+  .programme-agenda > li:hover .programme-agenda__time { color: #efe8f2; }
+  .speaker-spotlight__portrait img { transition: transform .38s cubic-bezier(.22,1,.36,1); }
+  .speaker-spotlight__portrait:hover img { transform: translateY(-5px); }
+}
 
 @media (prefers-reduced-motion: no-preference) {
   .day-tab { transition: color .2s ease; }
