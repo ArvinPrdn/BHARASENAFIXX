@@ -356,13 +356,11 @@ img { max-width: 100%; }
   position: relative;
   display: none;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  border-bottom: 1px solid rgba(217,195,160,.32);
-  background: linear-gradient(110deg, #2a171c, #1b1014 75%);
+  background: linear-gradient(90deg, transparent, rgba(217,195,160,.24) 18%, rgba(217,195,160,.24) 82%, transparent) bottom / 100% 1px no-repeat;
 }
 .programme-layout.is-interactive .day-tabs { display: grid; }
 .day-tab {
   position: relative;
-  isolation: isolate;
   display: flex;
   align-items: baseline;
   justify-content: center;
@@ -376,18 +374,10 @@ img { max-width: 100%; }
   line-height: 1.2;
   -webkit-tap-highlight-color: transparent;
 }
-.day-tab::before {
-  content: '';
-  position: absolute;
-  z-index: -1;
-  inset: 0;
-  background: radial-gradient(ellipse at 50% 100%, rgba(233,181,125,.17), transparent 72%);
-  opacity: 0;
-}
 .day-tab::after {
   content: '';
   position: absolute;
-  inset: auto 22% -1px;
+  inset: auto 22% 0;
   height: 2px;
   border-radius: 2px;
   background: linear-gradient(90deg, transparent, #f5d69f 32%, #fff2cf 50%, #f5d69f 68%, transparent);
@@ -396,7 +386,6 @@ img { max-width: 100%; }
 }
 .day-tab:hover { color: var(--ivory); }
 .day-tab[aria-selected="true"] { color: var(--ivory); }
-.day-tab[aria-selected="true"]::before { opacity: 1; }
 .day-tab[aria-selected="true"]::after { transform: scaleX(1); }
 .day-tab:focus-visible { outline-offset: -4px; }
 .day-tab__name { font: 500 clamp(1.45rem, 2.5vw, 2.1rem)/1 var(--display); }
@@ -563,7 +552,7 @@ img { max-width: 100%; }
 .has-rundown-motion .day-tabs::after {
   content: '';
   position: absolute;
-  bottom: -1px;
+  bottom: 0;
   left: 0;
   width: calc(100% / 3);
   height: 2px;
@@ -586,7 +575,6 @@ img { max-width: 100%; }
     animation: programme-dot-enter .4s ease-out var(--row-delay, 0ms) both;
   }
   .day-tab { transition: color .2s ease; }
-  .day-tab::before { transition: opacity .42s ease; }
   .day-tab::after { transition: transform .28s cubic-bezier(.22,1,.36,1); }
   .programme-session-tabs button { transition: color .2s ease, background-color .2s ease, border-color .2s ease; }
   .programme-layout.is-interactive .day-panel:not([hidden]) .programme-summary { animation: programme-enter .24s ease-out; }
