@@ -442,6 +442,22 @@ img { max-width: 100%; }
 .programme-description { max-width: 32ch; margin: 13px 0 0; color: var(--muted); font-size: 15px; line-height: 1.55; }
 .programme-meta { display: flex; flex-wrap: wrap; gap: 2px 10px; margin: 14px 0 0; color: var(--champagne); font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; }
 .programme-meta span + span::before { content: '·'; margin-right: 10px; }
+.programme-jump {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  margin-top: 14px;
+  padding: 6px 14px;
+  border: 1px solid rgba(233,190,134,.42);
+  border-radius: 100vw;
+  color: var(--ivory);
+  background: radial-gradient(ellipse at 30% 100%, rgba(239,188,123,.11), transparent 80%);
+  font-size: 13px;
+  font-weight: 600;
+}
+.programme-jump:hover { border-color: var(--champagne); background-color: rgba(233,190,134,.08); }
+.programme-jump span { color: var(--champagne); font-size: 16px; line-height: 1; }
 
 .programme-details { grid-area: agenda; min-width: 0; }
 .programme-session-tabs { display: none; flex-wrap: wrap; gap: 6px; margin: 0 0 16px; }
@@ -496,6 +512,9 @@ img { max-width: 100%; }
 .programme-agenda > .programme-agenda__featured::before { background: #ffe3ab; border-color: #ffe3ab; box-shadow: 0 0 0 3px rgba(244,217,153,.14), 0 0 14px 2px rgba(244,217,153,.5); }
 .programme-agenda__featured .programme-agenda__time { color: #ffe0a6; }
 .programme-agenda__featured h5 { color: #ffe0a6; }
+.programme-agenda__featured:focus::after {
+  background: radial-gradient(ellipse farthest-side at 44% 50%, rgba(244,182,113,.32), rgba(187,105,103,.12) 59%, transparent);
+}
 
 .speaker-spotlight { grid-area: portrait; position: relative; isolation: isolate; width: min(100%, 420px); min-width: 0; }
 .speaker-spotlight__portrait { position: relative; isolation: isolate; display: grid; justify-items: center; align-items: end; min-width: 0; margin: 0; }
@@ -546,6 +565,9 @@ img { max-width: 100%; }
   .day-tab::before { transition: opacity .42s ease; }
   .day-tab::after { transition: transform .28s cubic-bezier(.22,1,.36,1); }
   .programme-session-tabs button { transition: color .2s ease, background-color .2s ease, border-color .2s ease; }
+  .programme-jump { transition: background-color .22s ease, border-color .22s ease; }
+  .programme-jump span { transition: transform .22s ease; }
+  .programme-jump:is(:hover, :focus-visible) span { transform: translateY(3px); }
   .programme-layout.is-interactive .day-panel:not([hidden]) { animation: programme-enter .32s ease-out; }
   .programme-details.is-interactive .programme-session:not([hidden]) { animation: programme-enter .24s ease-out; }
   .programme-layout.is-interactive .programme-agenda::after {
@@ -565,6 +587,7 @@ img { max-width: 100%; }
     animation: programme-dust 2s ease-out;
   }
   .programme-agenda__featured.is-illuminated::before { animation: programme-cue 1.1s ease-out; }
+  .programme-agenda__featured:focus::after { animation: programme-light-up 1.3s ease-out; }
   @keyframes programme-enter {
     from { opacity: .82; transform: translateY(4px); }
     to { opacity: 1; transform: none; }

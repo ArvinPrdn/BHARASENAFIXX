@@ -586,6 +586,20 @@ function initRundown() {
   wireTabs($$('.day-tab[data-day]', layout), panels);
   layout.classList.add('is-interactive');
 
+  for (const button of $$('[data-programme-jump]', layout)) {
+    const panel = button.closest('.day-panel');
+    const row = document.getElementById(button.dataset.programmeJump);
+    if (!panel?.contains(row)) continue;
+
+    button.hidden = false;
+    button.addEventListener('click', () => {
+      const session = row.closest('.programme-session');
+      if (session?.hidden) document.getElementById(session.getAttribute('aria-labelledby'))?.click();
+      row.focus({ preventScroll: true });
+      row.scrollIntoView({ block: 'center', behavior: reduceMotion() ? 'instant' : 'smooth' });
+    });
+  }
+
   if ('IntersectionObserver' in window && !reduceMotion()) {
     const lighting = new IntersectionObserver((entries) => {
       for (const entry of entries) {
