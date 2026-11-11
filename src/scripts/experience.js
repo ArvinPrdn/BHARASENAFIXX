@@ -540,9 +540,124 @@ function initHero() {
   });
 }
 
+function initRundownMotion(layout) {
+  const section = layout.closest('.programme');
+  const tabs = $$('.day-tab', layout);
+  const tabList = $('.day-tabs', layout);
+  const agendas = $$('.programme-agenda', layout);
+  const portraits = $$('.speaker-spotlight__portrait', layout);
+  const heading = $('#programme-title', section);
+  const rows = agendas.flatMap((agenda) => [...agenda.children]);
+  let frame = 0;
+  let nearby = true;
+
+  layout.classList.add('has-rundown-motion');
+  if (heading) {
+    const outline = document.createElement('span');
+    outline.className = 'programme-title-outline';
+    outline.setAttribute('aria-hidden', 'true');
+    heading.childNodes.forEach((node) => outline.append(node.cloneNode(true)));
+    heading.append(outline);
+  }
+
+  // Read positions together, then write styles; no animation loop runs at rest.
+  function update() {
+    frame = 0;
+    const index = tabs.findIndex((tab) => tab.getAttribute('aria-selected') === 'true');
+    tabList?.style.setProperty('--selected-day', String(Math.max(0, index)));
+    if (reduceMotion() || !nearby) return;
+    const visible = agendas.filter((agenda) => !agenda.closest('[hidden]'));
+    const positions = visible.map((agenda) => ({ agenda, rect: agenda.getBoundingClientRect() }));
+    for (const { agenda, rect } of positions) {
+      const progress = clamp((innerHeight * .68 - rect.top) / Math.max(1, rect.height), 0, 1);
+      agenda.style.setProperty('--read-progress', String(progress));
+    }
+  }
+  function refresh() {
+    if (!frame) frame = requestAnimationFrame(update);
+    agendas.forEach((agenda) => agenda.classList.remove('has-row-hover'));
+  }
+  window.addEventListener('scroll', refresh, { passive: true });
+  window.addEventListener('resize', refresh, { passive: true });
+  if ('ResizeObserver' in window) new ResizeObserver(refresh).observe(layout);
+  document.fonts?.ready.then(refresh);
+
+  if ('IntersectionObserver' in window) {
+    const visibility = new IntersectionObserver(([entry]) => {
+      nearby = entry.isIntersecting;
+      if (nearby) refresh();
+    }, { rootMargin: '100px' });
+    visibility.observe(section);
+    const reveals = new IntersectionObserver((entries) => {
+      let order = 0;
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        if (!reduceMotion()) {
+          entry.target.style.setProperty('--row-delay', `${Math.min(order++, 4) * 45}ms`);
+          entry.target.classList.add('is-revealed');
+        }
+        reveals.unobserve(entry.target);
+      }
+    }, { threshold: .12 });
+    rows.forEach((row) => {
+      reveals.observe(row);
+      row.addEventListener('animationend', (event) => {
+        if (event.animationName === 'programme-row-enter' && event.target === row.lastElementChild) {
+          row.classList.remove('is-revealed');
+        }
+      });
+    });
+  }
+
+  const pointerEnabled = (event) => !reduceMotion() && finePointerQuery.matches && event.pointerType !== 'touch';
+  agendas.forEach((agenda) => {
+    agenda.addEventListener('pointermove', (event) => {
+      if (!pointerEnabled(event)) return;
+      const row = event.target.closest('li');
+      if (!row || row.parentElement !== agenda) return;
+      agenda.style.setProperty('--row-y', `${row.offsetTop + row.offsetHeight / 2 - 11}px`);
+      agenda.classList.add('has-row-hover');
+    });
+    agenda.addEventListener('pointerleave', () => agenda.classList.remove('has-row-hover'));
+  });
+  const resetPortrait = (portrait) => {
+    ['--portrait-x', '--portrait-y', '--portrait-rx', '--portrait-ry'].forEach((name) => portrait.style.removeProperty(name));
+  };
+  portraits.forEach((portrait) => {
+    portrait.addEventListener('pointermove', (event) => {
+      if (!pointerEnabled(event)) return;
+      const rect = portrait.getBoundingClientRect();
+      const x = clamp((event.clientX - rect.left) / rect.width * 2 - 1, -1, 1);
+      const y = clamp((event.clientY - rect.top) / rect.height * 2 - 1, -1, 1);
+      portrait.style.setProperty('--portrait-x', `${x * 5}px`);
+      portrait.style.setProperty('--portrait-y', `${y * 4}px`);
+      portrait.style.setProperty('--portrait-rx', `${-y * 2}deg`);
+      portrait.style.setProperty('--portrait-ry', `${x * 2}deg`);
+    });
+    portrait.addEventListener('pointerleave', () => resetPortrait(portrait));
+  });
+  heading?.addEventListener('pointermove', (event) => {
+    if (!pointerEnabled(event)) return;
+    const rect = heading.getBoundingClientRect();
+    heading.style.setProperty('--title-x', `${event.clientX - rect.left}px`);
+    heading.style.setProperty('--title-y', `${event.clientY - rect.top}px`);
+    heading.classList.add('has-title-hover');
+  });
+  heading?.addEventListener('pointerleave', () => heading.classList.remove('has-title-hover'));
+  function resetPointerEffects() {
+    portraits.forEach(resetPortrait);
+    heading?.classList.remove('has-title-hover');
+    refresh();
+  }
+  motionQuery.addEventListener('change', resetPointerEffects);
+  finePointerQuery.addEventListener('change', resetPointerEffects);
+  return refresh;
+}
+
 function initRundown() {
   const layout = $('.programme-layout');
   if (!layout) return;
+  let refreshMotion = () => {};
 
   function wireTabs(tabs, panels) {
     if (!tabs.length || !panels.length) return;
@@ -554,6 +669,7 @@ function initRundown() {
       });
       const id = tab.getAttribute('aria-controls');
       panels.forEach((panel) => { panel.hidden = panel.id !== id; });
+      refreshMotion();
     }
 
     tabs.forEach((tab, index) => {
@@ -581,6 +697,8 @@ function initRundown() {
 
   wireTabs($$('.day-tab[data-day]', layout), panels);
   layout.classList.add('is-interactive');
+  refreshMotion = initRundownMotion(layout);
+  refreshMotion();
 
   if ('IntersectionObserver' in window && !reduceMotion()) {
     const lighting = new IntersectionObserver((entries) => {
