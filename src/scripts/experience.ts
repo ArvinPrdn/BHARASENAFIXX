@@ -545,87 +545,50 @@ function initHero() {
 }
 
 function initRundown() {
-  const tabs = $$('.day-tab[data-day]');
-  const panels = $$('.day-panel[data-day]');
-  const track = $('.day-panels') || panels[0]?.parentElement;
-  if (!tabs.length || !panels.length) return;
+  const layout = $('.programme-layout');
+  if (!layout) return;
 
-  $$('.programme-details').forEach((details) => {
-    const sessionTabs = $$('[data-programme-session]', details);
-    const groups = $$('[data-programme-group]', details);
-    const scroll = $('[data-programme-scroll]', details);
-    const hint = $('[data-programme-scroll-hint]', details);
-    if (!scroll) return;
+  function wireTabs(tabs, panels, restoreStart) {
+    if (!tabs.length || !panels.length) return;
 
-    function updateScrollHint() {
-      if (!hint) return;
-      const atEnd = scroll.scrollTop + scroll.clientHeight >= scroll.scrollHeight - 3;
-      hint.textContent = atEnd ? 'Akhir sesi · Seluruh kegiatan sudah ditampilkan' : 'Scroll untuk kegiatan berikutnya ↓';
-      hint.classList.toggle('is-at-end', atEnd);
-    }
-    function selectSession(id, focus = false) {
-      sessionTabs.forEach((tab) => {
-        const selected = tab.dataset.programmeSession === id;
-        tab.setAttribute('aria-selected', String(selected));
-        tab.tabIndex = selected ? 0 : -1;
-        if (selected && focus) tab.focus();
+    function select(tab, event) {
+      const returnToStart = event?.isTrusted && restoreStart
+        && tab.getAttribute('aria-selected') !== 'true'
+        && restoreStart.getBoundingClientRect().top < tab.parentElement.getBoundingClientRect().top - 2;
+      tabs.forEach((item) => {
+        item.setAttribute('aria-selected', String(item === tab));
+        item.tabIndex = item === tab ? 0 : -1;
       });
-      groups.forEach((group) => { group.hidden = group.id !== id; });
-      scroll.scrollTop = 0;
-      updateScrollHint();
+      const id = tab.getAttribute('aria-controls');
+      panels.forEach((panel) => { panel.hidden = panel.id !== id; });
+      if (returnToStart) restoreStart.scrollIntoView({ block: 'start', behavior: 'instant' });
     }
-    if (sessionTabs.length) {
-      details.classList.add('is-interactive');
-      sessionTabs.forEach((tab, index) => {
-        tab.addEventListener('click', () => selectSession(tab.dataset.programmeSession));
-        tab.addEventListener('keydown', (event) => {
-          const offset = { ArrowRight: 1, ArrowLeft: -1 }[event.key];
-          const next = event.key === 'Home' ? 0 : event.key === 'End' ? sessionTabs.length - 1
-            : offset ? (index + offset + sessionTabs.length) % sessionTabs.length : -1;
-          if (next < 0) return;
-          event.preventDefault();
-          selectSession(sessionTabs[next].dataset.programmeSession, true);
-        });
-      });
-      selectSession(sessionTabs[0].dataset.programmeSession);
-    }
-    scroll.addEventListener('scroll', updateScrollHint, { passive: true });
-    if ('ResizeObserver' in window) new ResizeObserver(updateScrollHint).observe(scroll);
-    updateScrollHint();
-  });
 
-  for (const spotlight of $$('[data-speaker-spotlight]')) {
-    const portrait = $('.speaker-spotlight__portrait', spotlight);
-    if (portrait && 'IntersectionObserver' in window && !reduceMotion()) {
-      spotlight.classList.add('is-reveal-ready');
-      const reveal = new IntersectionObserver((entries) => {
-        if (!entries.some((entry) => entry.isIntersecting)) return;
-        spotlight.classList.add('is-in-view');
-        reveal.disconnect();
-      }, { threshold: 0.2 });
-      reveal.observe(portrait);
-      motionQuery.addEventListener?.('change', () => {
-        if (reduceMotion()) {
-          spotlight.classList.add('is-in-view');
-          reveal.disconnect();
-        }
+    tabs.forEach((tab, index) => {
+      tab.addEventListener('click', (event) => select(tab, event));
+      tab.addEventListener('keydown', (event) => {
+        const direction = { ArrowRight: 1, ArrowLeft: -1 }[event.key];
+        const next = event.key === 'Home' ? 0 : event.key === 'End' ? tabs.length - 1
+          : direction ? (index + direction + tabs.length) % tabs.length : -1;
+        if (next < 0) return;
+        event.preventDefault();
+        select(tabs[next], event);
+        tabs[next].focus();
       });
-    }
-    spotlight.addEventListener('pointermove', (event) => {
-      if (reduceMotion() || !finePointerQuery.matches || lowEnd) return;
-      const bounds = spotlight.getBoundingClientRect();
-      const x = clamp((event.clientX - bounds.left) / bounds.width - 0.5, -0.5, 0.5);
-      const y = clamp((event.clientY - bounds.top) / bounds.height - 0.5, -0.5, 0.5);
-      spotlight.style.setProperty('--speaker-x', `${(x * 9).toFixed(2)}px`);
-      spotlight.style.setProperty('--speaker-y', `${(y * 7).toFixed(2)}px`);
     });
-    const resetSpotlight = () => {
-      spotlight.style.removeProperty('--speaker-x');
-      spotlight.style.removeProperty('--speaker-y');
-    };
-    spotlight.addEventListener('pointerleave', resetSpotlight);
-    motionQuery.addEventListener?.('change', resetSpotlight);
+    select(tabs.find((tab) => tab.getAttribute('aria-selected') === 'true') || tabs[0]);
   }
+
+  const panels = $$('.day-panel[data-day]', layout);
+  for (const details of $$('.programme-details', layout)) {
+    const sessionTabs = $$('.programme-session-tabs [role="tab"]', details);
+    if (!sessionTabs.length) continue;
+    wireTabs(sessionTabs, $$('.programme-session', details));
+    details.classList.add('is-interactive');
+  }
+
+  wireTabs($$('.day-tab[data-day]', layout), panels, layout);
+  layout.classList.add('is-interactive');
 
   const timeLabel = (iso) => new Intl.DateTimeFormat('id-ID', {
     timeZone: EVENT.tz, hour: '2-digit', minute: '2-digit', hourCycle: 'h23',
@@ -658,47 +621,6 @@ function initRundown() {
     });
     old?.replaceWith(list);
   });
-
-  function activate(day, focus = false, fromSwipe = false) {
-    tabs.forEach((tab) => {
-      const selected = tab.dataset.day === day;
-      tab.classList.toggle('is-active', selected);
-      tab.setAttribute('aria-selected', String(selected));
-      tab.tabIndex = selected ? 0 : -1;
-      if (selected && focus) tab.focus();
-    });
-    panels.forEach((panel) => {
-      const selected = panel.dataset.day === day;
-      panel.classList.toggle('is-active', selected);
-      panel.hidden = !mobileQuery.matches && !selected;
-      if (selected && mobileQuery.matches && !fromSwipe) track?.scrollTo({ left: panel.offsetLeft - panels[0].offsetLeft, behavior: reduceMotion() ? 'instant' : 'smooth' });
-    });
-  }
-  function syncLayout() {
-    const selected = tabs.find((tab) => tab.getAttribute('aria-selected') === 'true') || tabs[0];
-    panels.forEach((panel) => { panel.hidden = !mobileQuery.matches && panel.dataset.day !== selected.dataset.day; });
-  }
-  tabs.forEach((tab, index) => {
-    tab.addEventListener('click', () => activate(tab.dataset.day));
-    tab.addEventListener('keydown', (event) => {
-      const offsets = { ArrowRight: 1, ArrowLeft: -1 };
-      const target = event.key === 'Home' ? 0 : event.key === 'End' ? tabs.length - 1
-        : Object.hasOwn(offsets, event.key) ? (index + offsets[event.key] + tabs.length) % tabs.length : -1;
-      if (target < 0) return;
-      event.preventDefault();
-      activate(tabs[target].dataset.day, true);
-    });
-  });
-  if (track && 'IntersectionObserver' in window) {
-    const observer = new IntersectionObserver((entries) => {
-      if (!mobileQuery.matches) return;
-      const mostVisible = entries.filter((entry) => entry.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-      if (mostVisible) activate(mostVisible.target.dataset.day, false, true);
-    }, { root: track, threshold: [0.5, 0.75] });
-    panels.forEach((panel) => observer.observe(panel));
-  }
-  mobileQuery.addEventListener?.('change', syncLayout);
-  activate(tabs.find((tab) => tab.getAttribute('aria-selected') === 'true')?.dataset.day || tabs[0].dataset.day, false, true);
 }
 
 async function rollUpLetter(dialog) {

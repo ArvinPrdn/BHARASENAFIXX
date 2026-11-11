@@ -134,10 +134,14 @@ function performerSlot(performers) {
 function rundownPanel(content, day, fallback) {
   const published = content.rundown.filter((item) => item.day.endsWith('-' + day) && !item.isPlaceholder);
   if (!published.length) return fallback;
-  const date = fallback.match(/<div class="programme-date">.*?<\/div>/su)?.[0] || '';
-  const intro = fallback.match(/<div class="day-one-intro">.*?<\/div>/su)?.[0] || '';
-  const dj = day === '12' ? fallback.match(/<!-- slot:day-two-dj:start -->.*?<!-- slot:day-two-dj:end -->/su)?.[0] || '' : '';
-  const artist = day === '13' ? fallback.match(/<!-- slot:day-three-artist:start -->.*?<!-- slot:day-three-artist:end -->/su)?.[0] || '' : '';
+  const summary = (fallback.match(/<div class="programme-summary">.*?<\/div>/su)?.[0] || '')
+    .replace(/(<span data-programme-count>).*?(<\/span>)/u,
+      (_match, opening, closing) => `${opening}${published.length} kegiatan${closing}`);
+  const isDjSession = (item) => day === '12' && /colou?r\s*fest/iu.test(item.title) && /dj/iu.test(item.title);
+  const isConcert = (item) => day === '13' && /konser/iu.test(item.title) && /budi doremi/iu.test(item.title + ' ' + item.description);
+  const spotlight = day === '12' && published.some(isDjSession)
+    ? fallback.match(/<!-- slot:day-two-dj:start -->.*?<!-- slot:day-two-dj:end -->/su)?.[0]
+    : day === '13' ? fallback.match(/<!-- slot:day-three-artist:start -->.*?<!-- slot:day-three-artist:end -->/su)?.[0] : '';
   const definitions = programme.find((item) => item.day === day)?.groups || [];
   const groups = [];
   published.forEach((item) => {
@@ -150,14 +154,32 @@ function rundownPanel(content, day, fallback) {
     }
     group.rows.push(item);
   });
-  const tabs = groups.length > 1 ? '<div class="programme-session-tabs" role="tablist" aria-label="Pilih sesi ' + day + ' Desember">' + groups.map((group, index) => '<button type="button" role="tab" id="session-' + escapeHtml(group.id) + '" aria-controls="programme-' + escapeHtml(group.id) + '" aria-selected="' + (index === 0) + '" tabindex="' + (index === 0 ? 0 : -1) + '" data-programme-session="programme-' + escapeHtml(group.id) + '">' + escapeHtml(group.label) + '<small>' + group.rows.length + '</small></button>').join('') + '</div>' : '';
+  const hasTabs = groups.length > 1;
+  const tabs = hasTabs ? `<div class="programme-session-tabs" role="tablist" aria-label="Pilih sesi ${day} Desember">
+    ${groups.map((group, index) => {
+      const id = escapeHtml(group.id);
+      return `<button type="button" role="tab" id="session-${id}" aria-controls="programme-${id}" aria-selected="${index === 0}" tabindex="${index === 0 ? 0 : -1}">${escapeHtml(group.label)}<small>${group.rows.length}</small></button>`;
+    }).join('')}
+  </div>` : '';
   const formatter = new Intl.DateTimeFormat('id-ID', { timeZone: 'Asia/Jakarta', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' });
   const time = (value) => value && Number.isFinite(Date.parse(value)) ? formatter.format(new Date(value)).replace(':', '.') : 'selesai';
-  const body = groups.map((group) => '<div class="programme-session" id="programme-' + escapeHtml(group.id) + '" role="' + (groups.length > 1 ? 'tabpanel' : 'group') + '" aria-labelledby="programme-' + escapeHtml(group.id) + '-title" data-programme-group><h4 id="programme-' + escapeHtml(group.id) + '-title">' + escapeHtml(group.title) + '</h4><ol class="programme-agenda">' + group.rows.map((item) => {
-    const djSession = day === '12' && /colou?r\s*fest/iu.test(item.title) && /dj/iu.test(item.title);
-    return '<li' + (djSession ? ' class="programme-agenda__featured"' : '') + '><span class="programme-agenda__time">' + escapeHtml(time(item.startAt) + '–' + time(item.endAt)) + '</span><div><h5>' + escapeHtml(item.title) + '</h5><p>' + escapeHtml(item.description || '') + '</p></div>' + (djSession ? dj : '') + '</li>';
-  }).join('') + '</ol></div>').join('');
-  return date + intro + artist + '<div class="programme-details"><p class="programme-details__heading"><span>RUNDOWN KEGIATAN</span><small>' + published.length + ' KEGIATAN</small></p>' + tabs + '<div class="programme-columns" aria-hidden="true"><span>JAM</span><span class="programme-columns__desktop">KEGIATAN</span><span class="programme-columns__mobile">KEGIATAN &amp; KETERANGAN</span><span class="programme-columns__desktop">KETERANGAN</span></div><div class="programme-scroll" role="region" aria-label="Rincian kegiatan ' + day + ' Desember" tabindex="0" data-programme-scroll>' + body + '</div><p class="programme-scroll-hint" data-programme-scroll-hint>Scroll untuk kegiatan berikutnya <span aria-hidden="true">↓</span></p></div>';
+  const body = groups.map((group) => {
+    const id = escapeHtml(group.id);
+    const title = group.title === 'Malam Puncak' ? 'Jadwal Malam Puncak' : group.title;
+    const rows = group.rows.map((item) => {
+      const featured = isDjSession(item) || isConcert(item);
+      const hours = `${time(item.startAt)}–${time(item.endAt)}`;
+      return `<li${featured ? ' class="programme-agenda__featured"' : ''}>
+        <span class="programme-agenda__time">${escapeHtml(hours)}</span>
+        <div><h5>${escapeHtml(item.title)}</h5><p>${escapeHtml(item.description || '')}</p></div>
+      </li>`;
+    }).join('');
+    return `<div class="programme-session" id="programme-${id}" role="${hasTabs ? 'tabpanel' : 'group'}" aria-labelledby="${hasTabs ? `session-${id}` : `programme-${id}-title`}"${hasTabs ? ' tabindex="0"' : ''}>
+      <h4 id="programme-${id}-title">${escapeHtml(title)}</h4>
+      <ol class="programme-agenda" role="list">${rows}</ol>
+    </div>`;
+  }).join('');
+  return `${summary}<div class="programme-details">${tabs}${body}</div>${spotlight || ''}`;
 }
 
 function gallerySlot(items) {
