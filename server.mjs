@@ -139,9 +139,9 @@ function rundownPanel(content, day, fallback) {
       (_match, opening, closing) => `${opening}${published.length} kegiatan${closing}`);
   const isDjSession = (item) => day === '12' && /colou?r\s*fest/iu.test(item.title) && /dj/iu.test(item.title);
   const isConcert = (item) => day === '13' && /konser/iu.test(item.title) && /budi doremi/iu.test(item.title + ' ' + item.description);
-  const spotlight = day === '12' && published.some(isDjSession)
-    ? fallback.match(/<!-- slot:day-two-dj:start -->.*?<!-- slot:day-two-dj:end -->/su)?.[0]
-    : day === '13' ? fallback.match(/<!-- slot:day-three-artist:start -->.*?<!-- slot:day-three-artist:end -->/su)?.[0] : '';
+  const spotlight = day !== '12' || published.some(isDjSession)
+    ? fallback.match(/<!-- slot:programme-spotlight:start -->.*?<!-- slot:programme-spotlight:end -->/su)?.[0]
+    : '';
   const definitions = programme.find((item) => item.day === day)?.groups || [];
   const groups = [];
   published.forEach((item) => {
