@@ -658,6 +658,7 @@ img { max-width: 100%; }
 .envelope-grid {
   --envelope-columns: 4;
   --envelope-gap: 16px;
+  position: relative;
   width: min(1220px, 100%);
   margin: auto;
   display: grid;
@@ -682,6 +683,43 @@ img { max-width: 100%; }
 }
 .envelope--upcoming::before { opacity: .45; }
 .envelope--upcoming .envelope-body h3 { margin: 0; }
+.envelope[role="button"] { cursor: pointer; }
+.envelope[role="button"]:focus-visible { outline-offset: -5px; }
+.envelope.has-envelope-pointer .wax-mini,
+.envelope[role="button"]:is(:active, :focus-visible) .wax-mini {
+  filter: brightness(1.22);
+  box-shadow: inset 2px 3px 4px rgba(255,255,255,.3), 0 0 12px rgba(188,74,82,.46);
+}
+.envelope-pointer-label {
+  position: fixed;
+  z-index: 140;
+  top: 0;
+  left: 0;
+  padding: 5px 11px;
+  border: 1px solid rgba(217,195,160,.55);
+  border-radius: 3px;
+  background: #211116;
+  color: var(--ivory);
+  box-shadow: 0 4px 14px rgba(0,0,0,.32);
+  font: 600 12px/1.4 var(--body);
+  white-space: nowrap;
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .envelope-grid .wax-mini { transition: scale .18s ease, filter .18s ease, box-shadow .18s ease; }
+  .envelope.has-envelope-pointer .wax-mini,
+  .envelope[role="button"]:active .wax-mini { scale: 1.12; }
+}
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .envelope-grid .envelope {
+    transform: perspective(950px) rotateX(var(--envelope-rx, 0deg)) rotateY(var(--envelope-ry, 0deg));
+    transition: transform .22s ease-out;
+  }
+  .envelope-grid .envelope.has-envelope-pointer {
+    z-index: 1;
+    transition-duration: .12s;
+  }
+}
 .envelope.is-jolted { animation: jolt .35s ease; }
 @keyframes jolt { 25%{transform:translateX(-3px) rotate(-1deg)} 55%{transform:translateX(4px) rotate(1deg)} 85%{transform:translateX(-2px)} }
 

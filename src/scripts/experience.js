@@ -783,7 +783,89 @@ async function rollUpLetter(dialog) {
   }
 }
 
+function initEnvelopePointerEffects() {
+  const grid = $('#info-peserta .envelope-grid');
+  if (!grid) return;
+
+  const label = document.createElement('span');
+  label.className = 'envelope-pointer-label';
+  label.setAttribute('aria-hidden', 'true');
+  label.hidden = true;
+  document.body.append(label);
+
+  const actionLabels = {
+    'parking-dialog': 'Lihat denah',
+    'busana-dialog': 'Lihat busana',
+    'info-letter-dialog': 'Buka surat',
+  };
+  let activeCard = null;
+  let pointer = null;
+  let frame = 0;
+
+  function resetCard() {
+    activeCard?.classList.remove('has-envelope-pointer');
+    activeCard?.style.removeProperty('--envelope-rx');
+    activeCard?.style.removeProperty('--envelope-ry');
+    activeCard = null;
+  }
+
+  function clear() {
+    if (frame) cancelAnimationFrame(frame);
+    frame = 0;
+    pointer = null;
+    resetCard();
+    label.hidden = true;
+  }
+
+  function update() {
+    frame = 0;
+    const { card, x, y } = pointer;
+    const gridBounds = grid.getBoundingClientRect();
+    // Grid offsets keep the pointer math independent of the card's rotation.
+    const relativeX = clamp((x - gridBounds.left - card.offsetLeft) / card.offsetWidth * 2 - 1, -1, 1);
+    const relativeY = clamp((y - gridBounds.top - card.offsetTop) / card.offsetHeight * 2 - 1, -1, 1);
+    if (activeCard !== card) {
+      resetCard();
+      activeCard = card;
+    }
+    const action = actionLabels[card.getAttribute('aria-controls')]
+      || (card.classList.contains('is-open') ? 'Info tersedia' : 'Segera hadir');
+    if (label.textContent !== action) label.textContent = action;
+    label.hidden = false;
+    const gap = 16;
+    const edge = 8;
+    const width = label.offsetWidth;
+    const height = label.offsetHeight;
+    const right = root.clientWidth - width - edge;
+    const bottom = root.clientHeight - height - edge;
+    const left = x + gap <= right ? x + gap : x - width - gap;
+    const top = y + gap <= bottom ? y + gap : y - height - gap;
+    label.style.transform = `translate(${clamp(left, edge, right)}px, ${clamp(top, edge, bottom)}px)`;
+    card.style.setProperty('--envelope-rx', `${-relativeY * 3}deg`);
+    card.style.setProperty('--envelope-ry', `${relativeX * 4}deg`);
+    card.classList.add('has-envelope-pointer');
+  }
+
+  grid.addEventListener('pointermove', (event) => {
+    const card = event.target.closest('.envelope');
+    if (!card || event.pointerType === 'touch' || !finePointerQuery.matches || reduceMotion()) {
+      clear();
+      return;
+    }
+    pointer = { card, x: event.clientX, y: event.clientY };
+    if (!frame) frame = requestAnimationFrame(update);
+  }, { passive: true });
+  grid.addEventListener('pointerleave', clear);
+  grid.addEventListener('pointercancel', clear);
+  grid.addEventListener('click', clear, { capture: true });
+  window.addEventListener('scroll', clear, { passive: true });
+  window.addEventListener('blur', clear);
+  motionQuery.addEventListener('change', clear);
+  finePointerQuery.addEventListener('change', clear);
+}
+
 function initEnvelopes() {
+  initEnvelopePointerEffects();
   const cards = $$('.envelope[data-envelope]');
 
 
