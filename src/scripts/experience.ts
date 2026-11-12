@@ -294,10 +294,13 @@ function initTimeline() {
 
   if ('IntersectionObserver' in window) {
     const observer = new IntersectionObserver((entries) => {
-      for (const entry of entries) if (entry.isIntersecting) entry.target.classList.add('is-visible');
-    }, { threshold: 0.12 });
+      for (const entry of entries) entry.target.classList.toggle('is-in-view', entry.isIntersecting);
+    });
     scenes.forEach((scene) => observer.observe(scene));
-  } else scenes.forEach((scene) => scene.classList.add('is-visible'));
+  } else {
+    hero?.classList.add('is-in-view');
+    $('#penampil')?.classList.add('is-in-view');
+  }
 
   dots.forEach((dot, index) => {
     if (dot.tagName !== 'A') dot.addEventListener('click', () => scenes[index]?.scrollIntoView({ behavior: reduceMotion() ? 'instant' : 'smooth' }));
@@ -1480,7 +1483,10 @@ function initCard() {
     ctx.font = '400 22px "Hanken Grotesk", sans-serif';
     ctx.fillText('BATALYON BHARA ARSA NAWASENA',w/2,1210);
     ctx.fillText('SMAN 2 TARUNA BHAYANGKARA',w/2,1255);
-    return new Promise((resolve) => canvas.toBlob((blob) => resolve(blob), 'image/png'));
+    return new Promise((resolve) => canvas.toBlob((blob) => {
+      canvas.width = canvas.height = 0;
+      resolve(blob);
+    }, 'image/png'));
   }
   function download(blob) {
     const url = URL.createObjectURL(blob);
@@ -1629,12 +1635,8 @@ function initGalleryAndFinale() {
     dialog.addEventListener('click', (event) => { if (event.target === dialog) dialog.close(); });
   }
 
-  const canvas = $('#gold-rain') || document.createElement('canvas');
-  canvas.className = 'gold-rain';
-  canvas.setAttribute('aria-hidden', 'true');
-  canvas.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:90;display:none';
-  if (canvas.parentElement !== document.body) document.body.append(canvas);
-  const ctx = canvas.getContext('2d', { alpha: true });
+  let canvas = null;
+  let ctx = null;
   let particles = [];
   let rainUntil = 0;
   let rainRequiresFinale = false;
@@ -1647,10 +1649,20 @@ function initGalleryAndFinale() {
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
   function rain(duration = 6500, requireFinale = false) {
-    if (reduceMotion() || !ctx) return;
+    if (reduceMotion() || document.hidden) return;
+    if (!canvas) {
+      const layer = document.createElement('canvas');
+      layer.id = 'gold-rain';
+      layer.className = 'gold-rain';
+      layer.setAttribute('aria-hidden', 'true');
+      const context = layer.getContext('2d');
+      if (!context) return;
+      canvas = layer;
+      ctx = context;
+      document.body.append(canvas);
+    }
     rainRequiresFinale = requireFinale;
     resizeCanvas();
-    canvas.style.display = 'block';
     const count = lowEnd ? 35 : 90;
     particles = Array.from({ length: count }, () => ({
       x: Math.random() * innerWidth,
@@ -1663,10 +1675,19 @@ function initGalleryAndFinale() {
     rainUntil = performance.now() + duration;
     requestFrame();
   }
+  function stopRain() {
+    if (!canvas) return;
+    particles = [];
+    canvas.width = canvas.height = 0;
+    canvas.remove();
+    canvas = null;
+    ctx = null;
+  }
   rainTrigger = rain;
   addFrameTask((time) => {
-    if (!particles.length || reduceMotion() || (rainRequiresFinale && finale && !finaleVisible)) {
-      if (particles.length) { particles = []; ctx.clearRect(0, 0, innerWidth, innerHeight); canvas.style.display = 'none'; }
+    if (!canvas) return false;
+    if (time >= rainUntil || reduceMotion() || (rainRequiresFinale && !finaleVisible)) {
+      stopRain();
       return false;
     }
     ctx.clearRect(0, 0, innerWidth, innerHeight);
@@ -1678,15 +1699,10 @@ function initGalleryAndFinale() {
       ctx.fillStyle = `rgba(233,212,154,${particle.alpha * fading})`;
       ctx.fillRect(particle.x, particle.y, particle.size, particle.size * 2);
     }
-    if (time >= rainUntil) {
-      particles = [];
-      ctx.clearRect(0, 0, innerWidth, innerHeight);
-      canvas.style.display = 'none';
-      return false;
-    }
     return true;
   });
-  addEventListener('resize', () => { if (particles.length) resizeCanvas(); }, { passive: true });
+  addEventListener('resize', () => { if (canvas) resizeCanvas(); }, { passive: true });
+  document.addEventListener('visibilitychange', () => { if (document.hidden) stopRain(); });
   if (finale && 'IntersectionObserver' in window) {
     new IntersectionObserver((entries) => {
       finaleVisible = entries[0]?.isIntersecting || false;
@@ -1740,11 +1756,6 @@ function initPerformer() {
   stage.querySelector('.performer-listen')?.addEventListener('click', () => {
     document.querySelector('#audio-toggle')?.click();
   });
-  if ('IntersectionObserver' in window) {
-    new IntersectionObserver(([entry]) => {
-      stage.classList.toggle('is-on-stage', entry.isIntersecting);
-    }, { threshold: 0.05 }).observe(stage);
-  } else stage.classList.add('is-on-stage');
 }
 
 function init() {
