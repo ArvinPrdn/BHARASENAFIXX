@@ -820,7 +820,6 @@ img { max-width: 100%; }
 .finale { min-height: 100dvh; padding: 130px 24px 105px; display: grid; place-items: center; background: radial-gradient(ellipse at 50% 48%,#38151b,#13090d 62%,#080506); text-align: center; }
 .gold-rain { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 90; }
 .finale-content { position: relative; z-index: 2; width: 100%; min-width: 0; }
-.midnight-clock { display: block; margin: 35px auto 22px; width: 180px; height: 180px; border: 1px solid rgba(217,195,160,.5); border-radius: 50%; font: 500 74px/180px var(--display); color: var(--champagne); box-shadow: 0 0 0 10px rgba(217,195,160,.045),0 0 0 19px rgba(217,195,160,.025); }
 .finale h2 { margin: 0; font: 500 clamp(4rem,8vw,8.5rem)/1 var(--display); letter-spacing: -.06em; }
 .finale-message { color: var(--champagne); margin: 27px 0 70px; }
 .social-contact { width: min(100%, 620px); margin: 0 auto 36px; }
@@ -967,7 +966,7 @@ img { max-width: 100%; }
   .gallery-track { gap: 16px; padding: 25px 22px 40px; }.gallery-frame { flex-basis: 76vw; }.gallery-frame:nth-child(2) { transform: translateY(15px); }
   .gallery-mat { --gallery-frame-border: 11px; }.frame-monogram { font-size: 100px; }
   .message-wall { padding: 100px 22px 110px; }.message-wall-heading { display: block; margin-bottom: 44px; }.message-wall-heading h2 { font-size: clamp(3.8rem,14vw,6.5rem); margin: 28px 0; }.message-wall-heading > p:last-child { max-width: 520px; }.message-wall-layout { display: block; }.message-form { padding: 22px 18px; }.message-list-wrap { margin-top: 52px; }.message-list-heading { font-size: 10px; }.message-card p { font-size: 18px; }
-  .finale { min-height: 100dvh; padding: 110px 22px 100px; }.midnight-clock { width: 145px; height: 145px; font-size: 58px; line-height: 145px; }
+  .finale { min-height: 100dvh; padding: 110px 22px 100px; }
   .finale h2 { font-size: clamp(3.5rem,13vw,6rem); }.finale-message { margin-bottom: 55px; }
   .site-footer { padding: 24px 22px; flex-wrap: wrap; }
 }
