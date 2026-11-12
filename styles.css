@@ -663,6 +663,14 @@ img { max-width: 100%; }
 .envelope-body h3 { font: 500 28px/1.13 var(--display); margin: 0 0 10px; }
 .envelope-body p { color: var(--muted); font-size: 15px; margin: 0; }
 .envelope-bottom { display: flex; align-items: center; justify-content: space-between; color: var(--muted); font-size: 12px; letter-spacing: .08em; }
+.envelope.envelope--upcoming {
+  min-height: 164px;
+  justify-content: center;
+  gap: 16px;
+  border-color: rgba(217,195,160,.3);
+}
+.envelope--upcoming::before { opacity: .45; }
+.envelope--upcoming .envelope-body h3 { margin: 0; }
 .envelope.is-jolted { animation: jolt .35s ease; }
 @keyframes jolt { 25%{transform:translateX(-3px) rotate(-1deg)} 55%{transform:translateX(4px) rotate(1deg)} 85%{transform:translateX(-2px)} }
 
