@@ -414,7 +414,6 @@ img { max-width: 100%; }
 .programme-session-tabs button {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
   min-height: 44px;
   padding: 7px 14px;
   border: 1px solid rgba(217,195,160,.28);
@@ -426,7 +425,6 @@ img { max-width: 100%; }
 }
 .programme-session-tabs button:hover { border-color: var(--champagne); }
 .programme-session-tabs button[aria-selected="true"] { border-color: #efd5a9; color: var(--ink); background: linear-gradient(125deg, #f8e4bf, #d3ac75); box-shadow: 0 3px 16px rgba(237,187,116,.14); }
-.programme-session-tabs small { font-size: 11px; font-weight: 700; font-variant-numeric: tabular-nums; }
 .programme-session + .programme-session:not([hidden]) { margin-top: 24px; }
 .programme-details.is-interactive .programme-session { margin-top: 0; }
 .programme-session > h4 { margin: 0 0 10px; color: var(--ivory); font: 500 clamp(1.45rem, 2.1vw, 2.15rem)/1.14 var(--display); letter-spacing: -.018em; }

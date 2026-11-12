@@ -162,7 +162,7 @@ function rundownPanel(content, day, fallback) {
   const tabs = hasTabs ? `<div class="programme-session-tabs" role="tablist" aria-label="Pilih sesi ${day} Desember">
     ${groups.map((group, index) => {
       const id = escapeHtml(group.id);
-      return `<button type="button" role="tab" id="session-${id}" aria-controls="programme-${id}" aria-selected="${index === 0}" tabindex="${index === 0 ? 0 : -1}">${escapeHtml(group.label)}<small>${group.rows.length}</small></button>`;
+      return `<button type="button" role="tab" id="session-${id}" aria-controls="programme-${id}" aria-selected="${index === 0}" tabindex="${index === 0 ? 0 : -1}">${escapeHtml(group.label)}</button>`;
     }).join('')}
   </div>` : '';
   const formatter = new Intl.DateTimeFormat('id-ID', { timeZone: 'Asia/Jakarta', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' });
