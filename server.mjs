@@ -120,16 +120,15 @@ function liveStrip(content) {
 }
 
 function venueSlot(event) {
-  const venue = event.venue?.split(',')[0] || 'Lokasi menyusul';
-  const title = venue === 'SMA Negeri 2 Taruna Bhayangkara Jawa Timur' ? 'SMAN 2 Taruna Bhayangkara' : venue;
-  return `<!-- slot:venue:start --><a class="event-ticket ticket-place" href="#tempat-acara"><span class="ticket-label">LOKASI</span><strong>${escapeHtml(title)}</strong><span>Lihat tempat acara</span></a><!-- slot:venue:end -->`;
+  const venue = event.venue || 'Tempat akan diumumkan';
+  const note = event.venue ? 'Lokasi acara' : 'Informasi resmi menyusul';
+  return `<!-- slot:venue:start --><button class="event-ticket ticket-place" type="button" aria-pressed="false" data-dynamic="venue"><span class="ticket-label">LOKASI</span><strong>${escapeHtml(venue)}</strong><span>${escapeHtml(note)}</span></button><!-- slot:venue:end -->`;
 }
 
 function performerSlot(performers) {
   const performer = performers.find((item) => item.name.toLowerCase().includes('budi')) || performers[0];
-  const schedule = performer?.scheduledAt || 'Jadwal menyusul';
-  const target = schedule.includes('13 Desember') ? '#tab-13' : '#rundown';
-  return `<!-- slot:performer-schedule:start --><a class="performer-schedule" href="${target}"><span>Jadwal konser</span><strong>${escapeHtml(schedule)}</strong></a><!-- slot:performer-schedule:end -->`;
+  const schedule = performer?.scheduledAt || 'Menunggu pengumuman';
+  return `<!-- slot:performer-schedule:start --><div class="mini-envelope" data-envelope="performer" data-dynamic="performer-schedule"><span class="wax-mini" aria-hidden="true"></span><span>Jadwal penampilan<br /><strong>${escapeHtml(schedule)}</strong></span></div><!-- slot:performer-schedule:end -->`;
 }
 
 function rundownPanel(content, day, fallback) {
@@ -174,11 +173,9 @@ function rundownPanel(content, day, fallback) {
     const rows = group.rows.map((item) => {
       const highlight = item === featured ? ' class="programme-agenda__featured"' : '';
       const hours = `${time(item.startAt)}–${time(item.endAt)}`;
-      const map = day === '11' && { 'donor darah': 'donor-darah', 'talkshow tiga agama': 'talkshow' }[item.title.trim().toLowerCase()];
-      const mapLink = map ? `<a class="action-link" href="#info-peserta" data-event-map="${map}">Lihat denah</a>` : '';
       return `<li${highlight}>
         <span class="programme-agenda__time">${escapeHtml(hours)}</span>
-        <div><h5>${escapeHtml(item.title)}</h5><p>${escapeHtml(item.description || '')}</p>${mapLink}</div>
+        <div><h5>${escapeHtml(item.title)}</h5><p>${escapeHtml(item.description || '')}</p></div>
       </li>`;
     }).join('');
     return `<div class="programme-session" id="programme-${id}" role="${hasTabs ? 'tabpanel' : 'group'}" aria-labelledby="${hasTabs ? `session-${id}` : `programme-${id}-title`}"${hasTabs ? ' tabindex="0"' : ''}>
@@ -190,30 +187,25 @@ function rundownPanel(content, day, fallback) {
 }
 
 function gallerySlot(items) {
-  if (!items.length) return '<div class="gallery-track" data-dynamic="gallery" aria-label="Pratinjau foto acara" hidden></div>';
+  if (!items.length) return `<div class="gallery-track" data-dynamic="gallery" tabindex="0" aria-label="Galeri foto acara"><figure class="gallery-frame"><div class="gallery-mat"><span class="frame-monogram">B</span></div><figcaption>HARI 01 · SEGERA DIPAJANG</figcaption></figure><figure class="gallery-frame"><div class="gallery-mat"><span class="frame-monogram">H</span></div><figcaption>HARI 02 · SEGERA DIPAJANG</figcaption></figure><figure class="gallery-frame"><div class="gallery-mat"><span class="frame-monogram">A</span></div><figcaption>HARI 03 · SEGERA DIPAJANG</figcaption></figure></div>`;
   return `<div class="gallery-track" data-dynamic="gallery" tabindex="0" aria-label="Galeri foto acara">${items.map((item) => `<figure class="gallery-frame"><div class="gallery-mat"><img src="${escapeHtml(item.src)}" alt="${escapeHtml(item.alt)}" loading="lazy" /></div><figcaption>${escapeHtml(item.day || 'BHARASENA')}</figcaption></figure>`).join('')}</div>`;
 }
 
 function envelopeGrid(content) {
-  const labels = {
-    venue: ['Tempat acara', 'tempat-acara', 'Lihat lokasi'],
-    parking: ['Denah parkir', null, 'Lihat denah'],
-    admission: ['Ketentuan masuk', 'ketentuan-masuk', 'Lihat ketentuan'],
-    'dress-code': ['Busana acara', null, 'Lihat busana'],
-  };
+  const labels = { venue: ['01 / LOKASI','Tempat acara'], parking: ['02 / PARKIR','Denah parkir'], admission: ['03 / AKSES','Ketentuan masuk'], 'dress-code': ['04 / BUSANA','Busana acara'] };
   const cards = Object.keys(labels).map((id) => content.envelopes.find((item) => item.id === id)).filter(Boolean).map((item) => {
-    const [title, anchor, action] = labels[item.id];
+    const label = labels[item.id] || [' / INFO', item.title];
     const open = !item.sealed && item.body;
-    const detail = open ? item.body : '';
-    const copy = item.id === 'venue' && open ? detail.replace(/\s*·\s*Google Maps:.*$/u, '') : detail || 'Informasi sedang disiapkan panitia.';
-    return `<article class="envelope ${open ? 'is-open' : 'is-sealed'}"${anchor ? ` id="${anchor}"` : ''} data-envelope="${escapeHtml(item.id)}" data-envelope-detail="${escapeHtml(detail)}"><div class="envelope-body"><h3>${title}</h3><p data-envelope-body>${escapeHtml(copy)}</p></div><div class="envelope-bottom"><span data-envelope-status>${open ? action : 'Menyusul'}</span><span class="wax-mini" aria-hidden="true"></span></div></article>`;
+    const text = open ? item.body : item.id === 'parking' ? 'Denah parkir akan segera dibuka.' : 'Informasi resmi segera dibuka.';
+    const status = open ? 'Terbuka' : 'SEGEL PANITIA';
+    return `<article class="envelope ${open ? 'is-open' : 'is-sealed'}" data-envelope="${escapeHtml(item.id)}" aria-expanded="${open}"><div class="envelope-top"><span>${escapeHtml(label[0])}</span><span class="envelope-fold" aria-hidden="true"></span></div><div class="envelope-body"><h3>${escapeHtml(label[1])}</h3><p data-envelope-body>${escapeHtml(text)}</p></div><div class="envelope-bottom"><span data-envelope-status>${escapeHtml(status)}</span><span class="wax-mini" aria-hidden="true"></span></div></article>`;
   }).join('');
   return cards;
 }
 
 function messageWall(messages) {
   const items = messages.map((item) => `<article class="message-card"><p>${escapeHtml(item.body)}</p><footer><strong>${escapeHtml(item.nickname || 'Tamu')}</strong></footer></article>`).join('');
-  return `<div class="message-wall-layout" data-dynamic="messages"><form id="message-form" class="message-form" data-message-form novalidate><div class="message-field"><label for="message-name">Nama panggilan <span>(opsional)</span></label><input id="message-name" name="nickname" data-message-name type="text" maxlength="20" autocomplete="nickname" placeholder="Nama atau inisial" /></div><div class="message-field"><label for="message-body">Pesan untuk angkatan</label><textarea id="message-body" name="body" data-message-body aria-describedby="message-rules" maxlength="80" rows="5" placeholder="Tulis pesanmu…" required></textarea><small id="message-rules" class="message-counter">Minimal 3 kata · <span data-message-count>0</span> / 80 karakter</small></div><div class="message-trap" aria-hidden="true"><label for="message-website">Website</label><input id="message-website" name="website" data-message-honeypot tabindex="-1" autocomplete="off" /></div><button class="message-submit" type="submit">Kirim pesan</button><p id="message-status" class="message-status" data-message-status role="status" aria-live="polite"></p></form><div class="message-list-wrap"><div class="message-list-heading"><span>Pesan dari peserta</span><span class="message-list-state" data-message-state>${items ? `${messages.length} PESAN TERBIT` : 'Belum ada pesan'}</span></div><div class="message-list" data-messages-list aria-live="polite">${items || '<p class="message-empty" data-message-empty>Belum ada pesan. Jadilah yang pertama menulis.</p>'}</div></div></div>`;
+  return `<div class="message-wall-layout" data-dynamic="messages"><form id="message-form" class="message-form" data-message-form novalidate><div class="message-field"><label for="message-name">Nama panggilan <span>(opsional)</span></label><input id="message-name" name="nickname" data-message-name type="text" maxlength="20" autocomplete="nickname" /></div><div class="message-field"><label for="message-body">Pesan untuk angkatan</label><textarea id="message-body" name="body" data-message-body aria-describedby="message-rules" maxlength="80" rows="4" required></textarea><small id="message-rules" class="message-counter">Minimal 3 kata · <span data-message-count>0</span> / 80 karakter</small></div><div class="message-trap" aria-hidden="true"><label for="message-website">Website</label><input id="message-website" name="website" data-message-honeypot tabindex="-1" autocomplete="off" /></div><button class="message-submit" type="submit">Kirim ke dinding</button><p id="message-status" class="message-status" data-message-status role="status" aria-live="polite"></p></form><div class="message-list-wrap"><div class="message-list-heading"><span>CATATAN YANG SUDAH TIBA</span><span class="message-list-state" data-message-state>${items ? `${messages.length} PESAN TERBIT` : 'MENUNGGU PESAN'}</span></div><div class="message-list" data-messages-list aria-live="polite">${items || '<p class="message-empty" data-message-empty>Belum ada pesan yang dibuka untuk umum. Jadilah yang pertama menulis.</p>'}</div></div></div>`;
 }
 
 function adminPage(session = null) {

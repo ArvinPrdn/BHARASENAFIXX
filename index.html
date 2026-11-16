@@ -42,16 +42,29 @@
     <script type="module" src="src/scripts/event-maps.js"></script>
   </head>
   <body>
-    <a class="skip-link" href="#main">Lewati ke konten utama</a>
+    <a class="skip-link" href="#main">Lewati pembuka</a>
     <div class="velvet-grain" aria-hidden="true"></div>
     <div class="ambient" aria-hidden="true"></div>
 
     <header class="site-header">
       <a class="site-brand" href="#hero" aria-label="BHARASENA, kembali ke awal">BHARASENA <span>· 2026</span></a>
-      <nav class="header-nav" aria-label="Navigasi utama"><a href="#rundown">Jadwal</a><a href="#info-peserta">Info peserta</a><a href="#undangan">Kartu</a><a href="#galeri">Galeri</a><details class="section-menu"><summary>Lainnya</summary><div class="section-menu__links"><a href="#tentang">Tentang acara</a><a href="#identitas">Lambang batalyon</a><a href="#penampil">Penampil</a><a href="#dinding-pesan">Dinding pesan</a><a href="#proposal">Proposal sponsor</a><a href="#kontak">Kontak panitia</a></div></details></nav>
-      <button id="audio-toggle" class="icon-button audio-toggle" type="button" aria-expanded="false" aria-haspopup="dialog"><span aria-hidden="true">♫</span> Musik</button>
+      <nav class="header-nav" aria-label="Navigasi utama"><a href="#rundown">Rundown</a><a href="#info-peserta">Info peserta</a><a href="#undangan">Undanganku</a><a href="#proposal">Proposal</a><a href="#dinding-pesan">Dinding pesan</a></nav>
+      <div class="clock-group"><span class="clock-caption" aria-hidden="true">WAKTU BERJALAN</span><span class="scene-clock" role="timer" aria-label="Waktu Indonesia Barat">--.--</span></div>
+      <button id="audio-toggle" class="icon-button audio-toggle" type="button" aria-expanded="false" aria-haspopup="dialog" aria-label="Pilih lagu Budi Doremi"><span aria-hidden="true">♫</span></button>
     </header>
 
+    <nav class="scene-rail" aria-label="Lompat ke adegan">
+      <a class="scene-dot is-active" href="#hero" aria-label="Ke pembuka"><span>01</span></a>
+      <a class="scene-dot" href="#tentang" aria-label="Ke tentang acara"><span>02</span></a>
+      <a class="scene-dot" href="#penampil" aria-label="Ke penampil"><span>03</span></a>
+      <a class="scene-dot" href="#rundown" aria-label="Ke rundown"><span>04</span></a>
+      <a class="scene-dot" href="#info-peserta" aria-label="Ke info peserta"><span>05</span></a>
+      <a class="scene-dot" href="#undangan" aria-label="Ke undangan personal"><span>06</span></a>
+      <a class="scene-dot" href="#proposal" aria-label="Ke proposal sponsor"><span>07</span></a>
+      <a class="scene-dot" href="#galeri" aria-label="Ke galeri"><span>08</span></a>
+      <a class="scene-dot" href="#dinding-pesan" aria-label="Ke dinding pesan"><span>09</span></a>
+      <a class="scene-dot" href="#tengah-malam" aria-label="Ke penutup"><span>10</span></a>
+    </nav>
 
     <main id="main">
       <section id="hero" class="scene hero" data-scene="1" aria-labelledby="hero-title">
@@ -78,25 +91,28 @@
         </div>
         <div class="hero-spotlight" aria-hidden="true"></div>
         <div class="hero-content">
+          <div class="hero-intro"><span class="small-rule"></span><span>PROM NIGHT BATALYON 6</span><span class="small-rule"></span></div>
+          <p class="hero-presents">Batalyon Bhara Arsa Nawasena mempersembahkan</p>
           <div class="wordmark-wrap"><h1 id="hero-title" class="foil-wordmark">BHARASENA</h1><div class="wordmark-reflection" aria-hidden="true">BHARASENA</div></div>
-          <p class="hero-presents">Prom Night Batalyon 6</p>
           <p class="hero-line">Satu angkatan. Banyak cerita.</p>
           <div class="hero-tickets">
-            <a class="event-ticket" href="#rundown"><span class="ticket-label">TANGGAL ACARA</span><strong>11—13 <em>Desember</em> 2026</strong><span>Lihat jadwal</span></a>
-            <!-- slot:venue:start --><a class="event-ticket ticket-place" href="#tempat-acara"><span class="ticket-label">LOKASI</span><strong>SMAN 2 Taruna Bhayangkara</strong><span>Lihat tempat acara</span></a><!-- slot:venue:end -->
+            <button class="event-ticket" type="button" aria-pressed="false"><span class="ticket-label">TANGGAL ACARA</span><strong>11—13 <em>Desember</em> 2026</strong><span>SMAN 2 Taruna Bhayangkara</span></button>
+            <!-- slot:venue:start --><button class="event-ticket ticket-place" type="button" aria-pressed="false" data-dynamic="venue"><span class="ticket-label">LOKASI</span><strong>Tempat akan diumumkan</strong><span>Informasi resmi menyusul</span></button><!-- slot:venue:end -->
           </div>
-          <a class="hero-scroll" href="#tentang">Tentang acara</a>
+          <a class="hero-scroll" href="#tentang">Masuk ke ballroom</a>
         </div>
-        <div class="hero-bottom"><p id="hero-countdown" aria-live="polite">Menuju BHARASENA</p><button id="motion-toggle" class="text-button" type="button" hidden>Aktifkan gerak</button></div>
+        <div class="hero-bottom"><p id="hero-countdown" aria-live="polite">Menuju BHARASENA</p><button id="motion-toggle" class="text-button" type="button" hidden>Aktifkan gerak</button><span>11–13 DESEMBER 2026</span></div>
       </section>
 
       <section id="tentang" class="scene about" data-scene="2" aria-labelledby="about-title">
         <div class="scene-shape about-orbit" data-parallax-depth="-0.08" aria-hidden="true"></div>
-        <div class="about-content"><h2 id="about-title">Satu angkatan.<br /><span>Banyak cerita.</span></h2><div class="about-copy"><span class="vertical-rule"></span><div><p>BHARASENA merayakan perjalanan Batalyon Bhara Arsa Nawasena. Di sini kita berhenti sejenak, berkumpul, dan memberi ruang bagi cerita yang tumbuh selama bersama di SMAN 2 Taruna Bhayangkara.</p><a class="heritage-discover" href="#identitas">Kenali lambang kita</a></div></div></div>
+        <div class="about-number" aria-hidden="true">06</div>
+        <div class="about-content"><p class="scene-kicker">18.45 / SEBUAH PERJALANAN</p><h2 id="about-title">Satu angkatan.<br /><span>Banyak cerita.</span></h2><div class="about-copy"><span class="vertical-rule"></span><div><p>BHARASENA merayakan perjalanan Batalyon Bhara Arsa Nawasena. Di sini kita berhenti sejenak, berkumpul, dan memberi ruang bagi cerita yang tumbuh selama bersama di SMAN 2 Taruna Bhayangkara.</p><a class="heritage-discover" href="#identitas">Kenali lambang kita</a></div></div></div>
       </section>
 
       <section id="identitas" class="scene heritage" data-scene="2.5" aria-labelledby="heritage-title">
         <div class="heritage-heading">
+          <p class="scene-kicker">IDENTITAS BATALYON</p>
           <h2 id="heritage-title">Di balik <em>lambang kita.</em></h2>
           <p>Setiap simbol menyimpan cerita. Setiap makna menjadi bagian dari kita.</p>
         </div>
@@ -110,6 +126,7 @@
             <figcaption>BHARA ARSA NAWASENA<span>Tekan lambang untuk mengenal maknanya</span></figcaption>
           </figure>
           <div class="heritage-story">
+            <p class="heritage-overline">SATU NAMA. SATU TEKAD.</p>
             <dl class="heritage-name"><div><dt>Bhara</dt><dd>Ksatria</dd></div><div><dt>Arsa</dt><dd>Semangat &amp; tekad</dd></div><div><dt>Nawasena</dt><dd>Masa depan yang cerah</dd></div></dl>
             <p class="heritage-intro">Keberanian untuk melindungi. Semangat untuk terus belajar. Harapan untuk membawa masa depan yang lebih cerah.</p>
             <details id="heritage-explorer" class="heritage-explorer">
@@ -150,26 +167,27 @@
       <section id="penampil" class="scene performer" data-scene="3" aria-labelledby="performer-title">
         <div class="performer-beam" data-parallax-depth="-0.08" aria-hidden="true"></div>
         <div class="performer-dust" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
-          <div class="performer-layout"><div class="performer-head"><h2 id="performer-title"><img class="performer-logo" src="assets/budi-doremi-logo.png" width="1682" height="235" alt="Budi Doremi" loading="lazy" decoding="async" /></h2><p class="performer-summary">Lagu yang akrab. Cerita yang dekat.<br />Satu malam, kita bernyanyi bersama.</p><!-- slot:performer-schedule:start --><a class="performer-schedule" href="#tab-13"><span>Jadwal konser</span><strong>13 Desember 2026 · 21.05–22.15 WIB</strong></a><!-- slot:performer-schedule:end --><button class="performer-listen" type="button" aria-haspopup="dialog" aria-controls="music-panel"><span aria-hidden="true">♫</span> Dengarkan lagunya</button></div><figure class="performer-portrait"><div class="portrait-mat"><img src="assets/budi-doremi.jpg" width="1200" height="1572" alt="Foto resmi Budi Doremi mengenakan jas hitam dan kacamata" loading="lazy" decoding="async" /></div><figcaption><span class="performer-portrait__name">Budi Doremi</span><details class="performer-portrait__credit"><summary>Kredit foto</summary>Foto resmi dari <a href="https://drive.google.com/file/d/1lWvfgCwti5gFmgCiaxgEA84O8tSzGXSv/view" target="_blank" rel="noopener noreferrer">manajemen Budi Doremi</a>.</details></figcaption></figure></div>
+          <div class="performer-layout"><div class="performer-head"><p class="scene-kicker">03 / DI BAWAH LAMPU</p><p class="performer-small"><span></span> LIVE ON STAGE</p><h2 id="performer-title"><img class="performer-logo" src="assets/budi-doremi-logo.png" width="1682" height="235" alt="Budi Doremi" loading="lazy" decoding="async" /></h2><p class="performer-summary">Lagu yang akrab. Cerita yang dekat.<br />Satu malam, kita bernyanyi bersama.</p><button class="performer-listen" type="button" aria-haspopup="dialog" aria-controls="music-panel"><span aria-hidden="true">♫</span> Dengarkan lagunya</button><!-- slot:performer-schedule:start --><div class="mini-envelope" data-envelope="performer" data-dynamic="performer-schedule"><span class="wax-mini" aria-hidden="true"></span><span>Jadwal penampilan<br /><strong>13 Desember 2026 · 21.05–22.15 WIB</strong></span></div><!-- slot:performer-schedule:end --></div><figure class="performer-portrait"><div class="performer-photo-label" aria-hidden="true">THE BALLROOM SESSIONS <span>BHARASENA / 2026</span></div><div class="portrait-mat"><img src="assets/budi-doremi.jpg" width="1200" height="1572" alt="Foto resmi Budi Doremi mengenakan jas hitam dan kacamata" loading="lazy" decoding="async" /></div><figcaption><span class="performer-portrait__name">Budi Doremi</span><details class="performer-portrait__credit"><summary>Kredit foto</summary>Foto resmi dari <a href="https://drive.google.com/file/d/1lWvfgCwti5gFmgCiaxgEA84O8tSzGXSv/view" target="_blank" rel="noopener noreferrer">manajemen Budi Doremi</a>.</details></figcaption></figure></div>
       </section>
 
       <section id="rundown" class="scene programme" data-scene="4" aria-labelledby="programme-title">
         <header class="programme-heading">
           <div>
-            <h2 id="programme-title">Jadwal <em>acara.</em></h2>
+            <p class="scene-kicker">Rundown BHARASENA</p>
+            <h2 id="programme-title">Tiga hari. <em>Satu perayaan.</em></h2>
           </div>
           <p class="programme-calendar"><strong>11–13 Desember 2026</strong><span>Seluruh waktu dalam WIB</span></p>
         </header>
         <div class="programme-layout" data-dynamic="rundown">
           <div class="day-tabs" id="pilih-hari" role="tablist" aria-label="Pilih hari acara" tabindex="-1">
             <button class="day-tab" id="tab-11" data-day="11" type="button" role="tab" aria-controls="panel-11" aria-selected="true" tabindex="0">
-              <span class="day-tab__name">Hari 1</span><span class="day-tab__date">Jumat, 11 Des</span>
+              <span class="day-tab__name">Jumat</span><span class="day-tab__date">11 Desember</span>
             </button>
             <button class="day-tab" id="tab-12" data-day="12" type="button" role="tab" aria-controls="panel-12" aria-selected="false" tabindex="-1">
-              <span class="day-tab__name">Hari 2</span><span class="day-tab__date">Sabtu, 12 Des</span>
+              <span class="day-tab__name">Sabtu</span><span class="day-tab__date">12 Desember</span>
             </button>
             <button class="day-tab" id="tab-13" data-day="13" type="button" role="tab" aria-controls="panel-13" aria-selected="false" tabindex="-1">
-              <span class="day-tab__name">Hari 3</span><span class="day-tab__date">Minggu, 13 Des</span>
+              <span class="day-tab__name">Minggu</span><span class="day-tab__date">13 Desember</span>
             </button>
           </div>
           <div class="day-panels">
@@ -231,7 +249,7 @@
                     </li>
                     <li>
                       <span class="programme-agenda__time">08.00–selesai</span>
-                      <div><h5>Donor Darah</h5><p>Seluruh Masyarakat SMADATARA</p><a class="action-link" href="#info-peserta" data-event-map="donor-darah">Lihat denah</a></div>
+                      <div><h5>Donor Darah</h5><p>Seluruh Masyarakat SMADATARA</p></div>
                     </li>
                     <li>
                       <span class="programme-agenda__time">12.00–12.45</span>
@@ -275,7 +293,7 @@
                     </li>
                     <li class="programme-agenda__featured">
                       <span class="programme-agenda__time">20.00–21.30</span>
-                      <div><h5>Talkshow tiga agama</h5><p>Ustadz/Kyai sekaligus penutupan oleh MC</p><a class="action-link" href="#info-peserta" data-event-map="talkshow">Lihat denah</a></div>
+                      <div><h5>Talkshow tiga agama</h5><p>Ustadz/Kyai sekaligus penutupan oleh MC</p></div>
                     </li>
                     <li>
                       <span class="programme-agenda__time">21.30–22.30</span>
@@ -505,37 +523,30 @@
 
       <section id="info-peserta" class="scene information" data-scene="5" aria-labelledby="information-title">
         <div class="scene-shape information-seal" data-parallax-depth="-0.06" aria-hidden="true"></div>
-        <div class="information-heading"><h2 id="information-title">Info peserta.</h2><p>Cari lokasi, aturan masuk, panduan busana, dan denah untuk persiapan datang.</p></div>
-         <div class="envelope-grid" data-dynamic="envelopes"><!-- slot:envelopes:start --><article class="envelope" id="tempat-acara" data-envelope="lokasi"><div class="envelope-body"><h3>Tempat acara</h3><p>Alamat dan petunjuk arah ke lokasi acara.</p></div><div class="envelope-bottom"><span>SEGEL PANITIA</span><span class="wax-mini" aria-hidden="true"></span></div></article><article class="envelope is-open" data-envelope="parkir"><div class="envelope-body"><h3>Denah parkir</h3><p>Jalur dan area parkir untuk motor dan mobil.</p></div><div class="envelope-bottom"><span>LIHAT DENAH</span><span class="wax-mini" aria-hidden="true"></span></div></article><article class="envelope" id="ketentuan-masuk" data-envelope="masuk"><div class="envelope-body"><h3>Ketentuan masuk</h3><p>Cari tahu siapa yang dapat hadir dan fasilitas yang tersedia.</p></div><div class="envelope-bottom"><span>SEGEL PANITIA</span><span class="wax-mini" aria-hidden="true"></span></div></article><article class="envelope" data-envelope="busana"><div class="envelope-body"><h3>Busana acara</h3><p>Panduan pakaian dan desain jersey BHARASENA VI.</p></div><div class="envelope-bottom"><span>SEGEL PANITIA</span><span class="wax-mini" aria-hidden="true"></span></div></article><!-- slot:envelopes:end -->
+        <div class="information-heading"><p class="scene-kicker">21.30 / UNTUK TAMU</p><h2 id="information-title">Info peserta.</h2><p>Detail praktis akan dibuka setelah dipastikan panitia. Kembali ke halaman ini untuk pembaruan.</p></div>
+         <div class="envelope-grid" data-dynamic="envelopes"><!-- slot:envelopes:start --><article class="envelope" data-envelope="lokasi"><div class="envelope-top"><span>01 / LOKASI</span><span class="envelope-fold" aria-hidden="true"></span></div><div class="envelope-body"><h3>Tempat acara</h3><p>Lokasi lengkap menyusul.</p></div><div class="envelope-bottom"><span>SEGEL PANITIA</span><span class="wax-mini" aria-hidden="true"></span></div></article><article class="envelope is-open" data-envelope="parkir"><div class="envelope-top"><span>02 / PARKIR</span><span class="envelope-fold" aria-hidden="true"></span></div><div class="envelope-body"><h3>Denah parkir</h3><p>Lihat denah dan jalur parkir motor serta mobil.</p></div><div class="envelope-bottom"><span>LIHAT DENAH</span><span class="wax-mini" aria-hidden="true"></span></div></article><article class="envelope" data-envelope="masuk"><div class="envelope-top"><span>03 / AKSES</span><span class="envelope-fold" aria-hidden="true"></span></div><div class="envelope-body"><h3>Ketentuan masuk</h3><p>Petunjuk masuk peserta dan tamu menyusul.</p></div><div class="envelope-bottom"><span>SEGEL PANITIA</span><span class="wax-mini" aria-hidden="true"></span></div></article><article class="envelope" data-envelope="busana"><div class="envelope-top"><span>04 / BUSANA</span><span class="envelope-fold" aria-hidden="true"></span></div><div class="envelope-body"><h3>Busana acara</h3><p>Ketentuan berpakaian menyusul.</p></div><div class="envelope-bottom"><span>SEGEL PANITIA</span><span class="wax-mini" aria-hidden="true"></span></div></article><!-- slot:envelopes:end -->
           <article class="envelope envelope--map is-open">
-            <div class="envelope-body"><h3>Denah acara</h3><p>Denah Hari 1 sudah tersedia. Hari 2 dan 3 menyusul.</p></div>
+            <div class="envelope-top"><span>DENAH KEGIATAN</span><span class="envelope-fold" aria-hidden="true"></span></div>
+            <div class="envelope-body"><h3>Denah acara</h3><p>Lokasi kegiatan dan pembagian area Day 1–3.</p></div>
             <div class="envelope-bottom">
               <button class="event-map-trigger" type="button" aria-haspopup="dialog" aria-controls="event-maps" aria-label="Lihat denah acara">Lihat denah</button>
               <span class="wax-mini" aria-hidden="true"></span>
             </div>
           </article>
         </div>
-        <p class="information-help">Butuh bantuan? <a class="action-link" href="#kontak">Hubungi panitia</a></p>
       </section>
 
       <section id="undangan" class="scene invitation" data-scene="6" aria-labelledby="invitation-title">
         <div class="scene-shape invitation-sheen" data-parallax-depth="0.08" aria-hidden="true"></div>
-        <div class="invitation-copy">
-          <h2 id="invitation-title">Buat kartu <em>undangan.</em></h2>
-          <p>Isi nama untuk membuat kartu yang bisa disimpan atau dibagikan. Syarat hadir tercantum di <a href="#ketentuan-masuk">Ketentuan masuk</a>.</p>
-          <form id="invite-form" class="invite-form">
-            <label for="invite-name">Nama pada kartu</label>
-            <div class="input-row"><input id="invite-name" name="name" type="text" maxlength="40" autocomplete="name" placeholder="Nama kamu" required /><button type="submit">Lihat kartu</button></div>
-          </form>
-        </div>
-        <div class="invite-card-wrap"><div class="invite-art"><div class="invite-envelope" aria-hidden="true"></div><div class="invite-card" id="invite-preview" tabindex="-1" aria-label="Pratinjau kartu undangan personal">
+        <div class="invitation-copy"><p class="scene-kicker">22.30 / SEBUAH SAPAAN</p><h2 id="invitation-title">Undangan ini<br />punya namamu.</h2><p>Tulis nama yang ingin tertera. Kartu dibuat di perangkatmu dan dapat diunduh atau dibagikan.</p><form id="invite-form" class="invite-form"><label for="invite-name">Nama pada undangan</label><div class="input-row"><input id="invite-name" name="name" type="text" maxlength="40" autocomplete="name" placeholder="Nama kamu" /><button type="submit">Tampilkan</button></div></form><div class="invite-actions"><button id="invite-download" type="button">Unduh kartu PNG</button><button id="invite-share" type="button">Bagikan kartu</button></div><p id="invite-status" class="invite-status" role="status" aria-live="polite"></p></div>
+        <div class="invite-card-wrap"><div class="invite-envelope" aria-hidden="true"></div><div class="invite-card" id="invite-preview" tabindex="0" aria-label="Pratinjau kartu undangan personal">
           <span class="invite-corner corner-tl" aria-hidden="true"></span><span class="invite-corner corner-tr" aria-hidden="true"></span><span class="invite-corner corner-bl" aria-hidden="true"></span><span class="invite-corner corner-br" aria-hidden="true"></span>
           <img class="card-crest" src="assets/batalyon/bhara-arsa-nawasena.png" width="1024" height="1024" alt="Lambang Batalyon Bhara Arsa Nawasena" loading="lazy">
           <span class="card-top">BHARASENA</span><span class="card-battalion">BHARA ARSA NAWASENA</span><span class="card-ornament" aria-hidden="true">✦</span>
           <span class="card-greeting">Dengan hangat kami mengundang</span><strong id="invite-preview-name">Nama Anda</strong>
           <span class="card-message">Menjadi bagian dari perayaan,<br>pertemuan, dan kenangan yang tinggal.</span><span class="card-date">11 — 13 DESEMBER 2026</span>
           <span class="card-signature">Sampai bertemu,</span><small>BATALYON BHARA ARSA NAWASENA<br>SMAN 2 TARUNA BHAYANGKARA</small>
-        </div><span class="invite-wax" aria-hidden="true">BH</span></div><div class="invite-actions" hidden><button id="invite-download" class="action-primary" type="button">Unduh kartu</button><button id="invite-share" type="button">Bagikan kartu</button><p id="invite-status" class="invite-status" role="status"></p></div></div>
+        </div><span class="invite-wax" aria-hidden="true">BH</span></div>
       </section>
 
       <section id="proposal" class="scene proposal" data-scene="7" aria-labelledby="proposal-title">
@@ -543,52 +554,56 @@
         <div class="proposal-orbit proposal-orbit-two" data-parallax-depth="-0.09" aria-hidden="true"></div>
         <div class="proposal-heading">
           <div>
-            <h2 id="proposal-title">Proposal <em>sponsor.</em></h2>
+            <p class="scene-kicker">23.00 / RUANG KERJA SAMA</p>
+            <h2 id="proposal-title">Buka pintu<br /><em>kemitraan.</em></h2>
           </div>
-          <p class="proposal-intro">Pilih proposal sesuai jenis kerja sama yang kamu minati.</p>
+          <p class="proposal-intro">Dua dokumen resmi untuk membaca visi, ruang kolaborasi, dan cara menjadi bagian dari malam BHARASENA.</p>
         </div>
         <div class="proposal-stage">
+          <div class="proposal-stamp" aria-hidden="true"><span>BHARASENA</span><strong>2026</strong><span>OFFICIAL</span></div>
           <div class="proposal-stack" aria-hidden="true"><span></span><span></span><span></span></div>
           <div class="proposal-card-grid">
             <article class="proposal-card proposal-card-featured">
-              <div class="proposal-card-top"><span>BAZAR</span><span>6 HALAMAN</span></div>
+              <div class="proposal-card-top"><span>01 / BAZZAR</span><span>6 HALAMAN</span></div>
               <div class="proposal-cover">
-                <strong>BAZAR<br /><em>PROPOSAL</em></strong>
+                <span class="proposal-cover-kicker">SPONSORSHIP</span>
+                <strong>BAZZAR<br /><em>PROPOSAL</em></strong>
                 <span class="proposal-cover-mark">B H</span>
                 <span class="proposal-cover-line"></span>
                 <small>BHARASENA · THREE NIGHT IN TRIBRATA</small>
               </div>
-              <div class="proposal-card-body"><p>Proposal kerja sama bazar untuk merek dan pelaku usaha yang ingin hadir di ruang perayaan BHARASENA.</p><div class="proposal-actions"><a class="proposal-primary action-primary" href="assets/proposals/bharasena-sponsorship-bazzar.pdf" target="_blank" rel="noopener">Buka PDF</a><a class="proposal-download action-link" href="assets/proposals/bharasena-sponsorship-bazzar.pdf" download>Unduh PDF</a></div></div>
+              <div class="proposal-card-body"><p>Proposal kerja sama bazar untuk brand dan tenant yang ingin hadir di ruang perayaan BHARASENA.</p><div class="proposal-actions"><a class="proposal-primary" href="assets/proposals/bharasena-sponsorship-bazzar.pdf" target="_blank" rel="noopener">Baca proposal</a><a class="proposal-download" href="assets/proposals/bharasena-sponsorship-bazzar.pdf" download>Unduh PDF</a></div></div>
             </article>
             <article class="proposal-card">
-              <div class="proposal-card-top"><span>SPONSOR ACARA</span><span>9 HALAMAN</span></div>
+              <div class="proposal-card-top"><span>02 / PARTNERSHIP</span><span>9 HALAMAN</span></div>
               <div class="proposal-cover proposal-cover-red">
+                <span class="proposal-cover-kicker">OFFICIAL DECK</span>
                 <strong>BHARA<br /><em>SENA</em></strong>
                 <span class="proposal-cover-mark">✦</span>
                 <span class="proposal-cover-line"></span>
                 <small>SPONSORSHIP PROPOSAL · 2026</small>
               </div>
-              <div class="proposal-card-body"><p>Proposal sponsor untuk mengenal BHARASENA, peserta, dan pilihan paket dukungan.</p><div class="proposal-actions"><a class="proposal-primary action-primary" href="assets/proposals/bharasena-sponsorship-deck.pdf" target="_blank" rel="noopener">Buka PDF</a><a class="proposal-download action-link" href="assets/proposals/bharasena-sponsorship-deck.pdf" download>Unduh PDF</a></div></div>
+              <div class="proposal-card-body"><p>Deck utama untuk calon partner yang ingin memahami acara, audiens, dan pilihan dukungan.</p><div class="proposal-actions"><a class="proposal-primary" href="assets/proposals/bharasena-sponsorship-deck.pdf" target="_blank" rel="noopener">Baca proposal</a><a class="proposal-download" href="assets/proposals/bharasena-sponsorship-deck.pdf" download>Unduh PDF</a></div></div>
             </article>
           </div>
         </div>
-        <p class="proposal-note">Punya pertanyaan soal kerja sama? <a class="action-link" href="#kontak">Hubungi panitia</a></p>
+        <p class="proposal-note"><span class="wax-mini" aria-hidden="true"></span> Untuk kerja sama dan pertanyaan proposal, hubungi panitia melalui kontak resmi yang tercantum di dokumen.</p>
       </section>
 
-      <section id="galeri" class="scene gallery" data-scene="8" aria-labelledby="gallery-title"><div class="scene-shape gallery-light" data-parallax-depth="-0.06" aria-hidden="true"></div><div class="gallery-top"><div><h2 id="gallery-title">Galeri foto.</h2></div><div class="gallery-intro"><p>Foto dokumentasi akan ditambahkan selama acara.</p><a class="gallery-link action-primary" href="/galeri">Buka galeri</a></div></div><!-- slot:gallery:start --><div class="gallery-track" data-dynamic="gallery" aria-label="Pratinjau foto acara" hidden></div><!-- slot:gallery:end --><dialog id="gallery-dialog" class="gallery-dialog" aria-label="Foto dokumentasi"><button class="dialog-close" type="button" aria-label="Tutup foto">×</button><img alt="" /><p></p><div class="dialog-controls"><button type="button" data-gallery-prev aria-label="Foto sebelumnya">Sebelumnya</button><button type="button" data-gallery-next aria-label="Foto berikutnya">Berikutnya</button></div></dialog></section>
+      <section id="galeri" class="scene gallery" data-scene="8" aria-labelledby="gallery-title"><div class="scene-shape gallery-light" data-parallax-depth="-0.06" aria-hidden="true"></div><div class="gallery-top"><div><p class="scene-kicker">23.15 / LORONG KENANGAN</p><h2 id="gallery-title">Galeri<br />pameran.</h2></div><div class="gallery-intro"><p>Setiap bingkai menunggu kisahnya. Galeri dibuka mulai 11 Desember 2026, dan foto akan ditambahkan panitia selama acara.</p><a class="gallery-link" href="/galeri">Lihat ruang foto</a></div></div><!-- slot:gallery:start --><div class="gallery-track" data-dynamic="gallery" tabindex="0" aria-label="Galeri foto acara, geser untuk melihat bingkai"><figure class="gallery-frame" data-parallax-depth="-0.03"><div class="gallery-mat"><span class="frame-monogram">B</span></div><figcaption>HARI 01 · SEGERA DIPAJANG</figcaption></figure><figure class="gallery-frame" data-parallax-depth="-0.07"><div class="gallery-mat"><span class="frame-monogram">H</span></div><figcaption>HARI 02 · SEGERA DIPAJANG</figcaption></figure><figure class="gallery-frame" data-parallax-depth="0.05"><div class="gallery-mat"><span class="frame-monogram">A</span></div><figcaption>HARI 03 · SEGERA DIPAJANG</figcaption></figure></div><!-- slot:gallery:end --><dialog id="gallery-dialog" class="gallery-dialog" aria-label="Foto dokumentasi"><button class="dialog-close" type="button" aria-label="Tutup foto">×</button><img alt="" /><p></p><div class="dialog-controls"><button type="button" data-gallery-prev aria-label="Foto sebelumnya">Sebelumnya</button><button type="button" data-gallery-next aria-label="Foto berikutnya">Berikutnya</button></div></dialog></section>
 
       <section id="dinding-pesan" class="scene message-wall" data-scene="9" aria-labelledby="message-wall-title">
         <div class="scene-shape message-orbit" data-parallax-depth="0.07" aria-hidden="true"></div>
-        <div class="message-wall-heading"><h2 id="message-wall-title">Dinding<br /><em>pesan.</em></h2><p>Tulis pesan singkat untuk angkatan. Pesan yang memenuhi ketentuan akan tampil di sini.</p></div>
+        <div class="message-wall-heading"><p class="scene-kicker">23.40 / SURAT UNTUK KITA</p><h2 id="message-wall-title">Dinding<br /><em>pesan.</em></h2><p>Tinggalkan satu kalimat untuk angkatan. Tulis satu kalimat untuk angkatan. Pesan yang memenuhi ketentuan akan langsung tampil di dinding.</p></div>
         <!-- slot:messages:start --><div class="message-wall-layout" data-dynamic="messages">
           <form id="message-form" class="message-form" data-message-form novalidate>
             <div class="message-field"><label for="message-name">Nama panggilan <span>(opsional)</span></label><input id="message-name" name="nickname" data-message-name type="text" maxlength="20" autocomplete="nickname" placeholder="Nama atau inisial" /></div>
             <div class="message-field"><label for="message-body">Pesan untuk angkatan</label><textarea id="message-body" name="body" data-message-body aria-describedby="message-rules" maxlength="80" rows="5" placeholder="Tulis sesuatu yang ingin kamu abadikan…" required></textarea><small id="message-rules" class="message-counter">Minimal 3 kata · <span data-message-count>0</span> / 80 karakter</small></div>
             <div class="message-trap" aria-hidden="true"><label for="message-website">Website</label><input id="message-website" name="website" data-message-honeypot tabindex="-1" autocomplete="off" /></div>
-            <button class="message-submit" type="submit">Kirim pesan</button>
+            <button class="message-submit" type="submit">Kirim ke meja redaksi</button>
             <p id="message-status" class="message-status" data-message-status role="status" aria-live="polite"></p>
           </form>
-          <div class="message-list-wrap"><div class="message-list-heading"><span>Pesan dari peserta</span><span class="message-list-state" data-message-state>MENUNGGU PESAN</span></div><div class="message-list" data-messages-list aria-live="polite"><p class="message-empty" data-message-empty>Belum ada pesan. Jadilah yang pertama menulis.</p></div></div>
+          <div class="message-list-wrap"><div class="message-list-heading"><span>CATATAN YANG SUDAH TIBA</span><span class="message-list-state" data-message-state>MENUNGGU PESAN</span></div><div class="message-list" data-messages-list aria-live="polite"><p class="message-empty" data-message-empty>Belum ada pesan yang dibuka untuk umum. Jadilah yang pertama menulis.</p></div></div>
         </div><!-- slot:messages:end -->
       </section>
 
@@ -623,6 +638,7 @@
               </a>
             </nav>
           </section>
+          <a href="#hero" class="return-link">Kembali ke awal</a>
           <section id="kontak" class="committee-contact" aria-labelledby="committee-contact-title">
             <h3 id="committee-contact-title">Kontak panitia</h3>
             <address class="committee-contact__links">
@@ -644,7 +660,7 @@
       </section>
     </main>
 
-    <nav class="mobile-dock" aria-label="Akses cepat"><a href="#rundown">Jadwal</a><a href="#info-peserta">Info peserta</a><a href="#undangan">Kartu</a><a href="#galeri">Galeri</a><details class="section-menu"><summary>Lainnya</summary><div class="section-menu__links"><a href="#tentang">Tentang acara</a><a href="#identitas">Lambang batalyon</a><a href="#penampil">Penampil</a><a href="#dinding-pesan">Dinding pesan</a><a href="#proposal">Proposal sponsor</a><a href="#kontak">Kontak panitia</a></div></details></nav>
+    <nav class="mobile-dock" aria-label="Akses cepat"><a href="#rundown">Rundown</a><a href="#info-peserta">Info</a><a href="#undangan">Undangan</a><a href="#proposal">Proposal</a><a href="#dinding-pesan">Pesan</a></nav>
     <footer class="site-footer"><span>BHARASENA © 2026</span><span>Batalyon Bhara Arsa Nawasena</span><a href="#hero">Kembali ke awal</a></footer>
 
     <dialog id="event-maps" class="letter-dialog letter-polished" aria-labelledby="event-maps-title">
@@ -659,15 +675,15 @@
                 <button type="button" class="letter-dialog-close" aria-label="Tutup denah acara" autofocus>×</button>
               </div>
               <div class="event-map-tabs" role="tablist" aria-label="Hari acara">
-                <button id="event-map-tab-1" type="button" role="tab" aria-selected="true" aria-controls="event-map-day-1" data-date="2026-12-11"><strong>Hari 1</strong><span>Jumat, 11 Des</span></button>
-                <button id="event-map-tab-2" type="button" role="tab" aria-selected="false" aria-controls="event-map-day-2" data-date="2026-12-12" tabindex="-1"><strong>Hari 2</strong><span>Sabtu, 12 Des</span></button>
-                <button id="event-map-tab-3" type="button" role="tab" aria-selected="false" aria-controls="event-map-day-3" data-date="2026-12-13" tabindex="-1"><strong>Hari 3</strong><span>Minggu, 13 Des</span></button>
+                <button id="event-map-tab-1" type="button" role="tab" aria-selected="true" aria-controls="event-map-day-1" data-date="2026-12-11"><strong>Day 1</strong><span>11 Des</span></button>
+                <button id="event-map-tab-2" type="button" role="tab" aria-selected="false" aria-controls="event-map-day-2" data-date="2026-12-12" tabindex="-1"><strong>Day 2</strong><span>12 Des</span></button>
+                <button id="event-map-tab-3" type="button" role="tab" aria-selected="false" aria-controls="event-map-day-3" data-date="2026-12-13" tabindex="-1"><strong>Day 3</strong><span>13 Des</span></button>
               </div>
             </header>
             <div class="letter-content letter-details">
               <section id="event-map-day-1" role="tabpanel" aria-labelledby="event-map-tab-1">
-                <article class="event-map-entry" id="denah-donor-darah">
-                  <h3 tabindex="-1">Donor Darah</h3>
+                <article class="event-map-entry">
+                  <h3>Donor Darah</h3>
                   <p>Ruang PBNK · Pagi</p>
                   <img src="assets/denah-acara/day-1-donor-darah.svg" width="4500" height="3000" loading="lazy" decoding="async" alt="Denah Ruang PBNK dengan pintu masuk dan keluar, area registrasi, ruang tunggu, bilik pemeriksaan, dan lima bilik donor.">
                   <div class="event-map-actions">
@@ -675,8 +691,8 @@
                     <a class="letter-map-link" href="assets/denah-acara/day-1-donor-darah.svg" download aria-label="Unduh denah Donor Darah">Unduh denah</a>
                   </div>
                 </article>
-                <article class="event-map-entry" id="denah-talkshow">
-                  <h3 tabindex="-1">Talkshow Tiga Agama</h3>
+                <article class="event-map-entry">
+                  <h3>Talkshow Tiga Agama</h3>
                   <p>Lapangan Tribrata · Malam</p>
                   <img src="assets/denah-acara/day-1-talkshow.svg" width="4500" height="3000" loading="lazy" decoding="async" alt="Denah Lapangan Tribrata yang menunjukkan panggung, pintu masuk, area VVIP, serta posisi taruna dan taruni.">
                   <div class="event-map-actions">
@@ -686,10 +702,10 @@
                 </article>
               </section>
               <section id="event-map-day-2" role="tabpanel" aria-labelledby="event-map-tab-2" tabindex="0" hidden>
-                <p class="event-map-pending">Denah Hari 2 sedang disiapkan panitia.</p>
+                <p class="event-map-pending">Denah Day 2 sedang disiapkan panitia.</p>
               </section>
               <section id="event-map-day-3" role="tabpanel" aria-labelledby="event-map-tab-3" tabindex="0" hidden>
-                <p class="event-map-pending">Denah Hari 3 sedang disiapkan panitia.</p>
+                <p class="event-map-pending">Denah Day 3 sedang disiapkan panitia.</p>
               </section>
               <p class="letter-signoff">Dengan hangat,<br><strong>Panitia BHARASENA</strong></p>
             </div>
@@ -725,13 +741,11 @@
             <div class="letter-content letter-details">
               <p id="parking-guide">Ikuti jalur motor berwarna biru dan jalur mobil berwarna oranye.</p>
               <p data-parking-status role="status" aria-live="polite"></p>
-              <div class="event-map-entry" aria-labelledby="parking-title">
-                <img data-parking-image data-src="assets/denah-parkir.svg" width="1920" height="1080" alt="Denah parkir BHARASENA dengan jalur motor biru dan mobil oranye dari Gapura Nawasena menuju area parkir." decoding="async">
-                <div class="event-map-actions">
-                  <button class="letter-action" type="button" data-enlarge-map>Perbesar denah</button>
-                  <a class="letter-map-link" href="assets/denah-parkir.svg" download>Unduh denah</a>
-                </div>
-              </div>
+              <div id="parking-viewport" class="parking-dialog__viewport" tabindex="0" role="region" aria-label="Denah parkir, cubit untuk memperbesar dan geser untuk melihat detail" aria-describedby="parking-gesture-hint"><img data-parking-image data-src="assets/denah-parkir.svg" width="1920" height="1080" alt="Denah parkir BHARASENA dengan jalur motor biru dan mobil oranye dari Gapura Nawasena menuju area parkir." decoding="async"></div>
+              <p id="parking-gesture-hint" class="parking-dialog__hint">Cubit dengan dua jari untuk memperbesar, lalu geser denah.</p>
+              <a class="letter-map-link letter-action" href="assets/denah-parkir.svg" target="_blank" rel="noopener noreferrer">
+                <span class="letter-action__label"><strong>Buka gambar penuh</strong></span>
+              </a>
               <p class="letter-signoff">Dengan hangat,<br><strong>Panitia BHARASENA</strong></p>
             </div>
           </div>
@@ -799,6 +813,7 @@
         </div>
         <div class="busana-editorial">
           <button type="button" class="busana-back">← Panduan busana</button>
+          <p class="scene-kicker">13 DESEMBER / MALAM PUNCAK</p>
           <h2 id="busana-title">Kenakan<br><em>identitas kita.</em></h2>
           <p class="busana-deck">Jersey BHARASENA VI. Satu identitas, bagian dari cerita yang kita rayakan bersama.</p>
           <div class="busana-palette" aria-label="Warna jersey: maroon, hitam, dan emas"><span><i class="busana-palette__maroon" aria-hidden="true"></i>Maroon</span><span><i class="busana-palette__black" aria-hidden="true"></i>Black</span><span><i class="busana-palette__gold" aria-hidden="true"></i>Gold</span></div>

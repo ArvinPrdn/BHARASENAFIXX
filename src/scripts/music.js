@@ -15,30 +15,42 @@ const tracks = [
 export function initMusic() {
   const trigger = document.querySelector('#audio-toggle');
   if (!trigger) return;
-  const triggers = [trigger, document.querySelector('.performer-listen')].filter(Boolean);
-  const panel = document.createElement('dialog');
+  trigger.removeAttribute('aria-pressed');
+  trigger.setAttribute('aria-label', 'Pilih lagu Budi Doremi');
+  trigger.setAttribute('aria-haspopup', 'dialog');
+  trigger.setAttribute('aria-expanded', 'false');
+  trigger.setAttribute('aria-controls', 'music-panel');
+  trigger.setAttribute('popovertarget', 'music-panel');
+  trigger.title = 'Pilih lagu Budi Doremi';
+
+  const panel = document.createElement('section');
   panel.id = 'music-panel';
   panel.className = 'music-panel';
+  panel.setAttribute('popover', 'auto');
+  panel.setAttribute('role', 'dialog');
   panel.setAttribute('aria-labelledby', 'music-title');
   panel.innerHTML = `
-    <header class="music-panel__top">
-      <h2 id="music-title">Lagu Budi Doremi</h2>
-      <form method="dialog"><button class="music-close" type="submit" aria-label="Tutup pilihan lagu" autofocus>×</button></form>
-    </header>
-    <div class="music-panel__body">
-    <div class="music-turntable" aria-hidden="true"><div class="music-record"><img src="assets/budi-doremi.jpg" alt="" /><span class="music-record__label">BHARASENA</span></div><span class="music-tonearm"></span></div>
+    <div class="music-panel__top">
+      <span class="music-panel__eyebrow"><span aria-hidden="true">♫</span> THE BALLROOM SESSIONS</span>
+      <button class="music-close" type="button" popovertarget="music-panel" popovertargetaction="hide" aria-label="Tutup pilihan lagu">×</button>
+    </div>
+    <div class="music-intro">
+      <div class="music-turntable" aria-hidden="true"><div class="music-record"><img src="assets/budi-doremi.jpg" alt="" /><span class="music-record__label">BHARASENA · SIDE A</span></div><span class="music-tonearm"></span></div>
+      <div><p class="music-artist">BUDI DOREMI</p><h2 id="music-title">Lagu untuk<br /><em>malam ini.</em></h2><p class="music-intro__note">Pilih lagu yang ingin kamu dengarkan.</p></div>
+    </div>
+    <div class="music-list-heading"><span>PILIHAN LAGU</span><span>${tracks.length} LAGU</span></div>
     <div class="music-tracks" role="group" aria-label="Lagu Budi Doremi">
       ${tracks.map((track, index) => `<button class="music-track" type="button" data-track="${index}" aria-pressed="false" aria-label="Pilih ${track.title} — ${track.artist}">
+        <span class="music-track__number" aria-hidden="true">${String(index + 1).padStart(2, '0')}</span>
         <span class="music-track__copy"><strong>${track.title}</strong><small>${track.artist}</small></span>
         <span class="music-track__play" aria-hidden="true"></span>
       </button>`).join('')}
     </div>
     <div class="music-player" aria-label="Pemutar lagu">
-      <div class="music-player__empty"><span aria-hidden="true">♫</span><p>Pilih lagu untuk mulai mendengarkan.</p><small></small></div>
+      <div class="music-player__empty"><span aria-hidden="true">♫</span><p>Malam ini, lagumu yang memilih suasana.</p><small>Pilih salah satu lagu di atas untuk mulai.</small></div>
     </div>
     <div class="music-playing"><p class="music-status" role="status" aria-live="polite">Belum ada lagu dipilih</p><button class="music-stop" type="button" hidden>Hentikan</button></div>
-    <p class="music-panel__foot">Lagu tetap diputar saat panel ditutup.</p>
-    </div>`;
+    <p class="music-panel__foot">Musik tetap menemanimu saat menjelajahi halaman.</p>`;
   document.body.append(panel);
 
   const choices = [...panel.querySelectorAll('.music-track')];
@@ -237,22 +249,15 @@ export function initMusic() {
     reset();
     choices[previous]?.focus();
   });
-  let opener;
-  for (const button of triggers) {
-    button.setAttribute('aria-controls', panel.id);
-    button.setAttribute('aria-expanded', 'false');
-    button.addEventListener('click', () => {
-      opener = button;
-      panel.showModal();
-      document.body.classList.add('music-open');
-      button.setAttribute('aria-expanded', 'true');
-      if (!sourceCheck) sourceCheck = checkSources().finally(() => { sourceCheck = null; });
-    });
-  }
-  panel.addEventListener('click', (event) => { if (event.target === panel) panel.close(); });
-  panel.addEventListener('close', () => {
-    document.body.classList.remove('music-open');
-    opener?.setAttribute('aria-expanded', 'false');
-    opener?.focus({ preventScroll: true });
+  panel.addEventListener('beforetoggle', (event) => {
+    const open = event.newState === 'open';
+    trigger.setAttribute('aria-expanded', String(open));
+    if (open && !sourceCheck) {
+      sourceCheck = checkSources().finally(() => { sourceCheck = null; });
+    }
   });
+  return () => {
+    panel.showPopover();
+    panel.querySelector('.music-close').focus();
+  };
 }

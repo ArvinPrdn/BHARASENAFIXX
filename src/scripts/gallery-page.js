@@ -8,13 +8,15 @@ const state = { items: [], filter: 'all', current: 0 };
 const grid = $('[data-gallery-grid]');
 const filters = $('[data-gallery-filters]');
 const status = $('[data-gallery-status]');
-const toolbar = $('.gallery-toolbar');
+const countNodes = $$('[data-gallery-count]');
 const dialog = $('[data-gallery-dialog]');
 const dialogImage = $('[data-gallery-dialog-image]');
 const dialogCaption = $('[data-gallery-dialog-caption]');
 const dialogCounter = $('[data-gallery-dialog-counter]');
 
-let opener;
+function setCount(value) {
+  countNodes.forEach((node) => { node.textContent = String(value); });
+}
 
 function safeItem(item) {
   return {
@@ -22,6 +24,11 @@ function safeItem(item) {
     alt: typeof item?.alt === 'string' && item.alt.trim() ? item.alt.trim() : 'Dokumentasi BHARASENA',
     day: typeof item?.day === 'string' && item.day.trim() ? item.day.trim() : 'BHARASENA',
   };
+}
+
+function emptyState() {
+  grid.innerHTML = '<article class="gallery-empty"><div><div class="gallery-empty__seal" aria-hidden="true">B</div><h3>Ruang ini belum terisi.</h3><p>Foto dokumentasi akan muncul di sini setelah panitia mengunggah dan menerbitkannya dari ruang kendali acara.</p></div></article>';
+  status.textContent = 'Foto akan ditambahkan panitia selama acara.';
 }
 
 function updateFilters() {
@@ -45,16 +52,19 @@ function visibleItems() {
 function render() {
   const items = visibleItems();
   if (!items.length) {
-    grid.replaceChildren();
+    if (state.items.length) {
+      grid.innerHTML = '<p class="gallery-empty gallery-empty--filtered">Belum ada foto pada bagian ini.</p>';
+      status.textContent = 'Belum ada foto pada filter yang dipilih.';
+    } else emptyState();
     return;
   }
-  status.textContent = `${items.length} foto`;
+  status.textContent = `${items.length} ${items.length === 1 ? 'foto' : 'foto'} dalam ruang ini.`;
   grid.replaceChildren(...items.map((item, index) => {
     const button = document.createElement('button');
     button.type = 'button';
     button.className = 'gallery-photo';
     button.style.setProperty('--photo-index', String(index));
-    button.dataset.galleryIndex = String(index);
+    button.dataset.galleryIndex = String(state.items.indexOf(item));
     button.setAttribute('aria-label', `Buka foto ${index + 1}: ${item.alt}`);
     const media = document.createElement('span');
     media.className = 'gallery-photo__media';
@@ -87,41 +97,27 @@ function selectFilter(filter) {
 }
 
 function showPhoto(index) {
-  const items = visibleItems();
-  if (!items.length || !dialog) return;
-  state.current = (index + items.length) % items.length;
-  const item = items[state.current];
+  if (!state.items.length || !dialog) return;
+  state.current = (index + state.items.length) % state.items.length;
+  const item = state.items[state.current];
   dialogImage.src = item.src;
   dialogImage.alt = item.alt;
   dialogCaption.textContent = item.day;
-  dialogCounter.textContent = `${state.current + 1} dari ${items.length}`;
-  for (const control of $$('[data-gallery-prev], [data-gallery-next]', dialog)) {
-    control.hidden = items.length === 1;
-  }
+  dialogCounter.textContent = `${String(state.current + 1).padStart(2, '0')} / ${String(state.items.length).padStart(2, '0')}`;
   if (!dialog.open) dialog.showModal();
 }
 
 async function loadGallery() {
-  let loadFailed = false;
   try {
     const response = await fetch('/api/content', { headers: { Accept: 'application/json' } });
-    if (response.status !== 404) {
-      if (!response.ok) throw new Error('Konten belum tersedia');
-      const payload = await response.json();
-      state.items = Array.isArray(payload.gallery) ? payload.gallery.map(safeItem).filter((item) => item.src) : [];
-    }
+    if (!response.ok) throw new Error('Konten belum tersedia');
+    const payload = await response.json();
+    state.items = Array.isArray(payload.gallery) ? payload.gallery.map(safeItem).filter((item) => item.src) : [];
   } catch {
-    loadFailed = true;
+    state.items = Array.isArray(staticGallery) ? staticGallery.map(safeItem).filter((item) => item.src) : [];
   }
-  if (!state.items.length) state.items = staticGallery.map(safeItem).filter((item) => item.src);
-  if (!state.items.length) {
-    status.classList.add('gallery-empty');
-    status.textContent = loadFailed
-      ? 'Foto belum berhasil dimuat. Muat ulang halaman untuk mencoba lagi.'
-      : 'Belum ada foto. Dokumentasi akan ditambahkan selama acara.';
-    return;
-  }
-  toolbar.hidden = false;
+  if (!state.items.length && Array.isArray(staticGallery)) state.items = staticGallery.map(safeItem).filter((item) => item.src);
+  setCount(state.items.length);
   updateFilters();
   render();
 }
@@ -132,12 +128,9 @@ filters?.addEventListener('click', (event) => {
 });
 grid?.addEventListener('click', (event) => {
   const card = event.target.closest('[data-gallery-index]');
-  if (!card) return;
-  opener = card;
-  showPhoto(Number(card.dataset.galleryIndex));
+  if (card) showPhoto(Number(card.dataset.galleryIndex));
 });
 dialog?.addEventListener('click', (event) => { if (event.target === dialog) dialog.close(); });
-dialog?.addEventListener('close', () => opener?.focus({ preventScroll: true }));
 dialog?.addEventListener('keydown', (event) => {
   if (event.key === 'ArrowLeft') { event.preventDefault(); showPhoto(state.current - 1); }
   if (event.key === 'ArrowRight') { event.preventDefault(); showPhoto(state.current + 1); }
