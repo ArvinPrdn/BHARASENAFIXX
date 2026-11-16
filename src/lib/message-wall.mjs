@@ -42,7 +42,6 @@ export function messageWallConfig(env = process.env) {
     origin, redisUrl, prefix, readReady, writeReady, enabled,
     redisToken, secret: env.APP_SECRET || '',
     botToken: env.TELEGRAM_BOT_TOKEN || '',
-    // This integration intentionally sends notifications only to a private chat.
     // Telegram group and supergroup chat IDs are negative numbers.
     chatId: /^-?\d{1,16}$/u.test(env.TELEGRAM_CHAT_ID || '') ? env.TELEGRAM_CHAT_ID : '',
   };

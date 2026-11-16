@@ -136,10 +136,12 @@ describe('online message wall', () => {
     expect(fetchImpl).toHaveBeenCalledTimes(1);
   });
 
-  it('does not send a notification to a group chat', async () => {
-    const { handle, fetchImpl } = harness([redis([1, 'new-id'])], { ...env, TELEGRAM_CHAT_ID: '-100123456789' });
+  it('sends a notification to the configured group chat', async () => {
+    const chatId = '-100123456789';
+    const { handle, fetchImpl } = harness([redis([1, 'new-id']), Response.json({ ok: true })], { ...env, TELEGRAM_CHAT_ID: chatId });
     expect((await handle(request())).status).toBe(201);
-    expect(fetchImpl).toHaveBeenCalledTimes(1);
+    expect(fetchImpl).toHaveBeenCalledTimes(2);
+    expect(JSON.parse(String(fetchImpl.mock.calls[1]?.[1]?.body))).toMatchObject({ chat_id: chatId });
   });
 
   it('returns the original message for a retried submission without a second notification', async () => {

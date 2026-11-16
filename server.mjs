@@ -232,6 +232,7 @@ async function handle(request, response) {
   const path = decodeURIComponent(url.pathname);
 
   if (request.method === 'GET' && path === '/') return send(response, 200, publicPage(request, getSession(db, request.headers.cookie, secret)), { 'Content-Type':'text/html; charset=utf-8', 'Cache-Control':'no-cache' });
+  if (request.method === 'GET' && path === '/galeri') return send(response, 200, await readFile(join(root, 'galeri.html')), { 'Content-Type':'text/html; charset=utf-8', 'Cache-Control':'no-cache' });
   if (request.method === 'GET' && path === '/healthz') return json(response, dbHealth(db) ? 200 : 503, { ok: dbHealth(db), database: 'sqlite', serverNow: new Date().toISOString() });
   if (request.method === 'GET' && path === '/api/content') {
     const payload = getPublicContent(new Date(), db);
@@ -319,8 +320,8 @@ async function handle(request, response) {
     const file = resolve(root, `.${requested}`);
     const assetRelative = relative(join(root, 'assets'), file);
     const publicAsset = path.startsWith('/assets/') && assetRelative && !assetRelative.startsWith('..') && !isAbsolute(assetRelative);
-    const publicFile = publicAsset || path === '/styles.css' || path === '/admin.css' || path === '/favicon.ico'
-      || path === '/src/scripts/experience.js' || path === '/src/scripts/music.js' || path === '/src/scripts/heritage.js' || path === '/src/data/event.js' || path === '/src/data/rundown.js' || path === '/src/data/message-rules.js';
+    const publicFile = publicAsset || path === '/styles.css' || path === '/gallery-page.css' || path === '/admin.css' || path === '/favicon.ico'
+      || path === '/src/scripts/experience.js' || path === '/src/scripts/gallery-page.js' || path === '/src/scripts/music.js' || path === '/src/scripts/heritage.js' || path === '/src/data/event.js' || path === '/src/data/rundown.js' || path === '/src/data/message-rules.js';
     if (publicFile && !relative(root, file).startsWith('..') && existsSync(file) && (await stat(file)).isFile()) {
       const type = mime[extname(file).toLowerCase()] || 'application/octet-stream';
       if (type.startsWith('audio/')) return sendAudio(request, response, file, (await stat(file)).size, type);

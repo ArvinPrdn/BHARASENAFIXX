@@ -305,22 +305,16 @@ function initTimeline() {
   dots.forEach((dot, index) => {
     if (dot.tagName !== 'A') dot.addEventListener('click', () => scenes[index]?.scrollIntoView({ behavior: reduceMotion() ? 'instant' : 'smooth' }));
   });
-  document.addEventListener('keydown', (event) => {
-    if (!['PageDown', 'PageUp', 'ArrowDown', 'ArrowUp'].includes(event.key)) return;
-    if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey || $('.seal-gate')) return;
-    if (event.target.closest?.('input, textarea, select, button, a, [contenteditable="true"], dialog')) return;
-    const next = clamp(activeIndex + (event.key.endsWith('Down') ? 1 : -1), 0, scenes.length - 1);
-    if (next === activeIndex || !scenes[next]) return;
-    event.preventDefault();
-    scenes[next].scrollIntoView({ behavior: reduceMotion() ? 'instant' : 'smooth' });
-  });
   markDirty();
 }
 
 function initSeal(onOpened) {
   let visited = false;
   try { visited = sessionStorage.getItem('bharasena-opened') === '1'; } catch { /* private mode */ }
-  if (visited) { onOpened?.(); return; }
+  if (visited) {
+    if (!location.hash) onOpened?.();
+    return;
+  }
   const gate = document.createElement('div');
   gate.className = 'seal-gate';
   gate.setAttribute('role', 'dialog');
