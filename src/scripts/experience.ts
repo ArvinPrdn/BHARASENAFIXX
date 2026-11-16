@@ -615,8 +615,6 @@ function initFinaleMotion() {
     pointer.y = moving ? lerp(pointer.y, target.y, 0.14) : target.y;
     finale.style.setProperty('--finale-pointer-x', `${pointer.x.toFixed(2)}px`);
     finale.style.setProperty('--finale-pointer-y', `${pointer.y.toFixed(2)}px`);
-    finale.style.setProperty('--finale-emblem-x', `${(-pointer.y * 0.18).toFixed(2)}deg`);
-    finale.style.setProperty('--finale-emblem-y', `${(pointer.x * 0.22).toFixed(2)}deg`);
     return moving;
   });
 }
