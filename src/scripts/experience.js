@@ -297,7 +297,10 @@ function initTimeline() {
     const observer = new IntersectionObserver((entries) => {
       for (const { target, isIntersecting } of entries) {
         target.classList.toggle('is-in-view', isIntersecting);
-        if (isIntersecting && target === finaleSparks) target.classList.add('has-started-waves');
+        if (isIntersecting && target === finaleSparks) {
+          target.classList.add('has-started-intro');
+          observer.unobserve(target);
+        }
         if (isIntersecting && target.parentElement?.classList.contains('finale-content')) observer.unobserve(target);
       }
     });

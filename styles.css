@@ -1005,28 +1005,33 @@ img { max-width: 100%; }
       0
     );
   }
-  .finale:has(.finale-sparks.is-in-view) .finale-velvet {
+  .finale.is-in-view { --finale-loop-state: running; }
+  .finale:has(.finale-sparks.has-started-intro) .finale-velvet {
     animation:
       finale-curtain-open 1.45s cubic-bezier(.2,.7,.24,1) var(--finale-curtain-delay, 0s) backwards,
-      finale-curtain-sway 4.6s ease-in-out calc(1.45s + var(--finale-curtain-delay, 0s)) infinite alternate;
+      finale-curtain-sway 4.6s ease-in-out calc(1.45s + var(--finale-curtain-delay, 0s)) infinite alternate var(--finale-loop-state, paused);
   }
-  .finale.is-in-view .finale-velvet span {
-    animation: finale-dust-drift 7.5s ease-in-out calc(var(--dust-delay) + var(--finale-dust-phase, 0s)) infinite;
+  .finale:has(.finale-sparks.has-started-intro) .finale-velvet span {
+    animation: finale-dust-drift 7.5s ease-in-out calc(var(--dust-delay) + var(--finale-dust-phase, 0s)) infinite var(--finale-loop-state, paused);
   }
-  .finale-sparks.has-started-waves::before {
+  .finale-sparks.has-started-intro::before {
     animation: finale-light-wave 1.5s cubic-bezier(.16,.72,.33,1) .1s;
   }
-  .finale-sparks.has-started-waves::after {
+  .finale-sparks.has-started-intro::after {
     animation: finale-light-wave 1.65s cubic-bezier(.16,.72,.33,1) .34s;
   }
-  .finale-sparks.is-in-view span::before {
+  .finale-sparks.has-started-intro span::before {
     animation: finale-spark-burst 1.65s cubic-bezier(.14,.7,.3,1) var(--spark-delay);
   }
-  .finale-sparks.is-in-view span::after {
+  .finale-sparks.has-started-intro span::after {
     animation: finale-spark-burst 1.4s cubic-bezier(.14,.7,.3,1) calc(var(--spark-delay) + .24s);
   }
-  .finale-content > .is-in-view:not(:focus-within) {
+  .finale-content > .is-in-view {
     animation: finale-reveal .85s cubic-bezier(.22,1,.36,1) var(--finale-reveal-delay, .12s) backwards;
+  }
+  .finale-content > .is-in-view:focus-within {
+    opacity: 1 !important;
+    transform: none !important;
   }
   .finale-message { --finale-reveal-delay: .25s; }
   .finale .social-contact { --finale-reveal-delay: .39s; }
