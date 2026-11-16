@@ -797,11 +797,12 @@ img { max-width: 100%; }
 .dialog-close { position: absolute; top: 5px; right: 8px; min-width: 44px; min-height: 44px; color: var(--ivory); background: transparent; border: 0; font-size: 30px; }
 .dialog-controls { display: flex; justify-content: space-between; }
 .dialog-controls button { min-width: 44px; min-height: 44px; color: var(--ivory); background: transparent; border: 1px solid var(--rule); }
-.parking-dialog__viewport { position: relative; width: min(100%, 52.5dvh); aspect-ratio: 5 / 4; overflow: hidden; margin: 20px auto 0; background: transparent; overscroll-behavior: contain; touch-action: pan-y; }
+.parking-dialog__viewport { position: relative; width: min(100%, 52.5dvh); aspect-ratio: 5 / 4; overflow: hidden; margin: 12px auto 0; background: transparent; overscroll-behavior: contain; touch-action: pan-y; }
 .parking-dialog__viewport img { display: block; width: 100%; max-width: none; height: 100%; object-fit: cover; mix-blend-mode: multiply; transform-origin: 0 0; user-select: none; -webkit-user-drag: none; }
 .parking-dialog__viewport.is-zoomed { touch-action: none; }
 .parking-dialog [data-parking-status] { color: #553a25; font-size: 13px; }
 .parking-dialog [data-parking-status]:empty { display: none; }
+.parking-dialog #parking-guide { margin: 0; }
 .parking-dialog__hint { color: #553a25; font-size: 12px; line-height: 1.6; }
 
 
@@ -1295,21 +1296,13 @@ img { max-width: 100%; }
 .busana-watermark { position: absolute; z-index: -1; left: 50%; transform: translateX(-50%); font: 500 390px/1 var(--display); color: #efc8880d; pointer-events: none; }
 .busana-product { position: relative; display: grid; place-items: center; width: 100%; perspective: 1000px; }
 .busana-product::before { content: ''; position: absolute; bottom: 3%; left: 16%; width: 68%; height: 12%; border-radius: 50%; background: #050204a6; filter: blur(14px); transform: scaleY(.4); }
-.busana-design-link { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 18px; min-height: 50px; padding: 14px 18px; border: 1px solid #e4cd9e; border-radius: 2px; background: linear-gradient(105deg, #c9a66a, #f4dfac 58%, #d4b47e); box-shadow: 0 5px 18px #0003, inset 0 1px 0 #fff7d690; color: #352018; font-size: 12px; font-weight: 700; text-align: left; transition: filter .2s ease, box-shadow .2s ease; }
-.busana-design-link > span:last-child { font-size: 22px; font-weight: 400; transition: transform .2s ease; }
-.busana-design-link:hover { filter: brightness(1.08); box-shadow: 0 7px 24px #0006; }
-.busana-design-link:hover > span:last-child { transform: translateX(4px); }
 .letter-polished .letter-action { display: flex; align-items: center; justify-content: space-between; gap: 18px; width: 100%; min-height: 50px; border: 1px solid; border-radius: 2px; text-align: left; text-decoration: none; margin-top: 24px; padding: 17px 20px; border-color: #88602f99; background: linear-gradient(110deg, #cfad70, #f0dbab 58%, #dfbe85); box-shadow: 0 5px 12px #64402024, inset 0 1px 0 #fff1cb99; color: #402a19; }
 .letter-polished .letter-action:hover { box-shadow: 0 7px 16px #64402038, inset 0 1px 0 #fff1cb99; }
 .letter-polished .letter-action:focus-visible { outline-color: #53341e; }
-.letter-polished .letter-action > span:last-child { color: #704a25; font-size: 22px; font-weight: 400; }
 .letter-action__label { display: grid; gap: 4px; min-width: 0; }
 .letter-action__label strong { font-size: 15px; font-weight: 600; line-height: 1.45; letter-spacing: .01em; }
 .letter-action__label small { color: #725432; font-size: 11px; font-weight: 400; line-height: 1.5; }
-.letter-polished .letter-divider { margin: 24px 0 18px; }
 .letter-polished { --display: 'Bharasena Letter', Georgia, serif; --body: 'Bharasena Sans', 'Segoe UI', sans-serif; font-family: var(--body); }
-.letter-polished .letter-kicker { font-family: var(--body); font-size: 10px; font-weight: 600; letter-spacing: .18em; }
-.letter-polished .letter-paper h2 { font-family: var(--display); font-size: clamp(42px, 6vw, 72px); font-weight: 600; line-height: 1.05; letter-spacing: -.035em; }
 .letter-polished .letter-details { font-family: var(--body); white-space: normal; font-size: 14px; line-height: 1.75; }
 .letter-details dl { margin: 0; }
 .letter-details dl > div { display: grid; grid-template-columns: 86px minmax(0, 1fr); gap: 16px; padding: 14px 0; border-bottom: 1px solid #81572e33; }
@@ -1473,9 +1466,11 @@ img { max-width: 100%; }
   .busana-palette { margin: 22px 0; }
 }
 
-/* Shared letter design used by the published venue and admission letters. */
-.letter-dialog { width: min(96vw, 1180px); height: min(92dvh, 820px); max-width: none; max-height: none; margin: auto; padding: 0; border: 0; overflow: visible; color: #3b2118; background: transparent; }
-.letter-dialog::backdrop { background: rgba(7,3,5,.88); backdrop-filter: blur(8px) saturate(.82); }
+/* Shared Info Peserta letters. The title and close button stay above the scrolling content. */
+.letter-dialog,
+.busana-dialog:not(.is-catalogue) { width: min(96vw, 1180px); height: min(92dvh, 820px); max-width: none; max-height: none; margin: auto; padding: 0; border: 0; border-radius: 0; overflow: visible; color: #3b2118; background: transparent; box-shadow: none; }
+.letter-dialog::backdrop,
+.busana-dialog:not(.is-catalogue)::backdrop { background: rgba(7,3,5,.88); backdrop-filter: blur(8px) saturate(.82); }
 .letter-dialog-stage { position: relative; width: 100%; height: 100%; display: grid; place-items: center; isolation: isolate; }
 .letter-bottle { position: absolute; width: min(36vw, 330px); height: min(64vh, 520px); border: 2px solid rgba(189,211,195,.16); border-radius: 43% 43% 22% 22% / 18% 18% 12% 12%; transform: translate(28%, 2%) rotate(8deg); opacity: .62; background: linear-gradient(90deg, rgba(111,154,139,.05), rgba(229,244,215,.12) 48%, rgba(54,91,80,.05)); box-shadow: inset 18px 0 30px rgba(229,244,215,.08), inset -24px 0 34px rgba(8,25,24,.25), 0 30px 70px rgba(0,0,0,.3); z-index: -1; }
 .letter-bottle::before { content: ''; position: absolute; left: 22%; top: -17%; width: 56%; height: 22%; border: 2px solid rgba(189,211,195,.2); border-bottom: 0; border-radius: 50% 50% 0 0; background: rgba(161,193,169,.06); }
@@ -1485,10 +1480,11 @@ img { max-width: 100%; }
 .letter-paper {
   --frame-line: rgba(91,48,23,.28);
   position: relative;
-  max-height: calc(92dvh - 92px);
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  padding: clamp(42px, 7vw, 78px) clamp(28px, 7vw, 84px) clamp(38px, 6vw, 64px);
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  max-height: min(754px, calc(92dvh - 66px));
+  overflow: hidden;
+  padding: 25px clamp(26px, 6vw, 72px) 20px;
   border: 1px solid rgba(112,65,35,.65);
   background:
     linear-gradient(var(--frame-line), var(--frame-line)) center top 16px / calc(100% - 32px) 1px no-repeat,
@@ -1505,49 +1501,25 @@ img { max-width: 100%; }
 .letter-roll::before, .letter-roll::after { content: ''; position: absolute; top: 3px; bottom: 3px; width: 18px; border-radius: 50%; background: linear-gradient(90deg,#704023,#d49b51 48%,#6d3a20); }
 .letter-roll::before { left: -9px; }.letter-roll::after { right: -9px; }
 .letter-roll-top { margin: 0 -12px -9px; border-radius: 50% 50% 7px 7px; }.letter-roll-bottom { margin: -9px -12px 0; border-radius: 7px 7px 50% 50%; }
-.letter-dialog-close { position: absolute; z-index: 3; top: 13px; right: 15px; width: 42px; height: 42px; display: grid; place-items: center; border: 1px solid rgba(76,39,19,.48); border-radius: 50%; color: #4a291a; background: rgba(244,213,151,.65); font: 400 27px/1 var(--body); cursor: pointer; transition: transform .25s ease, background .25s ease; }
+.letter-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
+.letter-heading h2 { margin: 0; color: #3c2118; font: 600 clamp(1.75rem, 6.3vw, 3rem)/1.05 var(--display); letter-spacing: -.035em; }
+.letter-dialog-close { flex: none; width: 44px; height: 44px; display: grid; place-items: center; border: 1px solid rgba(76,39,19,.48); border-radius: 50%; color: #4a291a; background: rgba(244,213,151,.65); font: 400 27px/1 var(--body); cursor: pointer; transition: transform .25s ease, background .25s ease; }
 .letter-dialog-close:hover { transform: rotate(8deg) scale(1.06); background: #f1d294; }
 .letter-dialog-close:focus-visible, .letter-map-link:focus-visible { outline: 2px solid #4d291b; outline-offset: 3px; }
-.letter-kicker { margin: 0 0 18px; color: #744426; font-size: 11px; font-weight: 800; letter-spacing: .2em; }
-.letter-paper h2 { max-width: 540px; margin: 0; color: #3c2118; font: 500 clamp(2.8rem, 6vw, 5.5rem)/.96 var(--display); letter-spacing: -.055em; }
-.letter-divider { display: block; margin: 30px 0 25px; color: #8d542d; font-size: 20px; letter-spacing: .55em; }
-.letter-body { max-width: 570px; color: #553020; font: 400 clamp(1rem, 1.5vw, 1.2rem)/1.75 var(--body); white-space: pre-wrap; }
+.letter-content { min-width: 0; overflow-y: auto; overscroll-behavior: contain; padding: 14px 4px 4px; color: #553020; scrollbar-width: thin; }
 .letter-map-link { display: inline-block; margin-top: 22px; color: #5b2b1b; font-size: 13px; font-weight: 800; text-underline-offset: 5px; }
 .letter-signoff { margin: 44px 0 0; color: #704426; font: 1.2rem/1.5 var(--script); }.letter-signoff strong { font: 600 13px/1.5 var(--body); letter-spacing: .1em; }
 @keyframes letter-unroll { from { opacity: 0; transform: translateY(25px) rotate(-4deg) scaleY(.72); transform-origin: 50% 0; } to { opacity: 1; transform: translateY(0) rotate(-1deg) scaleY(1); } }
 
-.busana-dialog:not(.is-catalogue) { width: min(96vw, 1180px); height: min(92dvh, 820px); max-width: none; max-height: none; margin: auto; padding: 0; border: 0; border-radius: 0; overflow: visible; color: #3b2118; background: transparent; box-shadow: none; }
 .busana-summary { width: 100%; height: 100%; }
 .busana-dialog:not(.is-catalogue) > .busana-topbar { display: none; }
-.busana-summary .letter-dialog-close { position: absolute; top: 13px; right: 15px; width: 42px; height: 42px; background: rgba(244,213,151,.65); border: 1px solid rgba(76,39,19,.48); color: #4a291a; }
 @media (max-width: 680px) {
-  .busana-dialog:not(.is-catalogue) { width: 100vw; height: 100dvh; }
   .letter-scroll { width: calc(100% - 22px); max-height: calc(100% - 18px); }
-  .letter-paper { max-height: calc(100dvh - 75px); padding: 48px 26px 40px; }
-  .letter-paper h2 { font-size: clamp(2.8rem, 14vw, 5rem); }
-  .letter-body { font-size: 16px; line-height: 1.7; }
-  .busana-summary .letter-dialog-close { top: 12px; right: 12px; }
   .letter-polished .letter-scroll { width: calc(100% - 48px); }
 }
 @media (prefers-reduced-motion: reduce) { .letter-scroll { animation: none !important; transform: none !important; } }
 
-.letter-paper.event-map-paper {
-  display: grid;
-  grid-template-rows: auto minmax(0, 1fr);
-  height: min(754px, calc(92dvh - 66px));
-  overflow: hidden;
-  padding: 25px clamp(26px, 6vw, 72px) 20px;
-}
-.event-map-heading {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 8px;
-}
-.letter-polished .event-map-heading h2 { font-size: clamp(1.75rem, 6.3vw, 3rem); }
-.event-map-heading .letter-dialog-close { position: static; flex: none; width: 44px; height: 44px; }
-.event-map-content { overflow-y: auto; overscroll-behavior: contain; padding: 14px 4px 4px; scrollbar-width: thin; }
+.event-map-paper { height: min(754px, calc(92dvh - 66px)); }
 
 /* Personal invitation: printed cream card and patterned burgundy envelope. */
 .invite-card-wrap { position: relative; width: min(100%, 440px); padding: 0 12px 22px; container-type: inline-size; }

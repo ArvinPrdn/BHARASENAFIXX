@@ -670,7 +670,7 @@
           <div class="letter-roll letter-roll-top" aria-hidden="true"></div>
           <div class="letter-paper event-map-paper">
             <header>
-              <div class="event-map-heading">
+              <div class="letter-heading">
                 <h2 id="event-maps-title">Denah acara</h2>
                 <button type="button" class="letter-dialog-close" aria-label="Tutup denah acara" autofocus>×</button>
               </div>
@@ -680,7 +680,7 @@
                 <button id="event-map-tab-3" type="button" role="tab" aria-selected="false" aria-controls="event-map-day-3" data-date="2026-12-13" tabindex="-1"><strong>Day 3</strong><span>13 Des</span></button>
               </div>
             </header>
-            <div class="letter-body letter-details event-map-content">
+            <div class="letter-content letter-details">
               <section id="event-map-day-1" role="tabpanel" aria-labelledby="event-map-tab-1">
                 <article class="event-map-entry">
                   <h3>Donor Darah</h3>
@@ -734,16 +734,20 @@
         <article class="letter-scroll">
           <div class="letter-roll letter-roll-top" aria-hidden="true"></div>
           <div class="letter-paper">
-            <button class="parking-dialog__close letter-dialog-close" type="button" aria-label="Tutup denah parkir">×</button>
-            <p class="letter-kicker">02 / PARKIR · SURAT BHARASENA</p>
-            <h2 id="parking-title">Denah parkir</h2>
-            <span class="letter-divider" aria-hidden="true">✦</span>
-            <div class="letter-body letter-details"><p id="parking-guide">Ikuti jalur motor berwarna biru dan jalur mobil berwarna oranye.</p></div>
-            <p data-parking-status role="status" aria-live="polite"></p>
-            <div id="parking-viewport" class="parking-dialog__viewport" tabindex="0" role="region" aria-label="Denah parkir, cubit untuk memperbesar dan geser untuk melihat detail" aria-describedby="parking-gesture-hint"><img data-parking-image data-src="assets/denah-parkir.svg" width="1920" height="1080" alt="Denah parkir BHARASENA dengan jalur motor biru dan mobil oranye dari Gapura Nawasena menuju area parkir." decoding="async"></div>
-            <p id="parking-gesture-hint" class="parking-dialog__hint">Cubit dengan dua jari untuk memperbesar, lalu geser denah.</p>
-            <a class="letter-map-link" href="assets/denah-parkir.svg" target="_blank" rel="noopener noreferrer">Buka gambar penuh</a>
-            <p class="letter-signoff">Dengan hangat,<br><strong>Panitia BHARASENA</strong></p>
+            <header class="letter-heading">
+              <h2 id="parking-title">Denah parkir</h2>
+              <button class="letter-dialog-close" type="button" aria-label="Tutup denah parkir" autofocus>×</button>
+            </header>
+            <div class="letter-content letter-details">
+              <p id="parking-guide">Ikuti jalur motor berwarna biru dan jalur mobil berwarna oranye.</p>
+              <p data-parking-status role="status" aria-live="polite"></p>
+              <div id="parking-viewport" class="parking-dialog__viewport" tabindex="0" role="region" aria-label="Denah parkir, cubit untuk memperbesar dan geser untuk melihat detail" aria-describedby="parking-gesture-hint"><img data-parking-image data-src="assets/denah-parkir.svg" width="1920" height="1080" alt="Denah parkir BHARASENA dengan jalur motor biru dan mobil oranye dari Gapura Nawasena menuju area parkir." decoding="async"></div>
+              <p id="parking-gesture-hint" class="parking-dialog__hint">Cubit dengan dua jari untuk memperbesar, lalu geser denah.</p>
+              <a class="letter-map-link letter-action" href="assets/denah-parkir.svg" target="_blank" rel="noopener noreferrer">
+                <span class="letter-action__label"><strong>Buka gambar penuh</strong></span>
+              </a>
+              <p class="letter-signoff">Dengan hangat,<br><strong>Panitia BHARASENA</strong></p>
+            </div>
           </div>
           <div class="letter-roll letter-roll-bottom" aria-hidden="true"></div>
         </article>
@@ -756,13 +760,15 @@
         <article class="letter-scroll">
           <div class="letter-roll letter-roll-top" aria-hidden="true"></div>
           <div class="letter-paper">
-            <button type="button" class="letter-dialog-close" aria-label="Tutup surat">×</button>
-            <p class="letter-kicker" data-info-kicker></p>
-            <h2 id="info-letter-title"></h2>
-            <span class="letter-divider" aria-hidden="true">✦</span>
-            <div class="letter-body letter-details" data-info-body></div>
-            <a class="letter-map-link letter-action" data-info-map href="https://maps.app.goo.gl/XGUJMNvkwBCmNSDWA?g_st=ac" target="_blank" rel="noopener noreferrer" hidden><span class="letter-action__label"><strong>Buka di Google Maps</strong><small>Petunjuk arah menuju tempat acara</small></span><span aria-hidden="true">→</span></a>
-            <p class="letter-signoff">Dengan hangat,<br><strong>Panitia BHARASENA</strong></p>
+            <header class="letter-heading">
+              <h2 id="info-letter-title"></h2>
+              <button type="button" class="letter-dialog-close" aria-label="Tutup surat" autofocus>×</button>
+            </header>
+            <div class="letter-content letter-details">
+              <div data-info-body></div>
+              <a class="letter-map-link letter-action" data-info-map href="https://maps.app.goo.gl/XGUJMNvkwBCmNSDWA?g_st=ac" target="_blank" rel="noopener noreferrer" hidden><span class="letter-action__label"><strong>Buka di Google Maps</strong><small>Petunjuk arah menuju tempat acara</small></span></a>
+              <p class="letter-signoff">Dengan hangat,<br><strong>Panitia BHARASENA</strong></p>
+            </div>
           </div>
           <div class="letter-roll letter-roll-bottom" aria-hidden="true"></div>
         </article>
@@ -776,20 +782,22 @@
           <article class="letter-scroll">
             <div class="letter-roll letter-roll-top" aria-hidden="true"></div>
             <div class="letter-paper">
-              <button type="button" class="busana-close letter-dialog-close" aria-label="Tutup busana acara">×</button>
-        <p class="letter-kicker">03 / BUSANA · SURAT BHARASENA</p>
-        <h2 id="busana-summary-title">Busana acara</h2>
-        <span class="letter-divider" aria-hidden="true">✦</span>
-              <div class="letter-body busana-guidelines letter-details">
-                <dl>
-                  <div><dt><time datetime="2026-12-11">11 Desember</time></dt><dd><p><strong>Muslim:</strong> busana muslim.</p><p><strong>Nonmuslim:</strong> batik atau pakaian bebas rapi.</p></dd></div>
-                  <div><dt><time datetime="2026-12-12">12 Desember</time></dt><dd><p><strong>Pagi:</strong> atasan putih polos dan training hitam.</p><p><strong>Malam:</strong> seragam PDSUS berjas Taruna Bhayangkara.</p></dd></div>
-                  <div><dt><time datetime="2026-12-13">13 Desember</time></dt><dd><p>Busana prom night semi PDL.</p></dd></div>
-                </dl>
-                <p class="busana-guidelines__note">Warna tambahan, aksesori terlarang, dan contoh outfit lainnya menyusul.</p>
+              <header class="letter-heading">
+                <h2 id="busana-summary-title">Busana acara</h2>
+                <button type="button" class="letter-dialog-close" aria-label="Tutup busana acara" autofocus>×</button>
+              </header>
+              <div class="letter-content letter-details">
+                <div class="busana-guidelines">
+                  <dl>
+                    <div><dt><time datetime="2026-12-11">11 Desember</time></dt><dd><p><strong>Muslim:</strong> busana muslim.</p><p><strong>Nonmuslim:</strong> batik atau pakaian bebas rapi.</p></dd></div>
+                    <div><dt><time datetime="2026-12-12">12 Desember</time></dt><dd><p><strong>Pagi:</strong> atasan putih polos dan training hitam.</p><p><strong>Malam:</strong> seragam PDSUS berjas Taruna Bhayangkara.</p></dd></div>
+                    <div><dt><time datetime="2026-12-13">13 Desember</time></dt><dd><p>Busana prom night semi PDL.</p></dd></div>
+                  </dl>
+                  <p class="busana-guidelines__note">Warna tambahan, aksesori terlarang, dan contoh outfit lainnya menyusul.</p>
+                </div>
+                <button type="button" class="busana-design-link letter-action"><span class="letter-action__label"><strong>Lihat desain baju</strong><small>Jersey BHARASENA VI · Dua model lengan</small></span></button>
+                <p class="letter-signoff">Dengan hangat,<br><strong>Panitia BHARASENA</strong></p>
               </div>
-              <button type="button" class="busana-design-link letter-action"><span class="letter-action__label"><strong>Lihat desain baju</strong><small>Jersey BHARASENA VI · Dua model lengan</small></span><span aria-hidden="true">→</span></button>
-        <p class="letter-signoff">Dengan hangat,<br><strong>Panitia BHARASENA</strong></p>
             </div>
             <div class="letter-roll letter-roll-bottom" aria-hidden="true"></div>
           </article>

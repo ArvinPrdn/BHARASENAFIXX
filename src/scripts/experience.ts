@@ -1045,8 +1045,8 @@ function initEnvelopes() {
         status.textContent = 'Memuat denah…';
         image.src = image.dataset.src;
       }
-      $('.letter-paper', parkingDialog).scrollTop = 0;
       parkingDialog.showModal();
+      $('.letter-content', parkingDialog).scrollTop = 0;
       document.body.classList.add('busana-open');
       parkingCard.setAttribute('aria-expanded', 'true');
     };
@@ -1054,7 +1054,7 @@ function initEnvelopes() {
     parkingCard.addEventListener('keydown', (event) => {
       if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openParking(); }
     });
-    $('.parking-dialog__close', parkingDialog).addEventListener('click', closeParking);
+    $('.letter-dialog-close', parkingDialog).addEventListener('click', closeParking);
     parkingDialog.addEventListener('cancel', (event) => { event.preventDefault(); closeParking(); });
     parkingDialog.addEventListener('click', (event) => {
       if (event.target === parkingDialog || event.target.classList.contains('letter-dialog-stage')) closeParking();
@@ -1062,7 +1062,7 @@ function initEnvelopes() {
     parkingDialog.addEventListener('close', () => {
       document.body.classList.remove('busana-open');
       parkingCard.setAttribute('aria-expanded', 'false');
-      parkingCard.focus();
+      parkingCard.focus({ preventScroll: true });
     });
   }
 
@@ -1085,7 +1085,7 @@ function initEnvelopes() {
     infoDialog.addEventListener('close', () => {
       document.body.classList.remove('busana-open');
       activeInfoCard?.setAttribute('aria-expanded', 'false');
-      activeInfoCard?.focus();
+      activeInfoCard?.focus({ preventScroll: true });
     });
     const renderInfoDetails = (content, venue) => {
       const container = $('[data-info-body]', infoDialog);
@@ -1141,12 +1141,11 @@ function initEnvelopes() {
       $('.envelope-bottom > span:first-child', card).textContent = 'TERBUKA';
       const openInfo = () => {
         activeInfoCard = card;
-        $('[data-info-kicker]', infoDialog).textContent = `${venue ? '01 / LOKASI' : '03 / AKSES'} · SURAT BHARASENA`;
         $('#info-letter-title', infoDialog).textContent = title;
         renderInfoDetails(content, venue);
         $('[data-info-map]', infoDialog).hidden = !venue;
-        $('.letter-paper', infoDialog).scrollTop = 0;
         infoDialog.showModal();
+        $('.letter-content', infoDialog).scrollTop = 0;
         document.body.classList.add('busana-open');
         card.setAttribute('aria-expanded', 'true');
       };
@@ -1278,8 +1277,8 @@ function initEnvelopes() {
       switchingBusana = false;
       busanaDialog.classList.remove('is-catalogue');
       busanaDialog.setAttribute('aria-labelledby', 'busana-summary-title');
-      $('.letter-paper', busanaDialog).scrollTop = 0;
       busanaDialog.showModal();
+      $('.letter-content', busanaDialog).scrollTop = 0;
       busanaDialog.scrollTop = 0;
       busanaCard.setAttribute('aria-expanded', 'true');
       document.body.classList.add('busana-open');
@@ -1288,7 +1287,7 @@ function initEnvelopes() {
     busanaCard.addEventListener('keydown', (event) => {
       if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openBusana(); }
     });
-    $$('.busana-close', busanaDialog).forEach((button) => button.addEventListener('click', closeBusana));
+    $$('.letter-dialog-close, .busana-close', busanaDialog).forEach((button) => button.addEventListener('click', closeBusana));
     busanaDialog.addEventListener('cancel', (event) => { event.preventDefault(); closeBusana(); });
     busanaDialog.addEventListener('click', (event) => {
       if (event.target === busanaDialog || event.target.classList.contains('letter-dialog-stage')) closeBusana();

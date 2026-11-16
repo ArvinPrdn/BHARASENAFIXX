@@ -2,7 +2,7 @@ import { rollUpLetter } from './experience.js';
 
 const mapDialog = document.querySelector('#event-maps');
 const mapTrigger = document.querySelector('.event-map-trigger');
-const mapContent = mapDialog.querySelector('.event-map-content');
+const mapContent = mapDialog.querySelector('.letter-content');
 const tabList = mapDialog.querySelector('[role="tablist"]');
 const tabs = [...tabList.querySelectorAll('[role="tab"]')];
 const eventDate = new Intl.DateTimeFormat('sv-SE', {

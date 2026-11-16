@@ -49,7 +49,7 @@ test('participants can find, enlarge, and download the event maps', async ({ pag
   await maps.getByRole('link', { name: 'Unduh denah Donor Darah' }).click();
   expect((await download).suggestedFilename()).toBe('day-1-donor-darah.svg');
 
-  const content = maps.locator('.event-map-content');
+  const content = maps.locator('.letter-content');
   await content.evaluate((element) => { element.scrollTop = element.scrollHeight; });
   await expect.poll(() => content.evaluate((element) => element.scrollTop)).toBeGreaterThan(0);
   const close = maps.getByRole('button', { name: 'Tutup denah acara' });
@@ -76,4 +76,48 @@ test('participants can find, enlarge, and download the event maps', async ({ pag
   await page.keyboard.press('Escape');
   await expect(maps).toBeHidden();
   await expect(trigger).toBeFocused();
+});
+
+test('participant letters keep their close button available while reading', async ({ page }) => {
+  await page.addInitScript(() => sessionStorage.setItem('bharasena-opened', '1'));
+  await page.goto('/#info-peserta');
+
+  for (const [title, label] of [
+    ['Tempat acara', 'Buka surat Tempat acara'],
+    ['Ketentuan masuk', 'Buka surat Ketentuan masuk'],
+    ['Denah parkir', 'Buka denah parkir motor dan mobil'],
+    ['Busana acara', 'Buka surat Busana acara'],
+  ] as const) {
+    const trigger = page.getByRole('button', { name: label, exact: true });
+    await trigger.click();
+    const letter = page.getByRole('dialog', { name: title, exact: true });
+    const content = letter.locator('.letter-content');
+    const close = letter.getByRole('button', { name: /^Tutup/ });
+    await expect(close).toBeFocused();
+    await expect.poll(() => content.evaluate((element) => element.scrollTop)).toBe(0);
+
+    if (title === 'Tempat acara') {
+      await expect(letter.getByRole('link', { name: /Buka di Google Maps/ })).toBeVisible();
+    } else if (title === 'Ketentuan masuk') {
+      await expect(letter.getByRole('link', { name: /Buka di Google Maps/ })).toBeHidden();
+    } else if (title === 'Denah parkir') {
+      await expect.poll(() => letter.getByRole('img').evaluate((img: HTMLImageElement) => img.naturalWidth))
+        .toBeGreaterThan(0);
+      await expect(letter.getByRole('link', { name: 'Buka gambar penuh' }))
+        .toHaveAttribute('href', 'assets/denah-parkir.svg');
+    } else if (title === 'Busana acara') {
+      const catalogueLink = letter.getByRole('button', { name: /Lihat desain baju/ });
+      await catalogueLink.click();
+      const catalogue = page.getByRole('dialog', { name: /Kenakan.*identitas kita/ });
+      await expect(catalogue.getByRole('img')).toBeVisible();
+      await catalogue.getByRole('button', { name: /Panduan busana/ }).click();
+      await expect(catalogueLink).toBeFocused();
+    }
+
+    await content.evaluate((element) => { element.scrollTop = element.scrollHeight; });
+    await expect(close).toBeInViewport({ ratio: 0.99 });
+    await close.click();
+    await expect(letter).toBeHidden();
+    await expect(trigger).toBeFocused();
+  }
 });
