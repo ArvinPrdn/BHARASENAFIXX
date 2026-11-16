@@ -49,11 +49,25 @@ test('participants can find, enlarge, and download the event maps', async ({ pag
   await maps.getByRole('link', { name: 'Unduh denah Donor Darah' }).click();
   expect((await download).suggestedFilename()).toBe('day-1-donor-darah.svg');
 
-  await maps.getByRole('tab', { name: 'Day 2 12 Des' }).click();
+  const content = maps.locator('.event-map-content');
+  await content.evaluate((element) => { element.scrollTop = element.scrollHeight; });
+  await expect.poll(() => content.evaluate((element) => element.scrollTop)).toBeGreaterThan(0);
+  const close = maps.getByRole('button', { name: 'Tutup denah acara' });
+  const dayTwo = maps.getByRole('tab', { name: 'Day 2 12 Des' });
+  await expect(close).toBeInViewport({ ratio: 0.99 });
+  await expect(dayTwo).toBeInViewport({ ratio: 0.99 });
+  await close.click();
+  await expect(trigger).toBeFocused();
+  await trigger.click();
+  await expect.poll(() => content.evaluate((element) => element.scrollTop)).toBe(0);
+
+  await content.evaluate((element) => { element.scrollTop = element.scrollHeight; });
+  await dayTwo.click();
   await expect(maps.getByRole('tabpanel')).toHaveText('Denah Day 2 sedang disiapkan panitia.');
-  await maps.getByRole('tab', { name: 'Day 2 12 Des' }).press('ArrowRight');
+  await expect.poll(() => content.evaluate((element) => element.scrollTop)).toBe(0);
+  await dayTwo.press('ArrowRight');
   await expect(maps.getByRole('tabpanel')).toHaveText('Denah Day 3 sedang disiapkan panitia.');
-  await maps.getByRole('button', { name: 'Tutup denah acara' }).click();
+  await close.click();
   await expect(trigger).toBeFocused();
 
   await page.clock.setFixedTime(new Date('2026-12-12T01:00:00+07:00'));

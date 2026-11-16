@@ -1343,20 +1343,20 @@ img { max-width: 100%; }
 .event-map-tabs {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  margin-bottom: 20px;
   border-bottom: 1px solid #8f603a77;
 }
 .event-map-tabs button {
   display: grid;
   justify-items: center;
   gap: 1px;
-  min-height: 54px;
+  min-height: 44px;
   padding: 6px 4px;
   border: 0;
   border-bottom: 3px solid transparent;
   color: #573623;
   background: transparent;
   font-size: 14px;
+  line-height: 1.15;
 }
 .event-map-tabs button span { font-size: 12px; }
 .event-map-tabs button[aria-selected="true"] { border-bottom-color: #794822; background: #fff1cb65; }
@@ -1530,6 +1530,24 @@ img { max-width: 100%; }
   .letter-polished .letter-scroll { width: calc(100% - 48px); }
 }
 @media (prefers-reduced-motion: reduce) { .letter-scroll { animation: none !important; transform: none !important; } }
+
+.letter-paper.event-map-paper {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  height: min(754px, calc(92dvh - 66px));
+  overflow: hidden;
+  padding: 25px clamp(26px, 6vw, 72px) 20px;
+}
+.event-map-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+.letter-polished .event-map-heading h2 { font-size: clamp(1.75rem, 6.3vw, 3rem); }
+.event-map-heading .letter-dialog-close { position: static; flex: none; width: 44px; height: 44px; }
+.event-map-content { overflow-y: auto; overscroll-behavior: contain; padding: 14px 4px 4px; scrollbar-width: thin; }
 
 /* Personal invitation: printed cream card and patterned burgundy envelope. */
 .invite-card-wrap { position: relative; width: min(100%, 440px); padding: 0 12px 22px; container-type: inline-size; }
