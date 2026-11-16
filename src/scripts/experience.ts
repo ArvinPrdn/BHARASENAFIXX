@@ -293,14 +293,17 @@ function initTimeline() {
   document.fonts?.ready.then(markDirty);
 
   if ('IntersectionObserver' in window) {
+    const finaleSparks = $('.finale-sparks');
     const observer = new IntersectionObserver((entries) => {
       for (const { target, isIntersecting } of entries) {
         target.classList.toggle('is-in-view', isIntersecting);
+        if (isIntersecting && target === finaleSparks) target.classList.add('has-started-waves');
         if (isIntersecting && target.parentElement?.classList.contains('finale-content')) observer.unobserve(target);
       }
     });
     scenes.forEach((scene) => observer.observe(scene));
-    $$('.finale-sparks, .finale-content > *').forEach((element) => observer.observe(element));
+    if (finaleSparks) observer.observe(finaleSparks);
+    $$('.finale-content > *').forEach((element) => observer.observe(element));
   } else {
     hero?.classList.add('is-in-view');
     $('#penampil')?.classList.add('is-in-view');

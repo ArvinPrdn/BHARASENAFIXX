@@ -1013,10 +1013,10 @@ img { max-width: 100%; }
   .finale.is-in-view .finale-velvet span {
     animation: finale-dust-drift 7.5s ease-in-out calc(var(--dust-delay) + var(--finale-dust-phase, 0s)) infinite;
   }
-  .finale-sparks.is-in-view::before {
+  .finale-sparks.has-started-waves::before {
     animation: finale-light-wave 1.5s cubic-bezier(.16,.72,.33,1) .1s;
   }
-  .finale-sparks.is-in-view::after {
+  .finale-sparks.has-started-waves::after {
     animation: finale-light-wave 1.65s cubic-bezier(.16,.72,.33,1) .34s;
   }
   .finale-sparks.is-in-view span::before {
