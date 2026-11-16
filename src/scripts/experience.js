@@ -294,9 +294,13 @@ function initTimeline() {
 
   if ('IntersectionObserver' in window) {
     const observer = new IntersectionObserver((entries) => {
-      for (const entry of entries) entry.target.classList.toggle('is-in-view', entry.isIntersecting);
+      for (const { target, isIntersecting } of entries) {
+        target.classList.toggle('is-in-view', isIntersecting);
+        if (isIntersecting && target.parentElement?.classList.contains('finale-content')) observer.unobserve(target);
+      }
     });
     scenes.forEach((scene) => observer.observe(scene));
+    $$('.finale-content > *').forEach((group) => observer.observe(group));
   } else {
     hero?.classList.add('is-in-view');
     $('#penampil')?.classList.add('is-in-view');
@@ -1597,10 +1601,9 @@ function initCard() {
 
 let rainTrigger = () => {};
 function startRain(duration = 6500) { rainTrigger(duration); }
-function initGalleryAndFinale() {
+function initGalleryAndRain() {
   const track = $('.gallery-track');
   const dialog = $('#gallery-dialog');
-  const finale = $('.finale');
   let galleryIndex = 0;
   let drag = null;
   let velocity = 0;
@@ -1711,16 +1714,13 @@ function initGalleryAndFinale() {
   let ctx = null;
   let particles = [];
   let rainUntil = 0;
-  let rainRequiresFinale = false;
-  let finaleVisible = false;
-  let rang = false;
   function resizeCanvas() {
     const dpr = Math.min(devicePixelRatio || 1, lowEnd ? 1 : 1.5);
     canvas.width = Math.round(innerWidth * dpr);
     canvas.height = Math.round(innerHeight * dpr);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
-  function rain(duration = 6500, requireFinale = false) {
+  function rain(duration) {
     if (reduceMotion() || document.hidden) return;
     if (!canvas) {
       const layer = document.createElement('canvas');
@@ -1733,7 +1733,6 @@ function initGalleryAndFinale() {
       ctx = context;
       document.body.append(canvas);
     }
-    rainRequiresFinale = requireFinale;
     resizeCanvas();
     const count = lowEnd ? 35 : 90;
     particles = Array.from({ length: count }, () => ({
@@ -1758,7 +1757,7 @@ function initGalleryAndFinale() {
   rainTrigger = rain;
   addFrameTask((time) => {
     if (!canvas) return false;
-    if (time >= rainUntil || reduceMotion() || (rainRequiresFinale && !finaleVisible)) {
+    if (time >= rainUntil || reduceMotion()) {
       stopRain();
       return false;
     }
@@ -1775,16 +1774,6 @@ function initGalleryAndFinale() {
   });
   addEventListener('resize', () => { if (canvas) resizeCanvas(); }, { passive: true });
   document.addEventListener('visibilitychange', () => { if (document.hidden) stopRain(); });
-  if (finale && 'IntersectionObserver' in window) {
-    new IntersectionObserver((entries) => {
-      finaleVisible = entries[0]?.isIntersecting || false;
-      if (finaleVisible && !rang) {
-        rang = true;
-        rain(6500, true);
-
-      }
-    }, { threshold: 0.35 }).observe(finale);
-  }
 }
 
 function initNavigation() {
@@ -1839,7 +1828,7 @@ function init() {
   initEnvelopes();
   initMessageWall();
   initCard();
-  initGalleryAndFinale();
+  initGalleryAndRain();
   const openMusic = initMusic();
   initPerformer();
   initHeritage();
