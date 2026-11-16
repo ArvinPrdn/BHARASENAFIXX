@@ -300,7 +300,7 @@ function initTimeline() {
       }
     });
     scenes.forEach((scene) => observer.observe(scene));
-    $$('.finale-content > *').forEach((group) => observer.observe(group));
+    $$('.finale-sparks, .finale-content > *').forEach((element) => observer.observe(element));
   } else {
     hero?.classList.add('is-in-view');
     $('#penampil')?.classList.add('is-in-view');
