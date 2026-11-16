@@ -821,7 +821,7 @@ function initRundown() {
   });
 }
 
-async function rollUpLetter(dialog) {
+export async function rollUpLetter(dialog) {
   const paper = $('.letter-paper', dialog);
   if (!paper || dialog.classList.contains('is-catalogue') || reduceMotion()) {
     dialog.close();

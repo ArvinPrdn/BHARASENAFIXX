@@ -27,6 +27,7 @@ test('participants can find, enlarge, and download the event maps', async ({ pag
   const trigger = page.getByRole('button', { name: 'Lihat denah acara' });
   await trigger.click();
   const maps = page.getByRole('dialog', { name: 'Denah acara', exact: true });
+  await expect(maps.locator('.letter-scroll')).toHaveCSS('animation-name', 'letter-unroll');
   await expect(maps.getByRole('tabpanel').getByRole('heading')).toHaveText([
     'Donor Darah',
     'Talkshow Tiga Agama',
@@ -52,10 +53,13 @@ test('participants can find, enlarge, and download the event maps', async ({ pag
   await expect(maps.getByRole('tabpanel')).toHaveText('Denah Day 2 sedang disiapkan panitia.');
   await maps.getByRole('tab', { name: 'Day 2 12 Des' }).press('ArrowRight');
   await expect(maps.getByRole('tabpanel')).toHaveText('Denah Day 3 sedang disiapkan panitia.');
-  await maps.getByRole('button', { name: 'Tutup', exact: true }).click();
+  await maps.getByRole('button', { name: 'Tutup denah acara' }).click();
   await expect(trigger).toBeFocused();
 
   await page.clock.setFixedTime(new Date('2026-12-12T01:00:00+07:00'));
   await trigger.click();
   await expect(maps.getByRole('tab', { name: 'Day 2 12 Des' })).toHaveAttribute('aria-selected', 'true');
+  await page.keyboard.press('Escape');
+  await expect(maps).toBeHidden();
+  await expect(trigger).toBeFocused();
 });

@@ -1,5 +1,8 @@
+import { rollUpLetter } from './experience.js';
+
 const mapDialog = document.querySelector('#event-maps');
 const mapTrigger = document.querySelector('.event-map-trigger');
+const paper = mapDialog.querySelector('.letter-paper');
 const mapContent = mapDialog.querySelector('.event-map-content');
 const tabList = mapDialog.querySelector('[role="tablist"]');
 const tabs = [...tabList.querySelectorAll('[role="tab"]')];
@@ -14,14 +17,33 @@ function selectDay(activeTab) {
     tab.tabIndex = selected ? 0 : -1;
     document.getElementById(tab.getAttribute('aria-controls')).hidden = !selected;
   }
-  mapContent.scrollTop = 0;
+}
+
+let closing = false;
+async function closeMapLetter() {
+  if (closing || !mapDialog.open) return;
+  closing = true;
+  try {
+    await rollUpLetter(mapDialog);
+  } finally {
+    closing = false;
+  }
 }
 
 mapTrigger.addEventListener('click', () => {
   const today = eventDate.format();
   selectDay(tabs.find((tab) => tab.dataset.date === today) ?? tabs[0]);
   mapDialog.showModal();
+  paper.scrollTop = 0;
   document.body.classList.add('busana-open');
+});
+mapDialog.querySelector('.letter-dialog-close').addEventListener('click', closeMapLetter);
+mapDialog.addEventListener('cancel', (event) => {
+  event.preventDefault();
+  closeMapLetter();
+});
+mapDialog.addEventListener('click', (event) => {
+  if (event.target === mapDialog || event.target.classList.contains('letter-dialog-stage')) closeMapLetter();
 });
 mapDialog.addEventListener('close', () => {
   document.body.classList.remove('busana-open');

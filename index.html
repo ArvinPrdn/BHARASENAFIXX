@@ -663,45 +663,53 @@
     <nav class="mobile-dock" aria-label="Akses cepat"><a href="#rundown">Rundown</a><a href="#info-peserta">Info</a><a href="#undangan">Undangan</a><a href="#proposal">Proposal</a><a href="#dinding-pesan">Pesan</a></nav>
     <footer class="site-footer"><span>BHARASENA © 2026</span><span>Batalyon Bhara Arsa Nawasena</span><a href="#hero">Kembali ke awal</a></footer>
 
-    <dialog id="event-maps" class="event-map-dialog letter-polished" aria-labelledby="event-maps-title">
-      <div class="event-map-panel">
-        <header class="event-map-header">
-          <h2 id="event-maps-title">Denah acara</h2>
-          <form method="dialog"><button class="event-map-close" type="submit" autofocus>Tutup</button></form>
-        </header>
-        <div class="event-map-tabs" role="tablist" aria-label="Hari acara">
-          <button id="event-map-tab-1" type="button" role="tab" aria-selected="true" aria-controls="event-map-day-1" data-date="2026-12-11"><strong>Day 1</strong><span>11 Des</span></button>
-          <button id="event-map-tab-2" type="button" role="tab" aria-selected="false" aria-controls="event-map-day-2" data-date="2026-12-12" tabindex="-1"><strong>Day 2</strong><span>12 Des</span></button>
-          <button id="event-map-tab-3" type="button" role="tab" aria-selected="false" aria-controls="event-map-day-3" data-date="2026-12-13" tabindex="-1"><strong>Day 3</strong><span>13 Des</span></button>
-        </div>
-        <div class="event-map-content">
-          <section id="event-map-day-1" role="tabpanel" aria-labelledby="event-map-tab-1">
-            <article class="event-map-entry">
-              <h3>Donor Darah</h3>
-              <p>Ruang PBNK · Pagi</p>
-              <img src="assets/denah-acara/day-1-donor-darah.svg" width="4500" height="3000" loading="lazy" decoding="async" alt="Denah Ruang PBNK dengan pintu masuk dan keluar, area registrasi, ruang tunggu, bilik pemeriksaan, dan lima bilik donor.">
-              <div class="event-map-actions">
-                <button type="button" data-enlarge-map aria-label="Perbesar denah Donor Darah">Perbesar denah</button>
-                <a href="assets/denah-acara/day-1-donor-darah.svg" download aria-label="Unduh denah Donor Darah">Unduh denah</a>
+    <dialog id="event-maps" class="letter-dialog letter-polished" aria-labelledby="event-maps-title">
+      <div class="letter-dialog-stage">
+        <span class="letter-bottle" aria-hidden="true"><span class="letter-bottle-cork"></span></span>
+        <article class="letter-scroll">
+          <div class="letter-roll letter-roll-top" aria-hidden="true"></div>
+          <div class="letter-paper">
+            <button type="button" class="letter-dialog-close" aria-label="Tutup denah acara" autofocus>×</button>
+            <p class="letter-kicker">DENAH · SURAT BHARASENA</p>
+            <h2 id="event-maps-title">Denah acara</h2>
+            <span class="letter-divider" aria-hidden="true">✦</span>
+            <div class="letter-body letter-details event-map-content">
+              <div class="event-map-tabs" role="tablist" aria-label="Hari acara">
+                <button id="event-map-tab-1" type="button" role="tab" aria-selected="true" aria-controls="event-map-day-1" data-date="2026-12-11"><strong>Day 1</strong><span>11 Des</span></button>
+                <button id="event-map-tab-2" type="button" role="tab" aria-selected="false" aria-controls="event-map-day-2" data-date="2026-12-12" tabindex="-1"><strong>Day 2</strong><span>12 Des</span></button>
+                <button id="event-map-tab-3" type="button" role="tab" aria-selected="false" aria-controls="event-map-day-3" data-date="2026-12-13" tabindex="-1"><strong>Day 3</strong><span>13 Des</span></button>
               </div>
-            </article>
-            <article class="event-map-entry">
-              <h3>Talkshow Tiga Agama</h3>
-              <p>Lapangan Tribrata · Malam</p>
-              <img src="assets/denah-acara/day-1-talkshow.svg" width="4500" height="3000" loading="lazy" decoding="async" alt="Denah Lapangan Tribrata yang menunjukkan panggung, pintu masuk, area VVIP, serta posisi taruna dan taruni.">
-              <div class="event-map-actions">
-                <button type="button" data-enlarge-map aria-label="Perbesar denah Talkshow Tiga Agama">Perbesar denah</button>
-                <a href="assets/denah-acara/day-1-talkshow.svg" download aria-label="Unduh denah Talkshow Tiga Agama">Unduh denah</a>
-              </div>
-            </article>
-          </section>
-          <section id="event-map-day-2" role="tabpanel" aria-labelledby="event-map-tab-2" tabindex="0" hidden>
-            <p class="event-map-pending">Denah Day 2 sedang disiapkan panitia.</p>
-          </section>
-          <section id="event-map-day-3" role="tabpanel" aria-labelledby="event-map-tab-3" tabindex="0" hidden>
-            <p class="event-map-pending">Denah Day 3 sedang disiapkan panitia.</p>
-          </section>
-        </div>
+              <section id="event-map-day-1" role="tabpanel" aria-labelledby="event-map-tab-1">
+                <article class="event-map-entry">
+                  <h3>Donor Darah</h3>
+                  <p>Ruang PBNK · Pagi</p>
+                  <img src="assets/denah-acara/day-1-donor-darah.svg" width="4500" height="3000" loading="lazy" decoding="async" alt="Denah Ruang PBNK dengan pintu masuk dan keluar, area registrasi, ruang tunggu, bilik pemeriksaan, dan lima bilik donor.">
+                  <div class="event-map-actions">
+                    <button class="letter-action" type="button" data-enlarge-map aria-label="Perbesar denah Donor Darah">Perbesar denah</button>
+                    <a class="letter-map-link" href="assets/denah-acara/day-1-donor-darah.svg" download aria-label="Unduh denah Donor Darah">Unduh denah</a>
+                  </div>
+                </article>
+                <article class="event-map-entry">
+                  <h3>Talkshow Tiga Agama</h3>
+                  <p>Lapangan Tribrata · Malam</p>
+                  <img src="assets/denah-acara/day-1-talkshow.svg" width="4500" height="3000" loading="lazy" decoding="async" alt="Denah Lapangan Tribrata yang menunjukkan panggung, pintu masuk, area VVIP, serta posisi taruna dan taruni.">
+                  <div class="event-map-actions">
+                    <button class="letter-action" type="button" data-enlarge-map aria-label="Perbesar denah Talkshow Tiga Agama">Perbesar denah</button>
+                    <a class="letter-map-link" href="assets/denah-acara/day-1-talkshow.svg" download aria-label="Unduh denah Talkshow Tiga Agama">Unduh denah</a>
+                  </div>
+                </article>
+              </section>
+              <section id="event-map-day-2" role="tabpanel" aria-labelledby="event-map-tab-2" tabindex="0" hidden>
+                <p class="event-map-pending">Denah Day 2 sedang disiapkan panitia.</p>
+              </section>
+              <section id="event-map-day-3" role="tabpanel" aria-labelledby="event-map-tab-3" tabindex="0" hidden>
+                <p class="event-map-pending">Denah Day 3 sedang disiapkan panitia.</p>
+              </section>
+            </div>
+            <p class="letter-signoff">Dengan hangat,<br><strong>Panitia BHARASENA</strong></p>
+          </div>
+          <div class="letter-roll letter-roll-bottom" aria-hidden="true"></div>
+        </article>
       </div>
     </dialog>
 
