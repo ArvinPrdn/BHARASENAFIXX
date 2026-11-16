@@ -545,6 +545,74 @@ function initHero() {
   });
 }
 
+function initFinaleMotion() {
+  const finale = $('.finale');
+  if (!finale) return;
+  const lights = $$('.finale-aura, .finale-velvet', finale).map((element) => ({
+    element, timer: 0,
+  }));
+  const pointer = { x: 0, y: 0 };
+  let target = { x: 0, y: 0 };
+  let visible = false;
+
+  function moveLight(light) {
+    const duration = 1700 + Math.random() * 2500;
+    light.element.style.setProperty('--finale-light-duration', `${duration}ms`);
+    light.element.style.setProperty('--finale-light-x', `${(Math.random() - 0.5) * 52}%`);
+    light.element.style.setProperty('--finale-light-y', `${(Math.random() - 0.5) * 48}%`);
+    light.element.style.setProperty('--finale-light-angle', `${(Math.random() - 0.5) * 24}deg`);
+    light.element.style.setProperty('--finale-light-opacity', (0.6 + Math.random() * 0.4).toFixed(2));
+    light.timer = setTimeout(() => moveLight(light), duration);
+  }
+
+  function updateLighting() {
+    for (const light of lights) {
+      clearTimeout(light.timer);
+      if (visible && !reduceMotion() && !document.hidden) moveLight(light);
+    }
+  }
+
+  function resetPointer() {
+    target = { x: 0, y: 0 };
+    requestFrame();
+  }
+
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(([entry]) => {
+      visible = entry.isIntersecting;
+      updateLighting();
+      if (!visible) resetPointer();
+    }).observe(finale);
+  }
+  document.addEventListener('visibilitychange', updateLighting);
+  motionQuery.addEventListener?.('change', () => {
+    updateLighting();
+    resetPointer();
+  });
+
+  finale.addEventListener('pointermove', (event) => {
+    if (event.pointerType === 'touch' || reduceMotion()) return;
+    const box = finale.getBoundingClientRect();
+    target = {
+      x: clamp(((event.clientX - box.left) / box.width - 0.5) * 2, -1, 1) * 48,
+      y: clamp(((event.clientY - box.top) / box.height - 0.5) * 2, -1, 1) * 32,
+    };
+    requestFrame();
+  }, { passive: true });
+  finale.addEventListener('pointerleave', resetPointer);
+
+  addFrameTask(() => {
+    const distance = Math.abs(pointer.x - target.x) + Math.abs(pointer.y - target.y);
+    if (reduceMotion() || !distance) return false;
+    const moving = distance > 0.15;
+    pointer.x = moving ? lerp(pointer.x, target.x, 0.14) : target.x;
+    pointer.y = moving ? lerp(pointer.y, target.y, 0.14) : target.y;
+    finale.style.setProperty('--finale-pointer-x', `${pointer.x.toFixed(2)}px`);
+    finale.style.setProperty('--finale-pointer-y', `${pointer.y.toFixed(2)}px`);
+    return moving;
+  });
+}
+
 function initRundownMotion(layout) {
   const section = layout.closest('.programme');
   const tabs = $$('.day-tab', layout);
@@ -1827,6 +1895,7 @@ function init() {
   initPublishedContent();
   initTimeline();
   initHero();
+  initFinaleMotion();
   initRundown();
   initTime();
   initEnvelopes();
