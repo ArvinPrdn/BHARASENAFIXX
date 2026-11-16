@@ -321,7 +321,7 @@ async function handle(request, response) {
     const assetRelative = relative(join(root, 'assets'), file);
     const publicAsset = path.startsWith('/assets/') && assetRelative && !assetRelative.startsWith('..') && !isAbsolute(assetRelative);
     const publicFile = publicAsset || path === '/styles.css' || path === '/gallery-page.css' || path === '/admin.css' || path === '/favicon.ico'
-      || path === '/src/scripts/experience.js' || path === '/src/scripts/gallery-page.js' || path === '/src/scripts/music.js' || path === '/src/scripts/heritage.js' || path === '/src/data/event.js' || path === '/src/data/rundown.js' || path === '/src/data/message-rules.js';
+      || path === '/src/scripts/experience.js' || path === '/src/scripts/gallery-page.js' || path === '/src/scripts/music.js' || path === '/src/scripts/heritage.js' || path === '/src/scripts/event-maps.js' || path === '/src/data/event.js' || path === '/src/data/rundown.js' || path === '/src/data/message-rules.js';
     if (publicFile && !relative(root, file).startsWith('..') && existsSync(file) && (await stat(file)).isFile()) {
       const type = mime[extname(file).toLowerCase()] || 'application/octet-stream';
       if (type.startsWith('audio/')) return sendAudio(request, response, file, (await stat(file)).size, type);

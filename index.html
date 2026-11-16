@@ -39,6 +39,7 @@
     <link rel="apple-touch-icon" href="assets/apple-touch-icon.png" sizes="180x180" />
     <link rel="stylesheet" href="styles.css" />
     <script type="module" src="src/scripts/experience.js"></script>
+    <script type="module" src="src/scripts/event-maps.js"></script>
   </head>
   <body>
     <a class="skip-link" href="#main">Lewati pembuka</a>
@@ -524,9 +525,13 @@
         <div class="scene-shape information-seal" data-parallax-depth="-0.06" aria-hidden="true"></div>
         <div class="information-heading"><p class="scene-kicker">21.30 / UNTUK TAMU</p><h2 id="information-title">Info peserta.</h2><p>Detail praktis akan dibuka setelah dipastikan panitia. Kembali ke halaman ini untuk pembaruan.</p></div>
          <div class="envelope-grid" data-dynamic="envelopes"><!-- slot:envelopes:start --><article class="envelope" data-envelope="lokasi"><div class="envelope-top"><span>01 / LOKASI</span><span class="envelope-fold" aria-hidden="true"></span></div><div class="envelope-body"><h3>Tempat acara</h3><p>Lokasi lengkap menyusul.</p></div><div class="envelope-bottom"><span>SEGEL PANITIA</span><span class="wax-mini" aria-hidden="true"></span></div></article><article class="envelope is-open" data-envelope="parkir"><div class="envelope-top"><span>02 / PARKIR</span><span class="envelope-fold" aria-hidden="true"></span></div><div class="envelope-body"><h3>Denah parkir</h3><p>Lihat denah dan jalur parkir motor serta mobil.</p></div><div class="envelope-bottom"><span>LIHAT DENAH</span><span class="wax-mini" aria-hidden="true"></span></div></article><article class="envelope" data-envelope="masuk"><div class="envelope-top"><span>03 / AKSES</span><span class="envelope-fold" aria-hidden="true"></span></div><div class="envelope-body"><h3>Ketentuan masuk</h3><p>Petunjuk masuk peserta dan tamu menyusul.</p></div><div class="envelope-bottom"><span>SEGEL PANITIA</span><span class="wax-mini" aria-hidden="true"></span></div></article><article class="envelope" data-envelope="busana"><div class="envelope-top"><span>04 / BUSANA</span><span class="envelope-fold" aria-hidden="true"></span></div><div class="envelope-body"><h3>Busana acara</h3><p>Ketentuan berpakaian menyusul.</p></div><div class="envelope-bottom"><span>SEGEL PANITIA</span><span class="wax-mini" aria-hidden="true"></span></div></article><!-- slot:envelopes:end -->
-          <article class="envelope envelope--upcoming">
-            <div class="envelope-body"><h3>Info tambahan</h3></div>
-            <div class="envelope-bottom">MENYUSUL</div>
+          <article class="envelope envelope--map is-open">
+            <div class="envelope-top"><span>DENAH KEGIATAN</span><span class="envelope-fold" aria-hidden="true"></span></div>
+            <div class="envelope-body"><h3>Denah acara</h3><p>Lokasi kegiatan dan pembagian area Day 1–3.</p></div>
+            <div class="envelope-bottom">
+              <button class="event-map-trigger" type="button" aria-haspopup="dialog" aria-controls="event-maps" aria-label="Lihat denah acara">Lihat denah</button>
+              <span class="wax-mini" aria-hidden="true"></span>
+            </div>
           </article>
         </div>
       </section>
@@ -657,6 +662,61 @@
 
     <nav class="mobile-dock" aria-label="Akses cepat"><a href="#rundown">Rundown</a><a href="#info-peserta">Info</a><a href="#undangan">Undangan</a><a href="#proposal">Proposal</a><a href="#dinding-pesan">Pesan</a></nav>
     <footer class="site-footer"><span>BHARASENA © 2026</span><span>Batalyon Bhara Arsa Nawasena</span><a href="#hero">Kembali ke awal</a></footer>
+
+    <dialog id="event-maps" class="event-map-dialog letter-polished" aria-labelledby="event-maps-title">
+      <div class="event-map-panel">
+        <header class="event-map-header">
+          <h2 id="event-maps-title">Denah acara</h2>
+          <form method="dialog"><button class="event-map-close" type="submit" autofocus>Tutup</button></form>
+        </header>
+        <div class="event-map-tabs" role="tablist" aria-label="Hari acara">
+          <button id="event-map-tab-1" type="button" role="tab" aria-selected="true" aria-controls="event-map-day-1" data-date="2026-12-11"><strong>Day 1</strong><span>11 Des</span></button>
+          <button id="event-map-tab-2" type="button" role="tab" aria-selected="false" aria-controls="event-map-day-2" data-date="2026-12-12" tabindex="-1"><strong>Day 2</strong><span>12 Des</span></button>
+          <button id="event-map-tab-3" type="button" role="tab" aria-selected="false" aria-controls="event-map-day-3" data-date="2026-12-13" tabindex="-1"><strong>Day 3</strong><span>13 Des</span></button>
+        </div>
+        <div class="event-map-content">
+          <section id="event-map-day-1" role="tabpanel" aria-labelledby="event-map-tab-1">
+            <article class="event-map-entry">
+              <h3>Donor Darah</h3>
+              <p>Ruang PBNK · Pagi</p>
+              <img src="assets/denah-acara/day-1-donor-darah.svg" width="4500" height="3000" loading="lazy" decoding="async" alt="Denah Ruang PBNK dengan pintu masuk dan keluar, area registrasi, ruang tunggu, bilik pemeriksaan, dan lima bilik donor.">
+              <div class="event-map-actions">
+                <button type="button" data-enlarge-map aria-label="Perbesar denah Donor Darah">Perbesar denah</button>
+                <a href="assets/denah-acara/day-1-donor-darah.svg" download aria-label="Unduh denah Donor Darah">Unduh denah</a>
+              </div>
+            </article>
+            <article class="event-map-entry">
+              <h3>Talkshow Tiga Agama</h3>
+              <p>Lapangan Tribrata · Malam</p>
+              <img src="assets/denah-acara/day-1-talkshow.svg" width="4500" height="3000" loading="lazy" decoding="async" alt="Denah Lapangan Tribrata yang menunjukkan panggung, pintu masuk, area VVIP, serta posisi taruna dan taruni.">
+              <div class="event-map-actions">
+                <button type="button" data-enlarge-map aria-label="Perbesar denah Talkshow Tiga Agama">Perbesar denah</button>
+                <a href="assets/denah-acara/day-1-talkshow.svg" download aria-label="Unduh denah Talkshow Tiga Agama">Unduh denah</a>
+              </div>
+            </article>
+          </section>
+          <section id="event-map-day-2" role="tabpanel" aria-labelledby="event-map-tab-2" tabindex="0" hidden>
+            <p class="event-map-pending">Denah Day 2 sedang disiapkan panitia.</p>
+          </section>
+          <section id="event-map-day-3" role="tabpanel" aria-labelledby="event-map-tab-3" tabindex="0" hidden>
+            <p class="event-map-pending">Denah Day 3 sedang disiapkan panitia.</p>
+          </section>
+        </div>
+      </div>
+    </dialog>
+
+    <dialog id="event-map-viewer" class="event-map-viewer" aria-labelledby="event-map-viewer-title">
+      <div class="event-map-viewer-bar">
+        <h2 id="event-map-viewer-title"></h2>
+        <form method="dialog"><button class="event-map-close" type="submit" autofocus>Kembali ke denah</button></form>
+      </div>
+      <div class="event-map-viewport" role="region" aria-label="Gambar denah" tabindex="0"><img alt="" draggable="false"></div>
+      <div class="event-map-zoom" role="group" aria-label="Ukuran denah">
+        <button type="button" data-map-zoom="out" aria-label="Perkecil gambar">−</button>
+        <button type="button" data-map-zoom="reset" aria-label="Pas ke layar">Pas ke layar</button>
+        <button type="button" data-map-zoom="in" aria-label="Perbesar gambar">+</button>
+      </div>
+    </dialog>
 
     <dialog id="parking-dialog" class="letter-dialog letter-polished parking-dialog" aria-labelledby="parking-title" aria-describedby="parking-guide">
       <div class="letter-dialog-stage">
