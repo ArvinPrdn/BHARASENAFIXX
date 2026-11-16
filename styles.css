@@ -844,46 +844,6 @@ img { max-width: 100%; }
     linear-gradient(118deg, #160b0f, #0d0709 58%, #211016);
   text-align: center;
 }
-/* A shallow oval floor gives the curtains a shared physical stage. */
-.finale-stage {
-  position: absolute;
-  z-index: 0;
-  inset: 41% -14% -12%;
-  pointer-events: none;
-  mask-image: linear-gradient(180deg, #000 55%, transparent 96%);
-}
-.finale-stage__surface {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  border-radius: 50% 50% 0 0 / 24% 24% 0 0;
-  border-top: 1px solid #d9ad7066;
-  background:
-    radial-gradient(ellipse 48% 18% at 50% 0%, #bd875938, transparent),
-    radial-gradient(ellipse 75% 100% at 50% 0%, transparent 25%, #0b070bd9 90%),
-    repeating-conic-gradient(from 75deg at 50% -30%, #c58c6012 0deg .12deg, transparent .12deg 10deg),
-    linear-gradient(180deg, #352119, #1c1213 50%, #100b10);
-  box-shadow: 0 -12px 55px #cd865b12, inset 0 8px 16px #edbd7510;
-}
-.finale-stage__surface::before,
-.finale-stage__surface::after {
-  content: '';
-  position: absolute;
-  inset: 3% -2% -8%;
-  border-radius: inherit;
-  border-top: 1px solid #e1b37b24;
-}
-.finale-stage__surface::after { inset: 7% -5% -15%; border-color: #e1b37b14; }
-.finale-stage__reflection {
-  --finale-light-range: .3;
-  position: absolute;
-  inset: 8% 12% 0;
-  background:
-    radial-gradient(ellipse 18% 34% at 30% 32%, #d5a36a26, transparent 80%),
-    radial-gradient(ellipse 14% 40% at 70% 28%, #e6bd7d20, transparent 80%),
-    radial-gradient(ellipse 38% 12% at 50% 10%, #f5cc8b15, transparent);
-  mask-image: linear-gradient(180deg, transparent, #000 20%, #000 65%, transparent);
-}
 /* The velvet fades into the backdrop around the brighter folds. */
 .finale-velvet {
   --finale-velvet-direction: 1;
@@ -1029,7 +989,7 @@ img { max-width: 100%; }
   from { opacity: .25; transform: translateY(42px) scale(.94); }
 }
 @media (prefers-reduced-motion: no-preference) {
-  .finale-aura, .finale-velvet::before, .finale-stage__reflection {
+  .finale-aura, .finale-velvet::before {
     transform: translate(
       calc(var(--finale-light-x, 0%) * var(--finale-light-range, 1)),
       calc(var(--finale-light-y, 0%) * var(--finale-light-range, 1))
@@ -1037,7 +997,6 @@ img { max-width: 100%; }
     transition: transform var(--finale-light-duration, 0s) ease-in-out, opacity var(--finale-light-duration, 0s) ease-in-out;
   }
   .finale-aura { opacity: var(--finale-light-opacity, .85); }
-  .finale-stage__reflection { opacity: var(--finale-light-opacity, .85); }
   .finale-velvet::before { opacity: var(--finale-light-opacity, 1); }
   .finale .finale-velvet {
     transform: translate3d(
@@ -1080,7 +1039,6 @@ img { max-width: 100%; }
   .finale .committee-contact { --finale-reveal-delay: .58s; }
 }
 @media (max-width: 767px) {
-  .finale-stage { inset: 34% -38% -10%; }
   .finale-velvet { width: 63%; bottom: 16%; left: -20%; opacity: .72; }
   .finale-velvet--right { left: auto; right: -20%; opacity: .58; }
   .finale-sparks { top: 165px; }
