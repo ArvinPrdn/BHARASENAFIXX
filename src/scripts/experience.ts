@@ -64,13 +64,6 @@ document.addEventListener('visibilitychange', () => {
 });
 
 function initTime() {
-  const clock = $('.scene-clock');
-  const clockFormatter = new Intl.DateTimeFormat('id-ID', {
-    timeZone: EVENT.tz,
-    hour: '2-digit',
-    minute: '2-digit',
-    hourCycle: 'h23',
-  });
   const countdown = $('#hero-countdown');
   const liveStrip = $('#live-status');
   let liveStatus = $('[data-live-status]') || liveStrip?.querySelector('span:last-child');
@@ -145,11 +138,6 @@ function initTime() {
   }
 
   function update() {
-    if (clock) {
-      const label = clockFormatter.format(new Date());
-      if (clock.textContent !== label) clock.textContent = label;
-    }
-
     const now = currentTime();
     const phase = getPhase(now);
     if (phase !== lastPhase) {
@@ -220,7 +208,6 @@ function initTimeline() {
   const hero = $('.hero');
   const heroLayers = hero ? $$('[data-depth]', hero) : [];
   const parallaxLayers = () => $$('[data-parallax-depth]');
-  const dots = $$('.scene-dot');
   const navigationLinks = $$('.header-nav a[href^="#"], .mobile-dock a[href^="#"]');
   let dirty = true;
   let activeIndex = -1;
@@ -229,13 +216,6 @@ function initTimeline() {
     if (index === activeIndex || index < 0) return;
     activeIndex = index;
     scenes.forEach((scene, sceneIndex) => scene.classList.toggle('is-active', sceneIndex === index));
-    dots.forEach((dot, dotIndex) => {
-      const id = dot.getAttribute('href')?.slice(1) || dot.dataset.sceneTarget;
-      const selected = id ? scenes[index]?.id === id : dotIndex === index;
-      dot.classList.toggle('is-active', selected);
-      if (selected) dot.setAttribute('aria-current', 'location');
-      else dot.removeAttribute('aria-current');
-    });
     navigationLinks.forEach((link) => {
       const selected = link.hash === `#${scenes[index]?.id}`;
       if (selected) link.setAttribute('aria-current', 'location');
@@ -312,130 +292,40 @@ function initTimeline() {
     $('#penampil')?.classList.add('is-in-view');
   }
 
-  dots.forEach((dot, index) => {
-    if (dot.tagName !== 'A') dot.addEventListener('click', () => scenes[index]?.scrollIntoView({ behavior: reduceMotion() ? 'instant' : 'smooth' }));
-  });
   markDirty();
 }
 
-function initSeal(onOpened) {
+function initSeal() {
   let visited = false;
   try { visited = sessionStorage.getItem('bharasena-opened') === '1'; } catch { /* private mode */ }
-  if (visited) {
-    if (!location.hash) onOpened?.();
-    return;
-  }
-  const gate = document.createElement('div');
+  if (visited || location.hash) return;
+
+  const gate = document.createElement('dialog');
   gate.className = 'seal-gate';
-  gate.setAttribute('role', 'dialog');
-  gate.setAttribute('aria-modal', 'true');
   gate.setAttribute('aria-labelledby', 'seal-title');
   gate.innerHTML = `
-    <div class="seal-gate__ambient" aria-hidden="true"></div>
     <div class="seal-card">
-      <span class="seal-card__eyebrow">SEBUAH UNDANGAN</span>
-      <h2 id="seal-title">Untuk malam<br>yang kita rayakan.</h2>
-      <p>BHARASENA · 11—13 DESEMBER 2026</p>
-      <button class="seal-hold" type="button" aria-label="Tahan untuk membuka undangan">
-        <svg class="seal-ring" viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="52" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="327" stroke-dashoffset="calc(327 * (1 - var(--seal-progress, 0)))" /></svg>
-        <span class="seal-wax" aria-hidden="true">B</span>
-        <span class="seal-hold__label">${reduceMotion() ? 'Buka undangan' : 'Tahan untuk membuka'}</span>
-      </button>
-      <div class="seal-actions"><button type="button" class="seal-direct">Buka undangan</button></div>
+      <span class="seal-wax" aria-hidden="true">B</span>
+      <h2 id="seal-title">BHARASENA</h2>
+      <p>Prom Night Batalyon 6 · 11–13 Desember 2026</p>
+      <form method="dialog"><button type="submit" class="seal-direct action-primary" autofocus>Buka undangan</button></form>
     </div>`;
   document.body.append(gate);
-  const oldFocus = document.activeElement;
-  const siblings = [...document.body.children].filter((child) => child !== gate && !['SCRIPT', 'STYLE'].includes(child.tagName));
-  const previousInert = siblings.map((child) => child.inert);
-  siblings.forEach((child) => { child.inert = true; });
-  const previousOverflow = document.body.style.overflow;
-  document.body.style.overflow = 'hidden';
-  const hold = $('.seal-hold', gate);
-  const ring = $('.seal-ring circle', gate);
-  const direct = $('.seal-direct', gate);
-  let holding = false;
-  let holdStart = 0;
-  let closing = false;
-
-  function close() {
-    if (closing) return;
-    closing = true;
-    holding = false;
-    document.dispatchEvent(new Event('bharasena:entered'));
+  gate.showModal();
+  document.body.classList.add('intro-open');
+  gate.addEventListener('close', () => {
     try { sessionStorage.setItem('bharasena-opened', '1'); } catch { /* private mode */ }
-    gate.classList.add('is-opening');
-    setTimeout(() => {
-      gate.remove();
-      siblings.forEach((child, i) => { child.inert = previousInert[i]; });
-      document.body.style.overflow = previousOverflow;
-      if (oldFocus instanceof HTMLElement && oldFocus !== document.body && oldFocus.isConnected) oldFocus.focus();
-      else { const main = $('main'); if (main) { main.tabIndex = -1; main.focus({ preventScroll: true }); } }
-      onOpened?.();
-    }, reduceMotion() ? 120 : 520);
-  }
-  function stopHold() {
-    if (!holding) return;
-    holding = false;
-    hold.style.setProperty('--seal-progress', '0');
-    if (ring) ring.style.strokeDashoffset = '327';
-    gate.classList.remove('is-holding');
-  }
-  function startHold(event) {
-    if (reduceMotion()) { close(); return; }
-    if (event?.type === 'pointerdown' && event.button !== 0) return;
-    if (holding || closing) return;
-    holding = true;
-    holdStart = performance.now();
-    gate.classList.add('is-holding');
-    if (event?.pointerId !== undefined) hold.setPointerCapture?.(event.pointerId);
-    requestFrame();
-  }
-  addFrameTask((time) => {
-    if (!holding || closing) return false;
-    const progress = clamp((time - holdStart) / 900, 0, 1);
-    hold.style.setProperty('--seal-progress', String(progress));
-    if (ring) ring.style.strokeDashoffset = String(327 * (1 - progress));
-    if (progress >= 1) {
-      navigator.vibrate?.(35);
-      close();
-      return false;
-    }
-    return true;
-  });
-  hold.addEventListener('pointerdown', startHold);
-  hold.addEventListener('pointerup', () => {
-    if (closing) document.dispatchEvent(new Event('bharasena:resume-audio'));
-  });
-  ['pointerup', 'pointercancel', 'pointerleave'].forEach((name) => hold.addEventListener(name, stopHold));
-  hold.addEventListener('keydown', (event) => {
-    if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); startHold(event); }
-  });
-  hold.addEventListener('keyup', (event) => {
-    if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); stopHold(); }
-  });
-  hold.addEventListener('click', (event) => event.preventDefault());
-  direct.addEventListener('click', close);
-  gate.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape') { event.preventDefault(); close(); return; }
-    if (event.key !== 'Tab') return;
-    const options = [hold, direct].filter((node) => getComputedStyle(node).display !== 'none');
-    const first = options[0], last = options.at(-1);
-    if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
-    if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
-  });
-  (reduceMotion() ? direct : hold).focus();
+    document.body.classList.remove('intro-open');
+    gate.remove();
+    const main = $('#main');
+    main.tabIndex = -1;
+    main.focus({ preventScroll: true });
+  }, { once: true });
 }
 
 function initHero() {
   const hero = $('.hero');
   if (!hero) return;
-  const tickets = $$('.event-ticket', hero);
-  for (const ticket of tickets) {
-    ticket.addEventListener('click', () => {
-      const wasPressed = ticket.getAttribute('aria-pressed') === 'true';
-      for (const item of tickets) item.setAttribute('aria-pressed', String(item === ticket && !wasPressed));
-    });
-  }
   const layers = $$('[data-depth]', hero);
   const chandelier = $('.chandelier', hero);
   const crystals = chandelier ? $$('[data-crystal]', chandelier) : [];
@@ -774,7 +664,12 @@ function initRundown() {
     details.classList.add('is-interactive');
   }
 
-  wireTabs($$('.day-tab[data-day]', layout), panels);
+  const dayTabs = $$('.day-tab[data-day]', layout);
+  wireTabs(dayTabs, panels);
+  const selectLinkedDay = () => dayTabs.find((tab) => location.hash === `#${tab.id}`)?.click();
+  addEventListener('hashchange', selectLinkedDay);
+  $('.performer-schedule[href="#tab-13"]')?.addEventListener('click', () => dayTabs.find((tab) => tab.id === 'tab-13')?.click());
+  selectLinkedDay();
   layout.classList.add('is-interactive');
   refreshMotion = initRundownMotion(layout);
   refreshMotion();
@@ -948,7 +843,6 @@ function initEnvelopes() {
   const parkingCard = cards.find((card) => ['parkir', 'parking'].includes(card.dataset.envelope));
   const parkingDialog = $('#parking-dialog');
   if (parkingCard && parkingDialog) {
-    const viewport = $('#parking-viewport', parkingDialog);
     const image = $('[data-parking-image]', parkingDialog);
     let closingParking = false;
     const closeParking = async () => {
@@ -958,77 +852,10 @@ function initEnvelopes() {
       closingParking = false;
     };
     const status = $('[data-parking-status]', parkingDialog);
-    image.addEventListener('load', () => { status.textContent = ''; resetZoom(); });
+    image.addEventListener('load', () => { status.textContent = ''; });
     image.addEventListener('error', () => {
-      status.textContent = 'Denah belum berhasil dimuat. Tutup lalu buka kembali, atau pilih Buka gambar penuh.';
+      status.textContent = 'Denah belum berhasil dimuat. Buka kembali surat ini atau coba unduh denah.';
     });
-    let scale = 1;
-    let offsetX = 0;
-    let offsetY = 0;
-    let gesture = null;
-    const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
-    const renderMap = () => {
-      offsetX = clamp(offsetX, viewport.clientWidth * (1 - scale), 0);
-      offsetY = clamp(offsetY, viewport.clientHeight * (1 - scale), 0);
-      image.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
-      viewport.classList.toggle('is-zoomed', scale > 1);
-    };
-    const resetZoom = () => { scale = 1; offsetX = 0; offsetY = 0; gesture = null; renderMap(); };
-    const touchPoint = (touches) => {
-      const bounds = viewport.getBoundingClientRect();
-      const first = touches[0];
-      const second = touches[1] || first;
-      return { x: (first.clientX + second.clientX) / 2 - bounds.left, y: (first.clientY + second.clientY) / 2 - bounds.top, distance: Math.hypot(second.clientX - first.clientX, second.clientY - first.clientY) };
-    };
-    const beginGesture = (event) => {
-      if (!event.touches.length || !image.naturalWidth) { gesture = null; return; }
-      gesture = { ...touchPoint(event.touches), scale, offsetX, offsetY, count: event.touches.length };
-      if (event.touches.length > 1 || scale > 1) event.preventDefault();
-    };
-    viewport.addEventListener('touchstart', beginGesture, { passive: false });
-    viewport.addEventListener('touchmove', (event) => {
-      if (!gesture || (!image.naturalWidth) || (event.touches.length < 2 && scale === 1)) return;
-      event.preventDefault();
-      if (event.touches.length !== gesture.count) { beginGesture(event); return; }
-      const point = touchPoint(event.touches);
-      const nextScale = event.touches.length > 1 ? clamp(gesture.scale * point.distance / Math.max(gesture.distance, 1), 1, 5) : scale;
-      const ratio = nextScale / gesture.scale;
-      offsetX = point.x - (gesture.x - gesture.offsetX) * ratio;
-      offsetY = point.y - (gesture.y - gesture.offsetY) * ratio;
-      scale = nextScale;
-      renderMap();
-    }, { passive: false });
-    viewport.addEventListener('touchend', beginGesture, { passive: false });
-    viewport.addEventListener('touchcancel', () => { gesture = null; });
-    const zoomAt = (nextScale, x, y) => {
-      if (!image.naturalWidth) return;
-      nextScale = clamp(nextScale, 1, 5);
-      const ratio = nextScale / scale;
-      offsetX = x - (x - offsetX) * ratio;
-      offsetY = y - (y - offsetY) * ratio;
-      scale = nextScale;
-      renderMap();
-    };
-    viewport.addEventListener('wheel', (event) => {
-      if (!event.ctrlKey && scale === 1) return;
-      event.preventDefault();
-      const bounds = viewport.getBoundingClientRect();
-      if (event.ctrlKey) zoomAt(scale * Math.exp(-event.deltaY * .01), event.clientX - bounds.left, event.clientY - bounds.top);
-      else { offsetX -= event.deltaX; offsetY -= event.deltaY; renderMap(); }
-    }, { passive: false });
-    viewport.addEventListener('keydown', (event) => {
-      if (['+', '=', '-', '_'].includes(event.key)) {
-        event.preventDefault();
-        zoomAt(scale * (['+', '='].includes(event.key) ? 1.25 : .8), viewport.clientWidth / 2, viewport.clientHeight / 2);
-      } else if (event.key === '0' || event.key === 'Home') { event.preventDefault(); resetZoom(); }
-      else if (scale > 1 && ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(event.key)) {
-        event.preventDefault();
-        offsetX += event.key === 'ArrowLeft' ? 40 : event.key === 'ArrowRight' ? -40 : 0;
-        offsetY += event.key === 'ArrowUp' ? 40 : event.key === 'ArrowDown' ? -40 : 0;
-        renderMap();
-      }
-    });
-    new ResizeObserver(resetZoom).observe(viewport);
     parkingCard.classList.remove('is-sealed');
     parkingCard.classList.add('is-open');
     parkingCard.setAttribute('role', 'button');
@@ -1037,10 +864,9 @@ function initEnvelopes() {
     parkingCard.setAttribute('aria-haspopup', 'dialog');
     parkingCard.setAttribute('aria-controls', 'parking-dialog');
     parkingCard.setAttribute('aria-expanded', 'false');
-    $('.envelope-body p', parkingCard).textContent = 'Lihat denah dan jalur parkir motor serta mobil.';
-    $('.envelope-bottom > span:first-child', parkingCard).textContent = 'LIHAT DENAH';
+    $('.envelope-body p', parkingCard).textContent = 'Jalur dan area parkir untuk motor dan mobil.';
+    $('.envelope-bottom > span:first-child', parkingCard).textContent = 'Lihat denah';
     const openParking = () => {
-      resetZoom();
       if (!image.getAttribute('src') || (image.complete && !image.naturalWidth)) {
         status.textContent = 'Memuat denah…';
         image.src = image.dataset.src;
@@ -1070,6 +896,7 @@ function initEnvelopes() {
   const infoCards = new Set();
   if (infoDialog) {
     let activeInfoCard = null;
+    let activeInfoOpener = null;
     let closingInfo = false;
     const closeInfo = async () => {
       if (closingInfo || !infoDialog.open) return;
@@ -1085,7 +912,7 @@ function initEnvelopes() {
     infoDialog.addEventListener('close', () => {
       document.body.classList.remove('busana-open');
       activeInfoCard?.setAttribute('aria-expanded', 'false');
-      activeInfoCard?.focus({ preventScroll: true });
+      activeInfoOpener?.focus({ preventScroll: true });
     });
     const renderInfoDetails = (content, venue) => {
       const container = $('[data-info-body]', infoDialog);
@@ -1128,8 +955,10 @@ function initEnvelopes() {
       infoCards.add(card);
       const title = venue ? 'Tempat acara' : 'Ketentuan masuk';
       const body = $('.envelope-body p', card);
-      const content = card.classList.contains('is-open') && body.textContent.trim() ? body.textContent.trim() : venue ? EVENT.venue : EVENT.admission;
-      body.textContent = content;
+      const content = card.dataset.envelopeDetail || (venue ? EVENT.venue : EVENT.admission);
+      body.textContent = venue
+        ? 'Alamat lengkap dan petunjuk arah ke lokasi acara.'
+        : 'Siapa yang dapat hadir dan fasilitas yang tersedia.';
       card.classList.remove('is-sealed');
       card.classList.add('is-open');
       card.setAttribute('role', 'button');
@@ -1138,9 +967,10 @@ function initEnvelopes() {
       card.setAttribute('aria-haspopup', 'dialog');
       card.setAttribute('aria-controls', 'info-letter-dialog');
       card.setAttribute('aria-expanded', 'false');
-      $('.envelope-bottom > span:first-child', card).textContent = 'TERBUKA';
-      const openInfo = () => {
+      $('.envelope-bottom > span:first-child', card).textContent = venue ? 'Lihat lokasi' : 'Lihat ketentuan';
+      const openInfo = (opener = card) => {
         activeInfoCard = card;
+        activeInfoOpener = opener;
         $('#info-letter-title', infoDialog).textContent = title;
         renderInfoDetails(content, venue);
         $('[data-info-map]', infoDialog).hidden = !venue;
@@ -1149,7 +979,15 @@ function initEnvelopes() {
         document.body.classList.add('busana-open');
         card.setAttribute('aria-expanded', 'true');
       };
-      card.addEventListener('click', openInfo);
+      card.addEventListener('click', () => openInfo());
+      for (const link of $$(`a[href="#${card.id}"]`)) {
+        link.setAttribute('aria-haspopup', 'dialog');
+        link.addEventListener('click', (event) => {
+          if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+          event.preventDefault();
+          openInfo(link);
+        });
+      }
       card.addEventListener('keydown', (event) => {
         if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openInfo(); }
       });
@@ -1300,22 +1138,6 @@ function initEnvelopes() {
       busanaCard.focus({ preventScroll: true });
     });
   }
-  const performerEnvelope = $('.mini-envelope[data-envelope="performer"]');
-  if (performerEnvelope) {
-    performerEnvelope.setAttribute('role', 'button');
-    performerEnvelope.setAttribute('tabindex', '0');
-    performerEnvelope.setAttribute('aria-label', `Jadwal penampilan Budi Doremi, ${$('strong', performerEnvelope).textContent.trim()}`);
-    const nudge = () => {
-      performerEnvelope.classList.remove('is-jolted');
-      void performerEnvelope.offsetWidth;
-      performerEnvelope.classList.add('is-jolted');
-      setTimeout(() => performerEnvelope.classList.remove('is-jolted'), 460);
-    };
-    performerEnvelope.addEventListener('click', nudge);
-    performerEnvelope.addEventListener('keydown', (event) => {
-      if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); nudge(); }
-    });
-  }
   if (!cards.length) return;
   const serverRendered = root.dataset.rendered === 'server';
   function refresh() {
@@ -1350,8 +1172,8 @@ function initEnvelopes() {
   if (busanaCard) {
     busanaCard.classList.remove('is-sealed');
     busanaCard.classList.add('is-open');
-    $('.envelope-body p', busanaCard).textContent = 'Lihat panduan busana dan desain jersey BHARASENA VI.';
-    $('.envelope-bottom > span:first-child', busanaCard).textContent = 'LIHAT BUSANA';
+    $('.envelope-body p', busanaCard).textContent = 'Panduan pakaian dan desain jersey BHARASENA VI.';
+    $('.envelope-bottom > span:first-child', busanaCard).textContent = 'Lihat busana';
   }
   refresh();
   const timer = setInterval(refresh, 30_000);
@@ -1443,7 +1265,7 @@ function initMessageWall() {
       if (card) { list.append(card); count += 1; }
     });
     if (empty) empty.hidden = count > 0;
-    if (state) state.textContent = count ? `${count} PESAN TERBIT` : 'MENUNGGU PESAN';
+    if (state) state.textContent = count ? `${count} pesan` : 'Belum ada pesan';
   }
   async function loadMessages() {
     if (!list || !('fetch' in window)) return;
@@ -1462,16 +1284,16 @@ function initMessageWall() {
         if (!form.hasAttribute('aria-busy')) form.querySelectorAll('input, textarea, button').forEach((control) => { control.disabled = !wallEnabled; });
         if (!wallEnabled) {
           setStatus('Pengiriman pesan akan segera dibuka.');
-          if (state && !messages.length) state.textContent = 'SEGERA DIBUKA';
+          if (state && !messages.length) state.textContent = 'Menyusul';
         } else if (!wasEnabled) {
           formStartedAt = Date.now();
-          setStatus('Pesan yang memenuhi ketentuan langsung tampil di dinding.');
+          setStatus('');
         }
       }
     } catch {
       if (managedWall && !wallEnabled) {
         setStatus('Dinding pesan belum tersedia. Silakan kembali lagi nanti.');
-        if (state) state.textContent = 'SEGERA DIBUKA';
+        if (state) state.textContent = 'Menyusul';
       }
     }
   }
@@ -1511,7 +1333,7 @@ function initMessageWall() {
       formStartedAt = Date.now();
       updateCount();
       setStatus(approved ? 'Pesanmu sudah tampil di dinding.' : 'Pesan diterima. Setelah disetujui panitia, pesanmu akan tampil.', 'success');
-      if (state && approved) state.textContent = 'PESAN TERBARU';
+      if (state && approved) state.textContent = 'Pesan baru diterbitkan';
     } catch (error) {
       setStatus(error?.message || 'Pesan belum dapat dikirim. Coba lagi nanti.', 'error');
     } finally {
@@ -1539,21 +1361,31 @@ function initCard() {
   // eslint-disable-next-line no-control-regex -- Remove control characters from visitor text.
   const safeName = (value) => [...String(value || '').replace(/[\u0000-\u001f\u007f]/g, '').replace(/\s+/g, ' ').trim()].slice(0, 40).join('');
   let name = safeName(urlName || input.value);
+  const actions = $('.invite-actions');
   if (name) input.value = name;
 
-  function updateName(normalizeInput = false) {
-    const clean = safeName(input.value);
-    // Leave in-progress spaces and the caret intact while the visitor types.
-    if (normalizeInput && input.value !== clean) input.value = clean;
-    name = clean;
-    if (previewName) previewName.textContent = clean || 'Nama Anda';
-    if (heroName) heroName.textContent = clean ? `Untuk ${clean}` : 'Untuk kamu';
-    preview.setAttribute('aria-label', `Pratinjau undangan BHARASENA untuk ${clean || 'Anda'}`);
+  function updatePreview() {
+    if (previewName) previewName.textContent = name || 'Nama Anda';
+    if (heroName) heroName.textContent = name ? `Untuk ${name}` : 'Untuk kamu';
+    preview.setAttribute('aria-label', `Pratinjau undangan BHARASENA untuk ${name || 'Anda'}`);
+    actions.hidden = !name;
   }
-  input.addEventListener('input', () => updateName());
-  input.addEventListener('blur', () => updateName(true));
-  form?.addEventListener('submit', (event) => { event.preventDefault(); updateName(true); preview.focus({ preventScroll: true }); });
-  updateName(true);
+  input.addEventListener('input', () => input.setCustomValidity(''));
+  form?.addEventListener('submit', (event) => {
+    event.preventDefault();
+    const clean = safeName(input.value);
+    if (!clean) {
+      input.setCustomValidity('Isi nama yang ingin ditulis pada kartu.');
+      input.reportValidity();
+      return;
+    }
+    name = input.value = clean;
+    updatePreview();
+    if (status) status.textContent = '';
+    preview.focus({ preventScroll: true });
+    preview.scrollIntoView({ block: 'nearest' });
+  });
+  updatePreview();
 
   const tilt = { x: 0, y: 0 };
   let target = { x: 0, y: 0 };
@@ -1666,7 +1498,7 @@ function initCard() {
         }
       }
       download(blob);
-      if (status) status.textContent = 'Kartu berhasil disiapkan. Jika belum tersimpan, periksa unduhan browser.';
+      if (status) status.textContent = share ? 'Fitur berbagi tidak tersedia di sini. Kartu diunduh sebagai gambar.' : 'Kartu diunduh sebagai gambar PNG.';
     } catch (error) {
       console.error('Kartu undangan gagal dibuat:', error);
       if (status) status.textContent = 'Kartu belum berhasil dibuat. Coba lagi.';
@@ -1685,7 +1517,8 @@ function initGalleryAndRain() {
   let drag = null;
   let velocity = 0;
 
-  if (track && gallery.length) {
+  if (track && gallery.length && root.dataset.rendered !== 'server') {
+    track.hidden = false;
     track.replaceChildren();
     gallery.forEach((item, index) => {
       const button = document.createElement('button');
@@ -1854,50 +1687,24 @@ function initGalleryAndRain() {
 }
 
 function initNavigation() {
-  const button = $('.menu-button');
-  const nav = $('#site-nav');
-  if (!button || !nav) return;
-  const close = () => {
-    button.setAttribute('aria-expanded', 'false');
-    nav.classList.remove('is-open');
-  };
-  button.addEventListener('click', () => {
-    const open = button.getAttribute('aria-expanded') !== 'true';
-    button.setAttribute('aria-expanded', String(open));
-    nav.classList.toggle('is-open', open);
-  });
-  $$('a', nav).forEach((link) => link.addEventListener('click', close));
-  document.addEventListener('keydown', (event) => { if (event.key === 'Escape') close(); });
-  document.addEventListener('click', (event) => { if (!nav.contains(event.target) && !button.contains(event.target)) close(); });
-}
-
-function initPublishedContent() {
-  if (EVENT.venue) {
-    const place = $('.ticket-place strong');
-    const note = $('.ticket-place > span:last-child');
-    if (place) place.textContent = EVENT.venue;
-    if (note) note.textContent = 'Lokasi acara';
+  for (const menu of $$('.section-menu')) {
+    menu.addEventListener('click', (event) => {
+      if (!event.target.closest('a')) return;
+      menu.open = false;
+    });
+    menu.addEventListener('keydown', (event) => {
+      if (event.key !== 'Escape' || !menu.open) return;
+      event.preventDefault();
+      menu.open = false;
+      $('summary', menu).focus();
+    });
+    document.addEventListener('click', (event) => {
+      if (!menu.contains(event.target)) menu.open = false;
+    });
   }
-  if (EVENT.artistAt && root.dataset.rendered !== 'server') {
-    const artistTime = $('.mini-envelope[data-envelope="performer"] strong');
-    if (artistTime) artistTime.textContent = EVENT.artistAt;
-  }
-  if (EVENT.contact) {
-    const note = $('.contact-note');
-    if (note) note.textContent = `Kontak panitia: ${EVENT.contact}`;
-  }
-}
-
-function initPerformer() {
-  const stage = document.querySelector('#penampil');
-  if (!stage) return;
-  stage.querySelector('.performer-listen')?.addEventListener('click', () => {
-    document.querySelector('#audio-toggle')?.click();
-  });
 }
 
 function init() {
-  initPublishedContent();
   initTimeline();
   initHero();
   initFinaleMotion();
@@ -1907,11 +1714,10 @@ function init() {
   initMessageWall();
   initCard();
   initGalleryAndRain();
-  const openMusic = initMusic();
-  initPerformer();
+  initMusic();
   initHeritage();
   initNavigation();
-  initSeal(openMusic);
+  initSeal();
 }
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, { once: true });
 else init();

@@ -20,6 +20,7 @@ function selectDay(activeTab) {
 }
 
 let closing = false;
+let mapOpener;
 async function closeMapLetter() {
   if (closing || !mapDialog.open) return;
   closing = true;
@@ -30,12 +31,29 @@ async function closeMapLetter() {
   }
 }
 
-mapTrigger.addEventListener('click', () => {
+function openMapLetter(trigger, entry) {
+  if (mapDialog.open) return;
+  mapOpener = trigger;
   const today = eventDate.format();
   mapDialog.showModal();
-  selectDay(tabs.find((tab) => tab.dataset.date === today) ?? tabs[0]);
+  selectDay(entry ? tabs[0] : tabs.find((tab) => tab.dataset.date === today) ?? tabs[0]);
   document.body.classList.add('busana-open');
-});
+  if (entry) {
+    const firstEntry = entry.parentElement.firstElementChild;
+    mapContent.scrollTop = entry.offsetTop - firstEntry.offsetTop;
+    entry.querySelector('h3').focus({ preventScroll: true });
+  }
+}
+mapTrigger.addEventListener('click', () => openMapLetter(mapTrigger));
+for (const link of document.querySelectorAll('a[data-event-map]')) {
+  link.addEventListener('click', (event) => {
+    if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    const entry = document.getElementById(`denah-${link.dataset.eventMap}`);
+    if (!entry) return;
+    event.preventDefault();
+    openMapLetter(link, entry);
+  });
+}
 mapDialog.querySelector('.letter-dialog-close').addEventListener('click', closeMapLetter);
 mapDialog.addEventListener('cancel', (event) => {
   event.preventDefault();
@@ -46,7 +64,7 @@ mapDialog.addEventListener('click', (event) => {
 });
 mapDialog.addEventListener('close', () => {
   document.body.classList.remove('busana-open');
-  mapTrigger.focus({ preventScroll: true });
+  mapOpener?.focus({ preventScroll: true });
 });
 for (const tab of tabs) {
   tab.addEventListener('click', () => selectDay(tab));
@@ -95,14 +113,15 @@ function setZoom(requestedScale, x = viewport.clientWidth / 2, y = viewport.clie
   zoomOut.disabled = scale <= 1;
 }
 
-for (const button of mapContent.querySelectorAll('[data-enlarge-map]')) {
+for (const button of document.querySelectorAll('[data-enlarge-map]')) {
   button.addEventListener('click', () => {
     const entry = button.closest('.event-map-entry');
     const image = entry.querySelector('img');
     opener = button;
-    viewerTitle.textContent = entry.querySelector('h3').textContent;
+    const heading = entry.querySelector('h3') ?? document.getElementById(entry.getAttribute('aria-labelledby'));
+    viewerTitle.textContent = heading.textContent;
     viewerImage.alt = image.alt;
-    viewerImage.src = image.src;
+    viewerImage.src = image.getAttribute('src') || image.dataset.src;
     viewerImage.width = Number(image.getAttribute('width'));
     viewerImage.height = Number(image.getAttribute('height'));
     aspectRatio = viewerImage.width / viewerImage.height;
