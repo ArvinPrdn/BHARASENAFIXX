@@ -176,10 +176,9 @@ img { max-width: 100%; }
   --curtain-edge: -11%;
   width: clamp(220px, 26vw, 460px);
   background: repeating-linear-gradient(91deg,#120508 0%,#4a0f1d 11%,#21070e 21%,#631627 31%,#23070e 41%,#4b0d1a 52%,#140509 62%);
-  box-shadow: 10px 0 45px rgba(0,0,0,.55), inset -28px 0 60px rgba(0,0,0,.5);
 }
-.curtain::after, .finale-velvet::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom,rgba(0,0,0,.45),transparent 23%,transparent 66%,rgba(0,0,0,.3)); }
-.curtain { top: -2%; bottom: -1%; }
+.curtain::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom,rgba(0,0,0,.45),transparent 23%,transparent 66%,rgba(0,0,0,.3)); }
+.curtain { top: -2%; bottom: -1%; box-shadow: 10px 0 45px rgba(0,0,0,.55), inset -28px 0 60px rgba(0,0,0,.5); }
 .curtain-left, .finale-velvet { left: var(--curtain-edge); border-radius: 0 0 44% 0; }
 .curtain-right, .finale-velvet--right { right: var(--curtain-edge); }
 .curtain-right { border-radius: 0 0 0 44%; }
@@ -882,8 +881,12 @@ img { max-width: 100%; }
 .finale-velvet::before {
   content: '';
   position: absolute;
-  inset: 0;
-  background: radial-gradient(ellipse at 70% 38%, #ffd19028, #e9896218 42%, transparent 72%);
+  top: 12%;
+  left: 42%;
+  width: 68%;
+  height: 62%;
+  background: radial-gradient(ellipse closest-side, #ffe6b58c, #ffb27555 32%, #e6784b22 64%, #e6784b00);
+  opacity: .85;
   mix-blend-mode: screen;
 }
 .finale-velvet span {
@@ -949,23 +952,6 @@ img { max-width: 100%; }
   height: 4px;
   background: #f3a5a7;
 }
-.finale-aura {
-  --finale-light-range: .65;
-  position: absolute;
-  z-index: 0;
-  top: 0;
-  left: max(2%, calc(50% - 460px));
-  width: min(96%, 920px);
-  height: 680px;
-  max-height: 80%;
-  pointer-events: none;
-  background:
-    radial-gradient(ellipse at 50% 36%, rgba(219, 190, 208, .14), transparent 53%),
-    radial-gradient(ellipse at 31% 48%, rgba(127, 42, 75, .24), transparent 58%),
-    radial-gradient(ellipse at 72% 37%, rgba(105, 99, 135, .13), transparent 54%);
-  mask-image: linear-gradient(180deg, transparent, #000 14%, #000 75%, transparent);
-  opacity: .85;
-}
 @keyframes finale-curtain-open {
   from { translate: calc(var(--finale-curtain-gather) * var(--finale-velvet-direction)) -36px; opacity: .28; }
   68% { translate: calc(-16px * var(--finale-velvet-direction)) 6px; }
@@ -997,15 +983,11 @@ img { max-width: 100%; }
   from { opacity: .25; transform: translateY(42px) scale(.94); }
 }
 @media (prefers-reduced-motion: no-preference) {
-  .finale-aura, .finale-velvet::before {
-    transform: translate(
-      calc(var(--finale-light-x, 0%) * var(--finale-light-range, 1)),
-      calc(var(--finale-light-y, 0%) * var(--finale-light-range, 1))
-    ) rotate(var(--finale-light-angle, 0deg));
+  .finale-velvet::before {
+    transform: translate(var(--finale-light-x, 0%), var(--finale-light-y, 0%)) rotate(var(--finale-light-angle, 0deg));
+    opacity: var(--finale-light-opacity, .85);
     transition: transform var(--finale-light-duration, 0s) ease-in-out, opacity var(--finale-light-duration, 0s) ease-in-out;
   }
-  .finale-aura { opacity: var(--finale-light-opacity, .85); }
-  .finale-velvet::before { opacity: var(--finale-light-opacity, 1); }
   .finale .finale-velvet {
     transform: translate3d(
       calc(var(--finale-pointer-x, 0px) * var(--finale-velvet-direction) * var(--finale-pointer-response)),
@@ -1048,7 +1030,6 @@ img { max-width: 100%; }
 }
 @media (max-width: 767px) {
   .finale-sparks { top: 165px; }
-  .finale-aura { height: 580px; }
 }
 .gold-rain { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 90; }
 .finale-content { position: relative; z-index: 2; width: 100%; min-width: 0; }

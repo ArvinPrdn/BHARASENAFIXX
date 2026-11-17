@@ -554,7 +554,7 @@ function initHero() {
 function initFinaleMotion() {
   const finale = $('.finale');
   if (!finale) return;
-  const lights = $$('.finale-aura, .finale-velvet', finale).map((element) => ({
+  const lights = $$('.finale-velvet', finale).map((element) => ({
     element, timer: 0,
   }));
   const pointer = { x: 0, y: 0 };
