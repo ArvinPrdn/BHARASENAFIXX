@@ -134,9 +134,7 @@ function performerSlot(performers) {
 function rundownPanel(content, day, fallback) {
   const published = content.rundown.filter((item) => item.day.endsWith('-' + day) && !item.isPlaceholder);
   if (!published.length) return fallback;
-  const summary = (fallback.match(/<div class="programme-summary">.*?<\/div>/su)?.[0] || '')
-    .replace(/(<span data-programme-count>).*?(<\/span>)/u,
-      (_match, opening, closing) => `${opening}${published.length} kegiatan${closing}`);
+  const summary = fallback.match(/<div class="programme-summary">.*?<\/div>/su)?.[0] || '';
   const matchesFeatured = {
     '11': (item) => /^talkshow\s+tiga\s+agama$/iu.test(item.title.trim()),
     '12': (item) => /colou?r\s*fest/iu.test(item.title) && /dj/iu.test(item.title),

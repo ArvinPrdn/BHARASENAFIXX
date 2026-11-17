@@ -423,8 +423,7 @@ img { max-width: 100%; }
 .programme-date { margin: 0 0 10px; color: var(--champagne); font-size: 12px; font-weight: 700; letter-spacing: .11em; text-transform: uppercase; }
 .programme-summary h3 { margin: 0; font: 500 clamp(2.25rem, 3.9vw, 3.8rem)/1.04 var(--display); letter-spacing: -.045em; text-wrap: balance; }
 .programme-description { max-width: 32ch; margin: 13px 0 0; color: var(--muted); font-size: 15px; line-height: 1.55; }
-.programme-meta { display: flex; flex-wrap: wrap; gap: 2px 10px; margin: 14px 0 0; color: var(--champagne); font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; }
-.programme-meta span + span::before { content: '·'; margin-right: 10px; }
+.programme-meta { margin: 14px 0 0; color: var(--champagne); font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; }
 
 .programme-details { grid-area: agenda; min-width: 0; }
 .programme-session-tabs { display: none; flex-wrap: wrap; gap: 6px; margin: 0 0 16px; }
