@@ -4,65 +4,9 @@ export const programme = [
     "day": "11",
     "date": "2026-12-11",
     "weekday": "Jumat",
-    "title": "Taruna Bakti & Talkshow Tiga Agama",
+    "title": "Ksatrian & Talkshow Tiga Agama",
     "hours": "06.00–22.30",
     "groups": [
-      {
-        "id": "11-1",
-        "label": "Sosialisasi",
-        "title": "Taruna Bakti dan Sosialisasi",
-        "rows": [
-          {
-            "time": "07.45–08.00",
-            "title": "Kedatangan",
-            "description": "Datang ke Lokasi Balai Desa",
-            "start": "07:45",
-            "end": "08:00"
-          },
-          {
-            "time": "08.00–08.05",
-            "title": "Doa pembuka",
-            "description": "Dipimpin oleh orang yang bertugas",
-            "start": "08:00",
-            "end": "08:05"
-          },
-          {
-            "time": "08.05–08.15",
-            "title": "Pembukaan",
-            "description": "Pemberian sambutan",
-            "start": "08:05",
-            "end": "08:15"
-          },
-          {
-            "time": "08.15–08.20",
-            "title": "Peresmian",
-            "description": "Peresmian tempat sampah secara simbolik",
-            "start": "08:15",
-            "end": "08:20"
-          },
-          {
-            "time": "08.20–08.50",
-            "title": "Sosialisasi",
-            "description": "Pemaparan penggunaan tempat sampah",
-            "start": "08:20",
-            "end": "08:50"
-          },
-          {
-            "time": "08.50–09.05",
-            "title": "Kuis",
-            "description": "Memberikan pertanyaan terkait pemaparan sosialisasi",
-            "start": "08:50",
-            "end": "09:05"
-          },
-          {
-            "time": "09.05–09.10",
-            "title": "Penutupan",
-            "description": "Kata kata penutup",
-            "start": "09:05",
-            "end": "09:10"
-          }
-        ]
-      },
       {
         "id": "11-2",
         "label": "Dalam Ksatrian",
