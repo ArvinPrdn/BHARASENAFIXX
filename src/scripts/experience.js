@@ -551,31 +551,56 @@ function initFinaleMotion() {
   const finale = $('.finale');
   if (!finale) return;
   const lightHeights = [-48, 0, 48];
-  const lights = $$('.finale-velvet', finale).map((element, index) => ({
-    element, timer: 0, height: index === 0 ? lightHeights[0] : lightHeights.at(-1),
+  const restingLight = { transform: 'translate(0%, 0%) rotate(0deg) scale(1)', opacity: 0.88 };
+  const lights = $$('.finale-spotlight', finale).map((element) => ({
+    element, animation: null, height: 0, destination: restingLight,
   }));
   const pointer = { x: 0, y: 0 };
   let target = { x: 0, y: 0 };
   let visible = false;
+  const canMoveLights = () => visible && !reduceMotion() && !document.hidden;
 
   function moveLight(light) {
     // Pick a different height so each pass moves visibly along the fabric.
     const otherHeights = lightHeights.filter((height) => height !== light.height);
     light.height = otherHeights[Math.floor(Math.random() * otherHeights.length)];
-    const duration = 1850 + Math.random() * 1250;
-    light.element.style.setProperty('--finale-light-duration', `${duration}ms`);
-    light.element.style.setProperty('--finale-light-x', `${(Math.random() - 0.5) * 36}%`);
-    light.element.style.setProperty('--finale-light-y', `${light.height + (Math.random() - 0.5) * 14}%`);
-    light.element.style.setProperty('--finale-light-angle', `${(Math.random() - 0.5) * 34}deg`);
-    light.element.style.setProperty('--finale-light-size', (0.85 + Math.random() * 0.3).toFixed(2));
-    light.element.style.setProperty('--finale-light-opacity', (0.78 + Math.random() * 0.22).toFixed(2));
-    light.timer = setTimeout(() => moveLight(light), duration);
+    const x = (Math.random() - 0.5) * 36;
+    const y = light.height + (Math.random() - 0.5) * 14;
+    const angle = (Math.random() - 0.5) * 34;
+    const size = 0.85 + Math.random() * 0.3;
+    const destination = {
+      transform: `translate(${x}%, ${y}%) rotate(${angle}deg) scale(${size})`,
+      opacity: 0.78 + Math.random() * 0.22,
+    };
+    // The next sweep starts at the previous endpoint after the browser finishes it.
+    const previous = light.animation;
+    const animation = light.element.animate([light.destination, destination], {
+      duration: 1850 + Math.random() * 1250,
+      easing: 'cubic-bezier(.38,0,.62,1)',
+      fill: 'both',
+    });
+    light.animation = animation;
+    light.destination = destination;
+    previous?.cancel();
+    animation.onfinish = () => {
+      if (light.animation === animation && canMoveLights()) moveLight(light);
+    };
   }
 
   function updateLighting() {
     for (const light of lights) {
-      clearTimeout(light.timer);
-      if (visible && !reduceMotion() && !document.hidden) moveLight(light);
+      if (reduceMotion()) {
+        light.animation?.cancel();
+        light.animation = null;
+        light.destination = restingLight;
+        light.height = 0;
+      } else if (!canMoveLights()) {
+        if (light.animation?.playState === 'running') light.animation.pause();
+      } else if (!light.animation || light.animation.playState === 'finished') {
+        moveLight(light);
+      } else if (light.animation.playState === 'paused') {
+        light.animation.play();
+      }
     }
   }
 

@@ -877,10 +877,8 @@ img { max-width: 100%; }
   --finale-pointer-response: .78;
   --finale-dust-phase: -2.4s;
   --finale-curtain-delay: .12s;
-  --finale-light-start-y: 48%;
 }
-.finale-velvet::before {
-  content: '';
+.finale-spotlight {
   position: absolute;
   top: 10%;
   left: 39%;
@@ -903,12 +901,12 @@ img { max-width: 100%; }
   box-shadow: 0 0 5px #e8a768a0;
   opacity: 0;
 }
-.finale-velvet span:nth-child(1) { top: 30%; left: 41%; --dust-delay: -1s; }
-.finale-velvet span:nth-child(2) { top: 43%; left: 49%; --dust-delay: -3s; --dust-size: 3px; }
-.finale-velvet span:nth-child(3) { top: 52%; left: 54%; --dust-delay: -5s; }
-.finale-velvet span:nth-child(4) { top: 67%; left: 41%; --dust-delay: -1.8s; }
-.finale-velvet span:nth-child(5) { top: 35%; left: 30%; --dust-delay: -4.4s; --dust-size: 3px; }
-.finale-velvet span:nth-child(6) { top: 58%; left: 48%; --dust-delay: -6.2s; }
+.finale-velvet span:nth-of-type(1) { top: 30%; left: 41%; --dust-delay: -1s; }
+.finale-velvet span:nth-of-type(2) { top: 43%; left: 49%; --dust-delay: -3s; --dust-size: 3px; }
+.finale-velvet span:nth-of-type(3) { top: 52%; left: 54%; --dust-delay: -5s; }
+.finale-velvet span:nth-of-type(4) { top: 67%; left: 41%; --dust-delay: -1.8s; }
+.finale-velvet span:nth-of-type(5) { top: 35%; left: 30%; --dust-delay: -4.4s; --dust-size: 3px; }
+.finale-velvet span:nth-of-type(6) { top: 58%; left: 48%; --dust-delay: -6.2s; }
 .finale-sparks {
   --finale-spark-travel: clamp(110px, 25vw, 385px);
   position: absolute;
@@ -988,12 +986,6 @@ img { max-width: 100%; }
   from { opacity: .25; transform: translateY(42px) scale(.94); }
 }
 @media (prefers-reduced-motion: no-preference) {
-  .finale-velvet::before {
-    transform: translate(var(--finale-light-x, 0%), var(--finale-light-y, var(--finale-light-start-y, -48%)))
-      rotate(var(--finale-light-angle, 0deg)) scale(var(--finale-light-size, 1));
-    opacity: var(--finale-light-opacity, .88);
-    transition: transform var(--finale-light-duration, 0s) cubic-bezier(.42,.2,.58,.8), opacity var(--finale-light-duration, 0s) ease-in-out;
-  }
   .finale .finale-velvet {
     transform: translate3d(
       calc(var(--finale-pointer-x, 0px) * var(--finale-velvet-direction) * var(--finale-pointer-response)),
