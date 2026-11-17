@@ -511,8 +511,6 @@ img { max-width: 100%; }
   mask-image: linear-gradient(#000 78%, transparent);
 }
 .speaker-spotlight__copy { position: relative; z-index: 1; margin-top: -16px; }
-.speaker-spotlight--studio .speaker-spotlight__portrait img { height: auto; border-radius: 8px; mask-image: none; }
-.speaker-spotlight--studio .speaker-spotlight__copy { margin-top: 12px; }
 .speaker-spotlight__session { margin: 0 0 6px; color: var(--champagne); font-size: 12px; font-weight: 700; letter-spacing: .06em; }
 .speaker-spotlight__name { margin: 0; font: 500 clamp(1.85rem, 3vw, 2.75rem)/1 var(--display); letter-spacing: -.035em; }
 .speaker-spotlight__name em { color: var(--champagne); }
