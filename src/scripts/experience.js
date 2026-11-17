@@ -550,20 +550,25 @@ function initHero() {
 function initFinaleMotion() {
   const finale = $('.finale');
   if (!finale) return;
-  const lights = $$('.finale-velvet', finale).map((element) => ({
-    element, timer: 0,
+  const lightHeights = [-48, 0, 48];
+  const lights = $$('.finale-velvet', finale).map((element, index) => ({
+    element, timer: 0, height: index === 0 ? lightHeights[0] : lightHeights.at(-1),
   }));
   const pointer = { x: 0, y: 0 };
   let target = { x: 0, y: 0 };
   let visible = false;
 
   function moveLight(light) {
-    const duration = 1700 + Math.random() * 2500;
+    // Pick a different height so each pass moves visibly along the fabric.
+    const otherHeights = lightHeights.filter((height) => height !== light.height);
+    light.height = otherHeights[Math.floor(Math.random() * otherHeights.length)];
+    const duration = 1850 + Math.random() * 1250;
     light.element.style.setProperty('--finale-light-duration', `${duration}ms`);
-    light.element.style.setProperty('--finale-light-x', `${(Math.random() - 0.5) * 52}%`);
-    light.element.style.setProperty('--finale-light-y', `${(Math.random() - 0.5) * 48}%`);
-    light.element.style.setProperty('--finale-light-angle', `${(Math.random() - 0.5) * 24}deg`);
-    light.element.style.setProperty('--finale-light-opacity', (0.6 + Math.random() * 0.4).toFixed(2));
+    light.element.style.setProperty('--finale-light-x', `${(Math.random() - 0.5) * 36}%`);
+    light.element.style.setProperty('--finale-light-y', `${light.height + (Math.random() - 0.5) * 14}%`);
+    light.element.style.setProperty('--finale-light-angle', `${(Math.random() - 0.5) * 34}deg`);
+    light.element.style.setProperty('--finale-light-size', (0.85 + Math.random() * 0.3).toFixed(2));
+    light.element.style.setProperty('--finale-light-opacity', (0.78 + Math.random() * 0.22).toFixed(2));
     light.timer = setTimeout(() => moveLight(light), duration);
   }
 

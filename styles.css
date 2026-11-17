@@ -877,15 +877,16 @@ img { max-width: 100%; }
   --finale-pointer-response: .78;
   --finale-dust-phase: -2.4s;
   --finale-curtain-delay: .12s;
+  --finale-light-start-y: 48%;
 }
 .finale-velvet::before {
   content: '';
   position: absolute;
   top: 12%;
-  left: 42%;
-  width: 68%;
+  left: 46%;
+  width: 60%;
   height: 62%;
-  background: radial-gradient(ellipse closest-side, #ffe6b58c, #ffb27555 32%, #e6784b22 64%, #e6784b00);
+  background: radial-gradient(ellipse closest-side, #ffe6b5b3, #ffb27560 30%, #e6784b22 64%, #e6784b00);
   opacity: .85;
   mix-blend-mode: screen;
 }
@@ -984,9 +985,10 @@ img { max-width: 100%; }
 }
 @media (prefers-reduced-motion: no-preference) {
   .finale-velvet::before {
-    transform: translate(var(--finale-light-x, 0%), var(--finale-light-y, 0%)) rotate(var(--finale-light-angle, 0deg));
+    transform: translate(var(--finale-light-x, 0%), var(--finale-light-y, var(--finale-light-start-y, -48%)))
+      rotate(var(--finale-light-angle, 0deg)) scale(var(--finale-light-size, 1));
     opacity: var(--finale-light-opacity, .85);
-    transition: transform var(--finale-light-duration, 0s) ease-in-out, opacity var(--finale-light-duration, 0s) ease-in-out;
+    transition: transform var(--finale-light-duration, 0s) cubic-bezier(.42,.2,.58,.8), opacity var(--finale-light-duration, 0s) ease-in-out;
   }
   .finale .finale-velvet {
     transform: translate3d(
