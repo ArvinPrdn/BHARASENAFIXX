@@ -882,12 +882,16 @@ img { max-width: 100%; }
 .finale-velvet::before {
   content: '';
   position: absolute;
-  top: 12%;
-  left: 46%;
-  width: 60%;
+  top: 10%;
+  left: 39%;
+  width: 74%;
   height: 62%;
-  background: radial-gradient(ellipse closest-side, #ffe6b5b3, #ffb27560 30%, #e6784b22 64%, #e6784b00);
-  opacity: .85;
+  /* A focused pool of champagne light with a warmer spill around it. */
+  background:
+    radial-gradient(ellipse 30% 38% at 50% 46%, #fff0ce72 0%, #ffe3b46b 24%, #ffc58c51 48%, #efa46726 70%, #efa46700 100%),
+    radial-gradient(ellipse closest-side at 50% 51%, #e49b5a32 0%, #d97b441f 52%, #bc593410 75%, #bc593400 100%);
+  rotate: -6deg;
+  opacity: .88;
   mix-blend-mode: screen;
 }
 .finale-velvet span {
@@ -987,7 +991,7 @@ img { max-width: 100%; }
   .finale-velvet::before {
     transform: translate(var(--finale-light-x, 0%), var(--finale-light-y, var(--finale-light-start-y, -48%)))
       rotate(var(--finale-light-angle, 0deg)) scale(var(--finale-light-size, 1));
-    opacity: var(--finale-light-opacity, .85);
+    opacity: var(--finale-light-opacity, .88);
     transition: transform var(--finale-light-duration, 0s) cubic-bezier(.42,.2,.58,.8), opacity var(--finale-light-duration, 0s) ease-in-out;
   }
   .finale .finale-velvet {
