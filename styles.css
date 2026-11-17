@@ -422,7 +422,6 @@ img { max-width: 100%; }
 .programme-summary { grid-area: summary; min-width: 0; }
 .programme-date { margin: 0 0 10px; color: var(--champagne); font-size: 12px; font-weight: 700; letter-spacing: .11em; text-transform: uppercase; }
 .programme-summary h3 { margin: 0; font: 500 clamp(2.25rem, 3.9vw, 3.8rem)/1.04 var(--display); letter-spacing: -.045em; text-wrap: balance; }
-.programme-description { max-width: 32ch; margin: 13px 0 0; color: var(--muted); font-size: 15px; line-height: 1.55; }
 .programme-meta { margin: 14px 0 0; color: var(--champagne); font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; }
 
 .programme-details { grid-area: agenda; min-width: 0; }
@@ -516,9 +515,6 @@ img { max-width: 100%; }
 .speaker-spotlight__wordmark { display: block; width: min(100%, 240px); height: auto; }
 .speaker-spotlight__time { margin: 9px 0 0; color: var(--ivory); font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums; }
 .speaker-spotlight__time small { margin-left: 3px; color: var(--champagne); font-size: 11px; }
-.speaker-spotlight__note { margin: 8px 0 0; color: var(--muted); font-size: 13px; line-height: 1.5; }
-.speaker-spotlight__credit { margin: 7px 0 0; color: var(--muted); font-size: 11px; }
-.speaker-spotlight__credit a { display: inline-flex; align-items: center; min-height: 24px; text-underline-offset: 3px; }
 
 @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
   .programme-agenda > li::before {
@@ -648,7 +644,6 @@ img { max-width: 100%; }
   .day-panel { grid-template-columns: minmax(0, 1fr); grid-template-areas: "summary" "agenda" "portrait"; gap: 22px; padding-top: 23px; }
   .programme-date { margin-bottom: 6px; font-size: 11px; }
   .programme-summary h3 { font-size: clamp(1.9rem, 7.8vw, 2.75rem); text-wrap: wrap; }
-  .programme-description { max-width: none; margin-top: 6px; font-size: 14px; }
   .programme-meta { margin-top: 8px; font-size: 12px; }
   .programme-session-tabs { margin-bottom: 13px; }
   .programme-agenda { --time-width: 5.35rem; --timeline-gutter: 20px; }
