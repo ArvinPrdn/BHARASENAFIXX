@@ -36,14 +36,18 @@ export function messageWallConfig(env = process.env) {
   const prefix = /^[a-zA-Z0-9:_-]{1,80}$/u.test(env.MESSAGE_WALL_NAMESPACE || '') ? env.MESSAGE_WALL_NAMESPACE : 'bharasena:wall:v1';
   const readReady = Boolean(redisUrl && redisToken);
   const secretReady = String(env.APP_SECRET || '').length >= 32 && !/^replace-with-/iu.test(env.APP_SECRET || '');
+  const botToken = env.TELEGRAM_BOT_TOKEN || '';
+  // Telegram group and supergroup chat IDs are negative numbers.
+  const chatId = /^-?\d{1,16}$/u.test(env.TELEGRAM_CHAT_ID || '') ? env.TELEGRAM_CHAT_ID : '';
+  const adminIds = new Set(String(env.TELEGRAM_ADMIN_IDS || '').split(',').map((id) => id.trim()).filter((id) => /^\d{1,20}$/u.test(id)));
+  const webhookSecret = String(env.TELEGRAM_WEBHOOK_SECRET || '');
+  const adminChatId = /^-?\d{1,16}$/u.test(env.TELEGRAM_ADMIN_CHAT_ID || '') ? env.TELEGRAM_ADMIN_CHAT_ID : chatId;
   const writeReady = Boolean(readReady && origin && secretReady);
-  const enabled = env.MESSAGE_WALL_ENABLED === 'true' && writeReady;
+  const adminReady = Boolean(botToken && chatId && adminIds.size && webhookSecret);
+  const enabled = env.MESSAGE_WALL_ENABLED === 'true' && writeReady && adminReady;
   return {
-    origin, redisUrl, prefix, readReady, writeReady, enabled,
-    redisToken, secret: env.APP_SECRET || '',
-    botToken: env.TELEGRAM_BOT_TOKEN || '',
-    // Telegram group and supergroup chat IDs are negative numbers.
-    chatId: /^-?\d{1,16}$/u.test(env.TELEGRAM_CHAT_ID || '') ? env.TELEGRAM_CHAT_ID : '',
+    origin, redisUrl, prefix, readReady, writeReady, enabled, adminReady, adminIds, adminChatId,
+    redisToken, secret: env.APP_SECRET || '', botToken, webhookSecret, chatId,
   };
 }
 
@@ -70,7 +74,7 @@ async function readJson(request) {
   catch { throw Object.assign(new Error(), { status: 400 }); }
 }
 
-async function redis(config, command, fetchImpl) {
+export async function redis(config, command, fetchImpl) {
   const response = await fetchImpl(config.redisUrl, {
     method: 'POST', headers: { Authorization: `Bearer ${config.redisToken}`, 'Content-Type': 'application/json' },
     body: JSON.stringify(command), signal: AbortSignal.timeout(7000),
@@ -81,9 +85,13 @@ async function redis(config, command, fetchImpl) {
   return payload.result;
 }
 
+function parseStoredMessage(raw) {
+  try { return typeof raw === 'string' ? JSON.parse(raw) : raw; } catch { return null; }
+}
+
 function publicMessage(raw) {
   let message;
-  try { message = typeof raw === 'string' ? JSON.parse(raw) : raw; } catch { return null; }
+  try { message = parseStoredMessage(raw); } catch { return null; }
   if (!message || message.status !== 'approved' || typeof message.id !== 'string' || typeof message.body !== 'string' || typeof message.nickname !== 'string') return null;
   if (containsMessageProfanity(message)) return null;
   return { id: message.id, nickname: message.nickname, body: message.body, status: 'approved', created_at: message.created_at };
@@ -91,10 +99,16 @@ function publicMessage(raw) {
 
 export async function notifyTelegram(config, message, fetchImpl = globalThis.fetch) {
   if (!config.botToken || !config.chatId) return;
-  const text = `<b>Dinding Pesan BHARASENA</b>\n\n<b>${escapeHtml(message.nickname || 'Tamu BHARASENA')}</b>\n${escapeHtml(message.body)}\n\nPesan sudah tampil otomatis di web.`;
+  const text = `<b>Dinding Pesan BHARASENA</b>\n\n<b>${escapeHtml(message.nickname || 'Tamu BHARASENA')}</b>\n${escapeHtml(message.body)}\n\nMenunggu persetujuan admin.`;
   const response = await fetchImpl(`https://api.telegram.org/bot${config.botToken}/sendMessage`, {
     method: 'POST', headers: { 'Content-Type': 'application/json' }, signal: AbortSignal.timeout(5000),
-    body: JSON.stringify({ chat_id: config.chatId, text, parse_mode: 'HTML', link_preview_options: { is_disabled: true } }),
+    body: JSON.stringify({
+      chat_id: config.chatId, text, parse_mode: 'HTML', link_preview_options: { is_disabled: true },
+      reply_markup: { inline_keyboard: [[
+        { text: '✅ Setujui', callback_data: `wall:approve:${message.id}` },
+        { text: '❌ Tolak', callback_data: `wall:reject:${message.id}` },
+      ]] },
+    }),
   });
   if (!response.ok || !(await response.json()).ok) throw new Error('Notification unavailable');
 }
@@ -133,20 +147,20 @@ export function createMessageWallHandler({ env = process.env, fetchImpl = global
     if (input.requestId !== undefined && (typeof input.requestId !== 'string' || !/^[a-zA-Z0-9_-]{16,80}$/u.test(input.requestId))) return json(400, { error: 'Identitas kiriman tidak valid.' });
 
     const id = uuid();
-    const message = { id, nickname: valid.nickname, body: valid.body, status: 'approved', created_at: new Date(timestamp).toISOString() };
+    const message = { id, nickname: valid.nickname, body: valid.body, status: 'pending', created_at: new Date(timestamp).toISOString() };
     // Vercel overwrites this header. Raw visitor IPs are never stored or sent to Telegram.
     const ip = (request.headers.get('x-forwarded-for') || 'unknown').split(',')[0].trim();
     const ipHash = createHmac('sha256', config.secret).update(`${new Date(timestamp).toISOString().slice(0, 10)}:${ip}`).digest('hex');
     const attempt = input.requestId || id;
     try {
       const result = await redis(config, ['EVAL', SAVE_MESSAGE_SCRIPT, 4,
-        `${config.prefix}:rate:${ipHash}`, `${config.prefix}:message:${id}`, `${config.prefix}:approved`, `${config.prefix}:attempt:${ipHash}:${attempt}`,
+        `${config.prefix}:rate:${ipHash}`, `${config.prefix}:message:${id}`, `${config.prefix}:pending`, `${config.prefix}:attempt:${ipHash}:${attempt}`,
         id, JSON.stringify(message), timestamp, WINDOW_SECONDS, MAX_MESSAGES,
       ], fetchImpl);
       if (!Array.isArray(result) || ![0, 1, 2].includes(Number(result[0]))) throw new Error('Invalid save result');
       if (Number(result[0]) === 0) return json(429, { error: 'Terlalu banyak kiriman. Coba lagi dalam 15 menit.' }, { 'Retry-After': String(WINDOW_SECONDS) });
       if (Number(result[0]) === 2) {
-        const existing = publicMessage(await redis(config, ['GET', `${config.prefix}:message:${result[1]}`], fetchImpl));
+        const existing = parseStoredMessage(await redis(config, ['GET', `${config.prefix}:message:${result[1]}`], fetchImpl));
         if (!existing) throw new Error('Saved message unavailable');
         return json(200, { ok: true, message: existing });
       }

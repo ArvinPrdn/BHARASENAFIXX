@@ -7,6 +7,7 @@ const env = {
   APP_SECRET: 'test-secret-for-message-wall-1234567890',
   UPSTASH_REDIS_REST_URL: 'https://redis.example', UPSTASH_REDIS_REST_TOKEN: 'fake-redis-secret',
   TELEGRAM_BOT_TOKEN: '12345:fake-not-a-real-token', TELEGRAM_CHAT_ID: '12345678',
+  TELEGRAM_ADMIN_IDS: '7666256021', TELEGRAM_WEBHOOK_SECRET: 'test-webhook-secret',
 };
 const instant = Date.parse('2026-11-02T00:00:00Z');
 const body = { nickname: 'Naim', body: 'Sampai jumpa di Bharasena', website: '', formStartedAt: instant - 2000, requestId: 'request-0000000001' };
@@ -104,12 +105,12 @@ describe('online message wall', () => {
     expect(fetchImpl).not.toHaveBeenCalled();
   });
 
-  it('saves an approved message atomically and then notifies the private chat', async () => {
+  it('saves a pending message atomically and then notifies the private chat', async () => {
     const { handle, fetchImpl } = harness([redis([1, 'new-id']), Response.json({ ok: true })]);
     const response = await handle(request());
     const payload = await response.json();
     expect(response.status).toBe(201);
-    expect(payload.message).toMatchObject({ nickname: 'Naim', body: body.body, status: 'approved' });
+    expect(payload.message).toMatchObject({ nickname: 'Naim', body: body.body, status: 'pending' });
     const command = JSON.parse(String(fetchImpl.mock.calls[0]?.[1]?.body));
     expect(command[0]).toBe('EVAL');
     expect(command[1]).toBe(SAVE_MESSAGE_SCRIPT);
@@ -119,8 +120,8 @@ describe('online message wall', () => {
     expect(JSON.parse(command[8])).toEqual(payload.message);
     const notification = JSON.parse(String(fetchImpl.mock.calls[1]?.[1]?.body));
     expect(notification.chat_id).toBe(env.TELEGRAM_CHAT_ID);
-    expect(notification.text).toContain('sudah tampil otomatis');
-    expect(notification).not.toHaveProperty('reply_markup');
+    expect(notification.text).toContain('Menunggu persetujuan admin');
+    expect(notification.reply_markup.inline_keyboard[0]).toHaveLength(2);
     expect(JSON.stringify(payload)).not.toMatch(/fake-|192\.0\.2|ip_hash/);
   });
 
@@ -130,10 +131,10 @@ describe('online message wall', () => {
     expect(logError).toHaveBeenCalledWith({ event: 'message_wall_notification_failed', messageId: expect.any(String) });
   });
 
-  it('allows web publication without configuring Telegram notifications', async () => {
+  it('keeps submissions closed without Telegram admin configuration', async () => {
     const { handle, fetchImpl } = harness([redis([1, 'new-id'])], { ...env, TELEGRAM_BOT_TOKEN: '', TELEGRAM_CHAT_ID: '' });
-    expect((await handle(request())).status).toBe(201);
-    expect(fetchImpl).toHaveBeenCalledTimes(1);
+    expect((await handle(request())).status).toBe(503);
+    expect(fetchImpl).not.toHaveBeenCalled();
   });
 
   it('sends a notification to the configured group chat', async () => {
