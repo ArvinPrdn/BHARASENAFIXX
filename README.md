@@ -16,7 +16,7 @@ Panel berisi 9 pilihan lagu yang dinyanyikan Budi Doremi, termasuk Cantik
 dengan ekstensi `.mp3`, `.m4a`, `.ogg`, atau `.wav`.
 Pengunjung memilih lagu di panel untuk memulai pemutaran. Panel mendeteksi file
 saat dibuka; lagu yang belum memiliki file ditandai “Audio belum tersedia”.
-File `friendzone` dan `ada-untukmu` belum tersedia di proyek.
+Kesembilan file audio sudah tersedia di proyek.
 Sumber rekaman tambahan dicatat di [daftar sumber audio](docs/AUDIO_SOURCES.md).
 
 ## Status pengembangan

@@ -15,11 +15,14 @@ kolom pertama, dengan ekstensi `.mp3`.
 | `123456` | Budi Doremi, New Version | [Official Lyric Video](https://www.youtube.com/watch?v=b7cmBqicC9c) |
 | `cantik` | Budi Doremi, cover Kahitna | [Rekaman cover](https://www.youtube.com/watch?v=kt9qbbiN8JA) |
 | `doremi` | Budi Doremi | [DoReMi, Official Music Video](https://www.youtube.com/watch?v=HTwN-f2t3Ag) |
+| `friendzone` | Budi Doremi | [Friendzone, Official Lyric Visualizer](https://www.youtube.com/watch?v=0nvCQ5PsqWA) |
+| `ada-untukmu` | Budi Doremi | [Ada Untukmu, Official Music Video](https://www.youtube.com/watch?v=SXHwgBTPhuQ) |
 
 Daftar pilihan diperbarui pada 21 November 2026 menjadi: 123456, Cantik (cover
 Kahitna), Tolong, Takkan Hilang, Mesin Waktu, Friendzone, Ada Untukmu, Melukis
-Senja, dan Doremi. File audio Friendzone (`friendzone`) dan Ada Untukmu
-(`ada-untukmu`) belum tersedia; keduanya ditandai belum tersedia di pemutar.
+Senja, dan Doremi. Audio Friendzone (`friendzone`) dan Ada Untukmu
+(`ada-untukmu`) ditambahkan pada 21 November 2026 dari kanal resmi Budi Doremi,
+melalui CnvMP3 di browser Chrome pengguna. Kesembilan lagu kini memiliki file audio.
 Empat rekaman di luar daftar tersebut telah dihapus dari aset publik.
 
 Versi penyanyi lain tidak disertakan dalam folder aset publik.
