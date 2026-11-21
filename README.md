@@ -11,8 +11,8 @@ tetap diputar saat panel ditutup; tekan Hentikan atau jeda pada pemutar untuk me
 Masukkan rekaman yang telah diizinkan untuk digunakan ke folder `assets/audio/`.
 Panel berisi 9 pilihan lagu yang dinyanyikan Budi Doremi, termasuk Cantik
 (cover Kahitna). Nama file yang didukung, sesuai urutan panel:
-`123456`, `cantik`, `tolong`, `tak-kan-hilang`, `mesin-waktu`, `friendzone`,
-`ada-untukmu`, `melukis-senja`, dan `doremi`,
+`123456`, `cantik`, `tolong`, `tak-kan-hilang`, `doremi`, `mesin-waktu`,
+`friendzone`, `ada-untukmu`, dan `melukis-senja`,
 dengan ekstensi `.mp3`, `.m4a`, `.ogg`, atau `.wav`.
 Pengunjung memilih lagu di panel untuk memulai pemutaran. Panel mendeteksi file
 saat dibuka; lagu yang belum memiliki file ditandai “Audio belum tersedia”.

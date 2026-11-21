@@ -19,8 +19,9 @@ kolom pertama, dengan ekstensi `.mp3`.
 | `ada-untukmu` | Budi Doremi | [Ada Untukmu, Official Music Video](https://www.youtube.com/watch?v=SXHwgBTPhuQ) |
 
 Daftar pilihan diperbarui pada 21 November 2026 menjadi: 123456, Cantik (cover
-Kahitna), Tolong, Takkan Hilang, Mesin Waktu, Friendzone, Ada Untukmu, Melukis
-Senja, dan Doremi. Audio Friendzone (`friendzone`) dan Ada Untukmu
+Kahitna), Tolong, Takkan Hilang, Doremi, Mesin Waktu, Friendzone, Ada Untukmu,
+dan Melukis Senja. Doremi berada di urutan kelima, tepat di tengah daftar.
+Audio Friendzone (`friendzone`) dan Ada Untukmu
 (`ada-untukmu`) ditambahkan pada 21 November 2026 dari kanal resmi Budi Doremi,
 melalui CnvMP3 di browser Chrome pengguna. Kesembilan lagu kini memiliki file audio.
 Empat rekaman di luar daftar tersebut telah dihapus dari aset publik.
