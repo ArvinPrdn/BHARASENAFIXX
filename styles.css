@@ -144,8 +144,9 @@ img { max-width: 100%; }
 .music-playing { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 38px; }
 .music-status { margin: 10px 0; color: var(--champagne); font-size: 11px; }
 .music-stop { min-height: 36px; padding: 0 8px; color: var(--ivory); border: 0; background: transparent; text-decoration: underline; text-underline-offset: 3px; font-size: 11px; }
-.music-tracks, .music-panel:has(.music-console) .music-tracks { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.music-tracks, .music-panel:has(.music-console) .music-tracks { --music-track-gap: 8px; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--music-track-gap); }
 .music-track, .music-panel:has(.music-console) .music-track { grid-template-columns: 1fr 30px; align-content: space-between; gap: 10px; min-height: 108px; padding: 12px; border-color: rgba(217,195,160,.22); border-radius: 5px; background: rgba(217,195,160,.045); }
+.music-track:last-child:nth-child(odd) { grid-column: 1 / -1; justify-self: center; width: calc((100% - var(--music-track-gap)) / 2); }
 .music-track__number { grid-column: 1 / -1; }
 .music-track__copy small { line-height: 1.4; }
 .music-track:focus-visible { outline: 2px solid var(--champagne); outline-offset: 2px; }
