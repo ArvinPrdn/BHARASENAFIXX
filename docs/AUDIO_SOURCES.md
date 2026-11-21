@@ -13,11 +13,13 @@ kolom pertama, dengan ekstensi `.mp3`.
 | File | Rekaman | Sumber |
 | --- | --- | --- |
 | `123456` | Budi Doremi, New Version | [Official Lyric Video](https://www.youtube.com/watch?v=b7cmBqicC9c) |
-| `inikah-cinta` | Budi Doremi, CNL 3 Mei 2015 | [Rekaman penampilan](https://www.youtube.com/watch?v=XgE7yhdBrAU) |
 | `cantik` | Budi Doremi, cover Kahitna | [Rekaman cover](https://www.youtube.com/watch?v=kt9qbbiN8JA) |
-| `yang-penting-happy` | Budi Doremi, Wisuda UMB 2023 | [Rekaman live](https://www.youtube.com/watch?v=_nguePS18zY) |
-| `losdol` | Budi Doremi, cover Denny Caknan | [Rekaman cover](https://www.youtube.com/watch?v=f4aSHai7_AM) |
-| `kopi-dangdut` | Budi Doremi, Jakarta Fair 2023 | [Rekaman live](https://www.youtube.com/watch?v=ZwMB5GxdZh8) |
 | `doremi` | Budi Doremi | [DoReMi, Official Music Video](https://www.youtube.com/watch?v=HTwN-f2t3Ag) |
+
+Daftar pilihan diperbarui pada 21 November 2026 menjadi: 123456, Cantik (cover
+Kahitna), Tolong, Takkan Hilang, Mesin Waktu, Friendzone, Ada Untukmu, Melukis
+Senja, dan Doremi. File audio Friendzone (`friendzone`) dan Ada Untukmu
+(`ada-untukmu`) belum tersedia; keduanya ditandai belum tersedia di pemutar.
+Empat rekaman di luar daftar tersebut telah dihapus dari aset publik.
 
 Versi penyanyi lain tidak disertakan dalam folder aset publik.

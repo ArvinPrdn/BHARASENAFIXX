@@ -1,15 +1,13 @@
 const tracks = [
-  { title: 'Melukis Senja', file: 'melukis-senja', artist: 'Budi Doremi' },
-  { title: 'Mesin Waktu', file: 'mesin-waktu', artist: 'Budi Doremi' },
-  { title: 'Takkan Hilang', file: 'tak-kan-hilang', artist: 'Budi Doremi' },
-  { title: 'Tolong', file: 'tolong', artist: 'Budi Doremi' },
   { title: '123456', file: '123456', artist: 'Budi Doremi' },
+  { title: 'Cantik (cover Kahitna)', file: 'cantik', artist: 'Budi Doremi' },
+  { title: 'Tolong', file: 'tolong', artist: 'Budi Doremi' },
+  { title: 'Takkan Hilang', file: 'tak-kan-hilang', artist: 'Budi Doremi' },
+  { title: 'Mesin Waktu', file: 'mesin-waktu', artist: 'Budi Doremi' },
+  { title: 'Friendzone', file: 'friendzone', artist: 'Budi Doremi' },
+  { title: 'Ada Untukmu', file: 'ada-untukmu', artist: 'Budi Doremi' },
+  { title: 'Melukis Senja', file: 'melukis-senja', artist: 'Budi Doremi' },
   { title: 'Doremi', file: 'doremi', artist: 'Budi Doremi' },
-  { title: 'Inikah Cinta', file: 'inikah-cinta', artist: 'Budi Doremi' },
-  { title: 'Cantik', file: 'cantik', artist: 'Budi Doremi' },
-  { title: 'Yang Penting Happy', file: 'yang-penting-happy', artist: 'Budi Doremi' },
-  { title: 'Los Dol', file: 'losdol', artist: 'Budi Doremi' },
-  { title: 'Kopi Dangdut', file: 'kopi-dangdut', artist: 'Budi Doremi' },
 ];
 
 export function initMusic() {
