@@ -913,12 +913,16 @@ img { max-width: 100%; }
 .finale-spotlight {
   position: absolute;
   inset: 0;
-  background:
-    radial-gradient(ellipse 95% 62% at 66% 36%, #f4ddd3a6, #e6c7b97a 28%, #d0a59a42 49%, #b3847a14 69%, transparent 90%),
-    linear-gradient(180deg, transparent, #e8c8bd26 35%, transparent 85%);
   mask-image: repeating-linear-gradient(91deg, #0003 0%, #000 11%, #0002 21%, #000 31%, #0002 41%, #000 52%, #0003 62%);
   opacity: .8;
   mix-blend-mode: screen;
+}
+.finale-spotlight__glow {
+  position: absolute;
+  inset: -30%;
+  background:
+    radial-gradient(ellipse 95% 62% at 66% 36%, #f4ddd3a6, #e6c7b97a 28%, #d0a59a42 49%, #b3847a14 69%, transparent 90%),
+    linear-gradient(180deg, transparent, #e8c8bd26 35%, transparent 85%);
 }
 @keyframes finale-curtain-open {
   from { translate: calc(var(--finale-curtain-gather) * var(--finale-velvet-direction)) 0; }

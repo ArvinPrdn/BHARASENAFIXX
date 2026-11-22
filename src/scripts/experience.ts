@@ -554,6 +554,71 @@ function initHero() {
   });
 }
 
+function initFinaleLighting() {
+  const finale = $('.finale');
+  if (!finale) return;
+  const restingLight = { transform: 'translate(0%, 0%) scale(1)', opacity: 1 };
+  const heights = [-12, 0, 12];
+  const lights = $$('.finale-spotlight__glow', finale).map((element) => ({
+    element, animation: null, height: 0, destination: restingLight,
+  }));
+  let visible = false;
+  let started = false;
+  const canMove = () => visible && started && !reduceMotion() && !document.hidden;
+
+  function drift(light) {
+    const nextHeights = heights.filter(height => height !== light.height);
+    light.height = nextHeights[Math.floor(Math.random() * nextHeights.length)];
+    const x = (Math.random() - .5) * 24;
+    const y = light.height + (Math.random() - .5) * 4;
+    const size = .92 + Math.random() * .16;
+    const destination = {
+      transform: `translate(${x}%, ${y}%) scale(${size})`,
+      opacity: .8 + Math.random() * .2,
+    };
+    // Move the light inside a stationary mask so the highlights stay on the folds.
+    const previous = light.animation;
+    const animation = light.element.animate([light.destination, destination], {
+      duration: 5500 + Math.random() * 3000,
+      easing: 'cubic-bezier(.38,0,.62,1)',
+      fill: 'both',
+    });
+    light.animation = animation;
+    light.destination = destination;
+    previous?.cancel();
+    animation.onfinish = () => {
+      if (light.animation === animation && canMove()) drift(light);
+    };
+  }
+
+  function update() {
+    for (const light of lights) {
+      if (reduceMotion()) {
+        light.animation?.cancel();
+        light.animation = null;
+        light.destination = restingLight;
+        light.height = 0;
+      } else if (!canMove()) {
+        light.animation?.pause();
+      } else if (!light.animation || light.animation.playState === 'finished') {
+        drift(light);
+      } else if (light.animation.playState === 'paused') {
+        light.animation.play();
+      }
+    }
+  }
+
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(([entry]) => {
+      visible = entry.isIntersecting;
+      started ||= entry.intersectionRatio >= .18;
+      update();
+    }, { threshold: [0, .18] }).observe(finale);
+  }
+  document.addEventListener('visibilitychange', update);
+  motionQuery.addEventListener?.('change', update);
+}
+
 function initRundownMotion(layout) {
   const section = layout.closest('.programme');
   const tabs = $$('.day-tab', layout);
@@ -1872,6 +1937,7 @@ function init() {
   initPublishedContent();
   initTimeline();
   initHero();
+  initFinaleLighting();
   initRundown();
   initTime();
   initEnvelopes();
