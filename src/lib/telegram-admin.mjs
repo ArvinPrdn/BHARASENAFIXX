@@ -55,6 +55,22 @@ function messageText(message, status = 'pending') {
   return `<b>Dinding Pesan BHARASENA</b>\n\n<b>${escapeHtml(message.nickname || 'Tamu BHARASENA')}</b>\n${escapeHtml(message.body)}\n\n<i>${label}</i>`;
 }
 
+function menuText() {
+  return `<b>🎛 PANEL ADMIN BHARASENA</b>\n\n` +
+    `<b>💬 Dinding pesan</b>\n` +
+    `Pesan baru akan masuk ke grup ini. Tekan <b>✅ Setujui</b> atau <b>❌ Tolak</b>.\n\n` +
+    `<b>🖼 Galeri foto</b>\n` +
+    `1. Kirim foto ke grup.\n` +
+    `2. Pilih Day 1, Day 2, atau Day 3.\n` +
+    `3. Isi judul, keterangan, dan kredit foto.\n` +
+    `4. Tekan <b>Terbitkan</b> atau <b>Simpan draft</b>.\n\n` +
+    `<b>📋 Perintah</b>\n` +
+    `/menu — tampilkan menu ini\n` +
+    `/pending — lihat pesan yang menunggu\n` +
+    `/stats — lihat jumlah pesan\n\n` +
+    `<b>🌐 Galeri publik</b>\nhttps://www.bharasena.com/galeri`;
+}
+
 async function moderate(config, id, status, fetchImpl) {
   if (!/^[a-zA-Z0-9_-]{16,80}$/u.test(id) || !['approved', 'rejected'].includes(status)) return { ok: false };
   const raw = await redis(config, ['GET', `${config.prefix}:message:${id}`], fetchImpl);
@@ -95,10 +111,12 @@ export function createTelegramAdminHandler({ env = process.env, fetchImpl = glob
     const incoming = update?.message;
     const chatId = incoming?.chat?.id;
     if (!isAdmin(config, incoming?.from?.id, chatId)) return json(200, { ok: true });
-    const command = /^\/(pending|stats)(?:@[^\s]+)?(?:\s|$)/iu.exec(String(incoming?.text || ''));
+    const command = /^\/(menu|pending|stats)(?:@[^\s]+)?(?:\s|$)/iu.exec(String(incoming?.text || ''));
     if (!command) return json(200, { ok: true });
     try {
-      if (command[1].toLowerCase() === 'stats') {
+      if (command[1].toLowerCase() === 'menu') {
+        await telegram(config, 'sendMessage', { chat_id: chatId, text: menuText(), parse_mode: 'HTML', disable_web_page_preview: true }, fetchImpl);
+      } else if (command[1].toLowerCase() === 'stats') {
         const [pending, approved] = await Promise.all([redis(config, ['ZCARD', `${config.prefix}:pending`], fetchImpl), redis(config, ['ZCARD', `${config.prefix}:approved`], fetchImpl)]);
         await telegram(config, 'sendMessage', { chat_id: chatId, text: `<b>BHARASENA Admin</b>\nPending: ${pending}\nTampil: ${approved}`, parse_mode: 'HTML' }, fetchImpl);
       } else {

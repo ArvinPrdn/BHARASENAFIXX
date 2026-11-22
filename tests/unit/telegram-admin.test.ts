@@ -41,6 +41,19 @@ describe('Telegram admin panel', () => {
     expect(notification.text).toContain('Tampil: 7');
   });
 
+  it('shows the admin menu to an authorized admin', async () => {
+    const fetchImpl = vi.fn(async (_url: string | URL | Request, options?: RequestInit) => {
+      const command = JSON.parse(String(options?.body));
+      return String(command[0]) === 'GET' ? redis(null) : telegram();
+    });
+    const handle = createTelegramAdminHandler({ env, fetchImpl });
+    const response = await handle(request({ message: { chat: { id: 12345678 }, from: { id: 7666256021 }, text: '/menu@PesanBharasenaBot' } }));
+    expect(response.status).toBe(200);
+    const notification = fetchImpl.mock.calls.map((call) => JSON.parse(String(call[1]?.body))).find((payload) => payload.text);
+    expect(notification.text).toContain('/pending');
+    expect(notification.text).toContain('Terbitkan');
+  });
+
   it('approves a pending message from an authorized inline button', async () => {
     const message = { id: '1234567890abcdef', nickname: 'Naim', body: 'Sampai jumpa di Bharasena', status: 'pending', created_at: '2026-11-19T00:00:00.000Z' };
     const fetchImpl = vi.fn(async (_url: string | URL | Request, options?: RequestInit) => {
