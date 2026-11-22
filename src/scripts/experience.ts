@@ -557,8 +557,8 @@ function initHero() {
 function initFinaleLighting() {
   const finale = $('.finale');
   if (!finale) return;
-  const restingLight = { transform: 'translate(0%, 0%) scale(1)', opacity: 1 };
-  const heights = [-12, 0, 12];
+  const restingLight = { transform: 'translate(-50%, -50%) scale(1)', opacity: 1 };
+  const heights = [-.24, 0, .24];
   const lights = $$('.finale-spotlight__glow', finale).map((element) => ({
     element, animation: null, height: 0, destination: restingLight,
   }));
@@ -569,11 +569,12 @@ function initFinaleLighting() {
   function drift(light) {
     const nextHeights = heights.filter(height => height !== light.height);
     light.height = nextHeights[Math.floor(Math.random() * nextHeights.length)];
-    const x = (Math.random() - .5) * 24;
-    const y = light.height + (Math.random() - .5) * 4;
+    const curtain = light.element.closest('.finale-velvet');
+    const x = (Math.random() - .5) * curtain.clientWidth * .28;
+    const y = (light.height + (Math.random() - .5) * .06) * curtain.clientHeight;
     const size = .92 + Math.random() * .16;
     const destination = {
-      transform: `translate(${x}%, ${y}%) scale(${size})`,
+      transform: `translate(calc(-50% + ${x}px), calc(-50% + ${y}px)) scale(${size})`,
       opacity: .8 + Math.random() * .2,
     };
     // Move the light inside a stationary mask so the highlights stay on the folds.
