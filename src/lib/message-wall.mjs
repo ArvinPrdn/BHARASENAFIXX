@@ -48,6 +48,7 @@ export function messageWallConfig(env = process.env) {
   return {
     origin, redisUrl, prefix, readReady, writeReady, enabled, adminReady, adminIds, adminChatId,
     redisToken, secret: env.APP_SECRET || '', botToken, webhookSecret, chatId,
+    blobToken: env.BLOB_READ_WRITE_TOKEN || '',
   };
 }
 
@@ -74,7 +75,7 @@ async function readJson(request) {
   catch { throw Object.assign(new Error(), { status: 400 }); }
 }
 
-export async function redis(config, command, fetchImpl) {
+export async function redis(config, command, fetchImpl = globalThis.fetch) {
   const response = await fetchImpl(config.redisUrl, {
     method: 'POST', headers: { Authorization: `Bearer ${config.redisToken}`, 'Content-Type': 'application/json' },
     body: JSON.stringify(command), signal: AbortSignal.timeout(7000),

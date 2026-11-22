@@ -109,7 +109,7 @@ function showPhoto(index) {
 
 async function loadGallery() {
   try {
-    const response = await fetch('/api/content', { headers: { Accept: 'application/json' } });
+    const response = await fetch('/api/gallery', { headers: { Accept: 'application/json' } });
     if (!response.ok) throw new Error('Konten belum tersedia');
     const payload = await response.json();
     state.items = Array.isArray(payload.gallery) ? payload.gallery.map(safeItem).filter((item) => item.src) : [];

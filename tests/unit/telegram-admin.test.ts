@@ -35,7 +35,8 @@ describe('Telegram admin panel', () => {
     const handle = createTelegramAdminHandler({ env, fetchImpl });
     const response = await handle(request({ message: { chat: { id: 12345678 }, from: { id: 7666256021 }, text: '/stats' } }));
     expect(response.status).toBe(200);
-    const notification = JSON.parse(String(fetchImpl.mock.calls.at(-1)?.[1]?.body));
+    const notificationCall = fetchImpl.mock.calls.find((call) => String(call[1]?.body).includes('Pending: 2'));
+    const notification = JSON.parse(String(notificationCall?.[1]?.body));
     expect(notification.text).toContain('Pending: 2');
     expect(notification.text).toContain('Tampil: 7');
   });

@@ -1,5 +1,6 @@
 import { escapeHtml } from './security.mjs';
 import { messageWallConfig, redis } from './message-wall.mjs';
+import { handleGalleryUpdate } from './gallery-admin.mjs';
 
 const MAX_BODY_BYTES = 32_768;
 const MODERATE_MESSAGE_SCRIPT = `
@@ -74,6 +75,8 @@ export function createTelegramAdminHandler({ env = process.env, fetchImpl = glob
     let update;
     try { update = await readJson(request); } catch { return json(400, { error: 'Update tidak valid.' }); }
 
+    if (await handleGalleryUpdate({ config, update, fetchImpl, logError })) return json(200, { ok: true });
+
     const callback = update?.callback_query;
     if (callback) {
       const chatId = callback.message?.chat?.id;
@@ -81,9 +84,9 @@ export function createTelegramAdminHandler({ env = process.env, fetchImpl = glob
       const match = /^wall:(approve|reject):([a-zA-Z0-9_-]{16,80})$/u.exec(String(callback.data || ''));
       if (!match) return json(200, { ok: true });
       const status = match[1] === 'approve' ? 'approved' : 'rejected';
+      await telegram(config, 'answerCallbackQuery', { callback_query_id: callback.id, text: 'Memproses...' }, fetchImpl).catch(() => {});
       try {
         const result = await moderate(config, match[2], status, fetchImpl);
-        await telegram(config, 'answerCallbackQuery', { callback_query_id: callback.id, text: result.ok ? (status === 'approved' ? 'Pesan disetujui.' : 'Pesan ditolak.') : 'Pesan sudah diproses.' }, fetchImpl).catch(() => {});
         if (result.ok && callback.message?.message_id) await telegram(config, 'editMessageText', { chat_id: chatId, message_id: callback.message.message_id, text: messageText(result.message, status), parse_mode: 'HTML' }, fetchImpl).catch(() => {});
       } catch { logError({ event: 'telegram_admin_moderation_failed' }); }
       return json(200, { ok: true });
