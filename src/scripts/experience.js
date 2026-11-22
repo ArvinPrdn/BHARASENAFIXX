@@ -293,19 +293,15 @@ function initTimeline() {
   document.fonts?.ready.then(markDirty);
 
   if ('IntersectionObserver' in window) {
-    const finaleSparks = $('.finale-sparks');
+    const finale = $('.finale');
     const observer = new IntersectionObserver((entries) => {
       for (const { target, isIntersecting } of entries) {
         target.classList.toggle('is-in-view', isIntersecting);
-        if (isIntersecting && target === finaleSparks) {
-          target.classList.add('has-started-intro');
-          observer.unobserve(target);
-        }
+        if (isIntersecting && target === finale) target.classList.add('has-started-intro');
         if (isIntersecting && target.parentElement?.classList.contains('finale-content')) observer.unobserve(target);
       }
     });
     scenes.forEach((scene) => observer.observe(scene));
-    if (finaleSparks) observer.observe(finaleSparks);
     $$('.finale-content > *').forEach((element) => observer.observe(element));
   } else {
     hero?.classList.add('is-in-view');
@@ -544,104 +540,6 @@ function initHero() {
       if (Math.abs(swing) + Math.abs(swingVelocity) > 0.015) chandelier.style.setProperty('--swing', `${swing.toFixed(2)}deg`);
     }
     return pointerMoving || Math.abs(swing) + Math.abs(swingVelocity) > 0.015;
-  });
-}
-
-function initFinaleMotion() {
-  const finale = $('.finale');
-  if (!finale) return;
-  const lightHeights = [-48, 0, 48];
-  const restingLight = { transform: 'translate(0%, 0%) rotate(0deg) scale(1)', opacity: 0.88 };
-  const lights = $$('.finale-spotlight', finale).map((element) => ({
-    element, animation: null, height: 0, destination: restingLight,
-  }));
-  const pointer = { x: 0, y: 0 };
-  let target = { x: 0, y: 0 };
-  let visible = false;
-  const canMoveLights = () => visible && !reduceMotion() && !document.hidden;
-
-  function moveLight(light) {
-    // Pick a different height so each pass moves visibly along the fabric.
-    const otherHeights = lightHeights.filter((height) => height !== light.height);
-    light.height = otherHeights[Math.floor(Math.random() * otherHeights.length)];
-    const x = (Math.random() - 0.5) * 36;
-    const y = light.height + (Math.random() - 0.5) * 14;
-    const angle = (Math.random() - 0.5) * 34;
-    const size = 0.85 + Math.random() * 0.3;
-    const destination = {
-      transform: `translate(${x}%, ${y}%) rotate(${angle}deg) scale(${size})`,
-      opacity: 0.78 + Math.random() * 0.22,
-    };
-    // The next sweep starts at the previous endpoint after the browser finishes it.
-    const previous = light.animation;
-    const animation = light.element.animate([light.destination, destination], {
-      duration: 1850 + Math.random() * 1250,
-      easing: 'cubic-bezier(.38,0,.62,1)',
-      fill: 'both',
-    });
-    light.animation = animation;
-    light.destination = destination;
-    previous?.cancel();
-    animation.onfinish = () => {
-      if (light.animation === animation && canMoveLights()) moveLight(light);
-    };
-  }
-
-  function updateLighting() {
-    for (const light of lights) {
-      if (reduceMotion()) {
-        light.animation?.cancel();
-        light.animation = null;
-        light.destination = restingLight;
-        light.height = 0;
-      } else if (!canMoveLights()) {
-        if (light.animation?.playState === 'running') light.animation.pause();
-      } else if (!light.animation || light.animation.playState === 'finished') {
-        moveLight(light);
-      } else if (light.animation.playState === 'paused') {
-        light.animation.play();
-      }
-    }
-  }
-
-  function resetPointer() {
-    target = { x: 0, y: 0 };
-    requestFrame();
-  }
-
-  if ('IntersectionObserver' in window) {
-    new IntersectionObserver(([entry]) => {
-      visible = entry.isIntersecting;
-      updateLighting();
-      if (!visible) resetPointer();
-    }).observe(finale);
-  }
-  document.addEventListener('visibilitychange', updateLighting);
-  motionQuery.addEventListener?.('change', () => {
-    updateLighting();
-    resetPointer();
-  });
-
-  finale.addEventListener('pointermove', (event) => {
-    if (event.pointerType === 'touch' || reduceMotion()) return;
-    const box = finale.getBoundingClientRect();
-    target = {
-      x: clamp(((event.clientX - box.left) / box.width - 0.5) * 2, -1, 1) * 48,
-      y: clamp(((event.clientY - box.top) / box.height - 0.5) * 2, -1, 1) * 32,
-    };
-    requestFrame();
-  }, { passive: true });
-  finale.addEventListener('pointerleave', resetPointer);
-
-  addFrameTask(() => {
-    const distance = Math.abs(pointer.x - target.x) + Math.abs(pointer.y - target.y);
-    if (reduceMotion() || !distance) return false;
-    const moving = distance > 0.15;
-    pointer.x = moving ? lerp(pointer.x, target.x, 0.14) : target.x;
-    pointer.y = moving ? lerp(pointer.y, target.y, 0.14) : target.y;
-    finale.style.setProperty('--finale-pointer-x', `${pointer.x.toFixed(2)}px`);
-    finale.style.setProperty('--finale-pointer-y', `${pointer.y.toFixed(2)}px`);
-    return moving;
   });
 }
 
@@ -1963,7 +1861,6 @@ function init() {
   initPublishedContent();
   initTimeline();
   initHero();
-  initFinaleMotion();
   initRundown();
   initTime();
   initEnvelopes();
