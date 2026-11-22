@@ -297,12 +297,19 @@ function initTimeline() {
     const observer = new IntersectionObserver((entries) => {
       for (const { target, isIntersecting } of entries) {
         target.classList.toggle('is-in-view', isIntersecting);
-        if (isIntersecting && target === finale) target.classList.add('has-started-intro');
         if (isIntersecting && target.parentElement?.classList.contains('finale-content')) observer.unobserve(target);
       }
     });
     scenes.forEach((scene) => observer.observe(scene));
     $$('.finale-content > *').forEach((element) => observer.observe(element));
+    if (finale) {
+      const curtainObserver = new IntersectionObserver(([entry]) => {
+        if (!entry.isIntersecting || entry.intersectionRatio < .18) return;
+        finale.classList.add('has-started-intro');
+        curtainObserver.disconnect();
+      }, { threshold: .18 });
+      curtainObserver.observe(finale);
+    }
   } else {
     hero?.classList.add('is-in-view');
     $('#penampil')?.classList.add('is-in-view');
