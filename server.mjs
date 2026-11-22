@@ -181,7 +181,7 @@ function rundownPanel(content, day, fallback) {
       <ol class="programme-agenda" role="list">${rows}</ol>
     </div>`;
   }).join('');
-  return `${summary}<div class="programme-details">${tabs}${body}</div>${spotlight || ''}`;
+  return `${summary}${tabs}${spotlight || ''}<div class="programme-details">${body}</div>`;
 }
 
 function gallerySlot(items) {

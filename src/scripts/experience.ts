@@ -768,7 +768,7 @@ function initRundown() {
   if (!layout) return;
   let refreshMotion = () => {};
 
-  function wireTabs(tabs, panels) {
+  function wireTabs(tabs, panels, onSelect = () => {}) {
     if (!tabs.length || !panels.length) return;
 
     function select(tab) {
@@ -778,6 +778,7 @@ function initRundown() {
       });
       const id = tab.getAttribute('aria-controls');
       panels.forEach((panel) => { panel.hidden = panel.id !== id; });
+      onSelect(panels.find((panel) => panel.id === id));
       refreshMotion();
     }
 
@@ -797,11 +798,47 @@ function initRundown() {
   }
 
   const panels = $$('.day-panel[data-day]', layout);
-  for (const details of $$('.programme-details', layout)) {
-    const sessionTabs = $$('.programme-session-tabs [role="tab"]', details);
-    if (!sessionTabs.length) continue;
-    wireTabs(sessionTabs, $$('.programme-session', details));
-    details.classList.add('is-interactive');
+  for (const panel of panels) {
+    const details = $('.programme-details', panel);
+    const sessions = $$('.programme-session', details);
+    const sessionTabs = $$('.programme-session-tabs [role="tab"]', panel);
+    if (sessionTabs.length) {
+      panel.classList.add('has-sessions', 'is-interactive');
+      details.classList.add('is-interactive');
+      wireTabs(sessionTabs, sessions, (session) => {
+        const spotlight = $('.speaker-spotlight', panel);
+        const hasPerformer = Boolean($('.programme-agenda__featured', session));
+        if (spotlight) spotlight.hidden = !hasPerformer;
+        panel.classList.toggle('is-night', !hasPerformer);
+        $('.programme-summary h3', panel).textContent = $('h4', session).textContent.split('·').pop().trim();
+        const times = $$('.programme-agenda__time', session);
+        const hours = $('.programme-meta', panel);
+        if (hours && times.length) {
+          hours.textContent = `${times[0].textContent.split('–')[0]}–${times.at(-1).textContent.split('–').pop()} WIB`;
+        }
+      });
+    }
+
+    const descriptions = $$('.programme-agenda p', details).filter((item) => item.textContent.trim());
+    if (!descriptions.length) continue;
+    const toggle = document.createElement('button');
+    toggle.type = 'button';
+    toggle.className = 'programme-detail-toggle';
+    toggle.setAttribute('aria-controls', sessions.map((session) => session.id).join(' '));
+    details.prepend(toggle);
+    let expanded = false;
+    function updateDetails() {
+      details.dataset.detailsExpanded = String(expanded);
+      toggle.setAttribute('aria-expanded', String(!mobileQuery.matches || expanded));
+      toggle.textContent = expanded ? 'Ringkas rincian' : 'Tampilkan rincian';
+      refreshMotion();
+    }
+    toggle.addEventListener('click', () => {
+      expanded = !expanded;
+      updateDetails();
+    });
+    mobileQuery.addEventListener('change', updateDetails);
+    updateDetails();
   }
 
   wireTabs($$('.day-tab[data-day]', layout), panels);
