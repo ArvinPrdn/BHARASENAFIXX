@@ -824,6 +824,7 @@ img { max-width: 100%; }
 .gallery-track { display: flex; gap: 40px; overflow-x: auto; overscroll-behavior-inline: contain; scroll-snap-type: x mandatory; scrollbar-color: var(--champagne) transparent; padding: 40px max(8vw,calc((100vw - 1180px)/2)) 40px; touch-action: pan-x pan-y; }
 .gallery-frame { flex: 0 0 min(34vw,430px); margin: 0; scroll-snap-align: center; }
 .gallery-frame:nth-child(2) { transform: translateY(26px); }
+.gallery-frame[data-gallery-index] { cursor: pointer; }
 .gallery-mat { --gallery-frame-border: 16px; position: relative; aspect-ratio: .84; border: var(--gallery-frame-border) solid transparent; border-image: var(--foil) 1; background: radial-gradient(circle at 50% 30%,#2e2220,#100a0b 65%); box-shadow: 18px 25px 40px rgba(0,0,0,.4), inset 0 0 0 12px #1c1110; display: grid; place-items: center; }
 .gallery-mat::before {
   content: '';
@@ -837,7 +838,7 @@ img { max-width: 100%; }
 .gallery-frame figcaption { margin-top: 20px; color: var(--champagne); font-size: 12px; letter-spacing: .13em; text-align: center; }
 .gallery-dialog { max-width: min(96vw,1050px); max-height: 94dvh; background: #100b0d; color: var(--ivory); border: 1px solid var(--champagne); padding: 45px; }
 .gallery-dialog::backdrop { background: rgba(0,0,0,.87); }
-.gallery-dialog img { display: block; max-height: 70dvh; margin: 0 auto; }
+.gallery-dialog img { display: block; max-width: 100%; max-height: 70dvh; width: auto; height: auto; object-fit: contain; margin: 0 auto; }
 .dialog-close { position: absolute; top: 5px; right: 8px; min-width: 44px; min-height: 44px; color: var(--ivory); background: transparent; border: 0; font-size: 30px; }
 .dialog-controls { display: flex; justify-content: space-between; }
 .dialog-controls button { min-width: 44px; min-height: 44px; color: var(--ivory); background: transparent; border: 1px solid var(--rule); }

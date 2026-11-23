@@ -19,6 +19,9 @@ if (existsSync(join(root, '.env'))) {
     if (match && !process.env[match[1]]) process.env[match[1]] = match[2].replace(/^['"]|['"]$/gu, '');
   }
 }
+if (process.env.NODE_ENV !== 'production' && existsSync(join(root, '_qa/local-gallery/setup.mjs'))) {
+  await import(new URL('./_qa/local-gallery/setup.mjs', import.meta.url));
+}
 const port = Number(process.env.PORT || 4321);
 const production = process.env.NODE_ENV === 'production';
 const secret = process.env.APP_SECRET || (production ? '' : randomBytes(32).toString('hex'));

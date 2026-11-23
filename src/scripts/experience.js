@@ -1739,11 +1739,35 @@ function initGalleryAndRain() {
       track.append(button);
     });
   }
+  const galleryItems = [];
+  if (track && dialog) {
+    $$('.gallery-frame', track).forEach((frame) => {
+      const image = $('img', frame);
+      const src = frame.dataset.gallerySrc || image?.getAttribute('src');
+      if (!src) return;
+      const caption = frame.dataset.galleryCaption || $('figcaption, .gallery-plaque', frame)?.textContent.trim() || 'BHARASENA';
+      frame.dataset.galleryIndex = String(galleryItems.length);
+      frame.setAttribute('aria-haspopup', 'dialog');
+      frame.setAttribute('aria-controls', dialog.id);
+      frame.setAttribute('aria-label', `Lihat foto lengkap · ${caption}`);
+      if (frame.tagName !== 'BUTTON') {
+        frame.setAttribute('role', 'button');
+        frame.tabIndex = 0;
+      }
+      galleryItems.push({ src, alt: image?.alt || frame.dataset.galleryAlt || 'Dokumentasi BHARASENA', day: caption });
+    });
+  }
   if (track) {
+    track.addEventListener('keydown', (event) => {
+      const frame = event.target.closest('[data-gallery-index]');
+      if (!frame || frame.tagName === 'BUTTON' || !['Enter', ' '].includes(event.key)) return;
+      event.preventDefault();
+      showGallery(Number(frame.dataset.galleryIndex));
+    });
     track.addEventListener('click', (event) => {
       if (track.dataset.dragged === 'true') return;
       const frame = event.target.closest('[data-gallery-index]');
-      if (frame && gallery.length) showGallery(Number(frame.dataset.galleryIndex));
+      if (frame && galleryItems.length) showGallery(Number(frame.dataset.galleryIndex));
     });
     track.addEventListener('wheel', (event) => {
       if (!finePointerQuery.matches || track.scrollWidth <= track.clientWidth || Math.abs(event.deltaY) < Math.abs(event.deltaX)) return;
@@ -1793,11 +1817,11 @@ function initGalleryAndRain() {
     });
   }
   function showGallery(index) {
-    if (!dialog || !gallery.length) return;
-    galleryIndex = (index + gallery.length) % gallery.length;
-    const item = gallery[galleryIndex];
+    if (!dialog || !galleryItems.length) return;
+    galleryIndex = (index + galleryItems.length) % galleryItems.length;
+    const item = galleryItems[galleryIndex];
     const image = $('img', dialog);
-      const caption = $('[data-gallery-caption]', dialog) || $('p', dialog);
+    const caption = $('[data-gallery-caption]', dialog) || $('p', dialog);
     if (image) { image.src = item.src; image.alt = item.alt || 'Dokumentasi BHARASENA'; }
     if (caption) caption.textContent = item.day || 'BHARASENA';
     if (!dialog.open) dialog.showModal();
