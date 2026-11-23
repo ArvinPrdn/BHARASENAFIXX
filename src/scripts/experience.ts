@@ -1825,14 +1825,11 @@ function initGalleryAndRain() {
     galleryIndex = (index + galleryItems.length) % galleryItems.length;
     const item = galleryItems[galleryIndex];
     const image = $('img', dialog);
-    const caption = $('[data-gallery-caption]', dialog) || $('p', dialog);
     if (image) { image.src = item.src; image.alt = item.alt || 'Dokumentasi BHARASENA'; }
-    if (caption) caption.textContent = item.day || 'BHARASENA';
+    dialog.setAttribute('aria-label', `Foto lengkap · ${item.day || 'BHARASENA'}`);
     if (!dialog.open) dialog.showModal();
   }
   if (dialog) {
-    $('[data-gallery-prev]', dialog)?.addEventListener('click', () => showGallery(galleryIndex - 1));
-    $('[data-gallery-next]', dialog)?.addEventListener('click', () => showGallery(galleryIndex + 1));
     ($('[data-gallery-close]', dialog) || $('.dialog-close', dialog))?.addEventListener('click', () => dialog.close());
     dialog.addEventListener('keydown', (event) => {
       if (event.key === 'ArrowLeft') { event.preventDefault(); showGallery(galleryIndex - 1); }
