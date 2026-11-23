@@ -215,7 +215,7 @@ function initTime() {
   window.addEventListener('pageshow', update);
 }
 
-function initTimeline() {
+function initTimeline(openFinale) {
   const scenes = $$('.scene[data-scene]');
   const hero = $('.hero');
   const heroLayers = hero ? $$('[data-depth]', hero) : [];
@@ -284,6 +284,8 @@ function initTimeline() {
       if (sceneDistance < distance) { distance = sceneDistance; nearest = index; }
     });
     selectScene(nearest);
+    const activeScene = scenes[nearest];
+    if (activeScene?.matches('.finale:not(.has-started-intro)') && !activeScene.closest('[inert]')) openFinale?.();
     return false;
   }
   addFrameTask(update);
@@ -293,23 +295,12 @@ function initTimeline() {
   document.fonts?.ready.then(markDirty);
 
   if ('IntersectionObserver' in window) {
-    const finale = $('.finale');
     const observer = new IntersectionObserver((entries) => {
       for (const { target, isIntersecting } of entries) {
         target.classList.toggle('is-in-view', isIntersecting);
-        if (isIntersecting && target.parentElement?.classList.contains('finale-content')) observer.unobserve(target);
       }
     });
     scenes.forEach((scene) => observer.observe(scene));
-    $$('.finale-content > *').forEach((element) => observer.observe(element));
-    if (finale) {
-      const curtainObserver = new IntersectionObserver(([entry]) => {
-        if (!entry.isIntersecting || entry.intersectionRatio < .18) return;
-        finale.classList.add('has-started-intro');
-        curtainObserver.disconnect();
-      }, { threshold: .18 });
-      curtainObserver.observe(finale);
-    }
   } else {
     hero?.classList.add('is-in-view');
     $('#penampil')?.classList.add('is-in-view');
@@ -319,6 +310,7 @@ function initTimeline() {
     if (dot.tagName !== 'A') dot.addEventListener('click', () => scenes[index]?.scrollIntoView({ behavior: reduceMotion() ? 'instant' : 'smooth' }));
   });
   markDirty();
+  return markDirty;
 }
 
 function initSeal(onOpened) {
@@ -554,70 +546,34 @@ function initHero() {
   });
 }
 
-function initFinaleLighting() {
+function initFinaleMotion() {
   const finale = $('.finale');
   if (!finale) return;
-  const restingLight = { transform: 'translate(-50%, -50%) scale(1)', opacity: 1 };
-  const heights = [-.24, 0, .24];
-  const lights = $$('.finale-spotlight__glow', finale).map((element) => ({
-    element, animation: null, height: 0, destination: restingLight,
-  }));
-  let visible = false;
-  let started = false;
-  const canMove = () => visible && started && !reduceMotion() && !document.hidden;
+  finale.classList.add('has-curtain-intro');
 
-  function drift(light) {
-    const nextHeights = heights.filter(height => height !== light.height);
-    light.height = nextHeights[Math.floor(Math.random() * nextHeights.length)];
-    const curtain = light.element.closest('.finale-velvet');
-    const x = (Math.random() - .5) * curtain.clientWidth * .28;
-    const y = (light.height + (Math.random() - .5) * .06) * curtain.clientHeight;
-    const size = .92 + Math.random() * .16;
-    const destination = {
-      transform: `translate(calc(-50% + ${x}px), calc(-50% + ${y}px)) scale(${size})`,
-      opacity: .8 + Math.random() * .2,
-    };
-    // Move the light inside a stationary mask so the highlights stay on the folds.
-    const previous = light.animation;
-    const animation = light.element.animate([light.destination, destination], {
-      duration: 5500 + Math.random() * 3000,
-      easing: 'cubic-bezier(.38,0,.62,1)',
-      fill: 'both',
-    });
-    light.animation = animation;
-    light.destination = destination;
-    previous?.cancel();
-    animation.onfinish = () => {
-      if (light.animation === animation && canMove()) drift(light);
-    };
+  function open() {
+    finale.classList.add('has-started-intro');
   }
 
-  function update() {
-    for (const light of lights) {
-      if (reduceMotion()) {
-        light.animation?.cancel();
-        light.animation = null;
-        light.destination = restingLight;
-        light.height = 0;
-      } else if (!canMove()) {
-        light.animation?.pause();
-      } else if (!light.animation || light.animation.playState === 'finished') {
-        drift(light);
-      } else if (light.animation.playState === 'paused') {
-        light.animation.play();
-      }
-    }
+  function resetPointer() {
+    finale.style.removeProperty('--finale-pointer-x');
+    finale.style.removeProperty('--finale-pointer-y');
   }
 
-  if ('IntersectionObserver' in window) {
-    new IntersectionObserver(([entry]) => {
-      visible = entry.isIntersecting;
-      started ||= entry.intersectionRatio >= .18;
-      update();
-    }, { threshold: [0, .18] }).observe(finale);
-  }
-  document.addEventListener('visibilitychange', update);
-  motionQuery.addEventListener?.('change', update);
+  finale.addEventListener('pointermove', (event) => {
+    if (!finale.classList.contains('has-started-intro') || !finePointerQuery.matches || reduceMotion() || event.pointerType === 'touch') return;
+    const bounds = finale.getBoundingClientRect();
+    const x = clamp((event.clientX - bounds.left) / bounds.width, 0, 1) - .5;
+    const y = clamp((event.clientY - bounds.top) / bounds.height, 0, 1) - .5;
+    finale.style.setProperty('--finale-pointer-x', `${x * 40}px`);
+    finale.style.setProperty('--finale-pointer-y', `${y * 20}px`);
+  }, { passive: true });
+  finale.addEventListener('pointerleave', resetPointer);
+  finePointerQuery.addEventListener?.('change', resetPointer);
+  finale.addEventListener('focusin', open, { once: true });
+
+  motionQuery.addEventListener?.('change', resetPointer);
+  return open;
 }
 
 function initRundownMotion(layout) {
@@ -1957,9 +1913,8 @@ function initPerformer() {
 
 function init() {
   initPublishedContent();
-  initTimeline();
+  const refreshTimeline = initTimeline(initFinaleMotion());
   initHero();
-  initFinaleLighting();
   initRundown();
   initTime();
   initEnvelopes();
@@ -1970,7 +1925,10 @@ function init() {
   initPerformer();
   initHeritage();
   initNavigation();
-  initSeal(openMusic);
+  initSeal(() => {
+    refreshTimeline();
+    openMusic?.();
+  });
 }
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, { once: true });
 else init();

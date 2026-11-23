@@ -894,60 +894,52 @@ img { max-width: 100%; }
     linear-gradient(118deg, #160b0f, #0d0709 58%, #211016);
   text-align: center;
 }
-/* Keep the light on the fabric ridges and fade the curtains into the footer. */
+/* Keep the curtains opaque until they have moved clear of the text. */
+@property --finale-curtain-edge-alpha {
+  syntax: '<number>';
+  inherits: false;
+  initial-value: 0;
+}
 .finale-velvet {
   --finale-velvet-direction: 1;
-  --finale-curtain-gather: clamp(28px, 4vw, 56px);
+  --finale-curtain-edge-alpha: 0;
   top: 0;
   bottom: 0;
   overflow: hidden;
-  mask-image: linear-gradient(180deg, transparent, #000 12%, #000 77%, transparent);
+  mask-image: linear-gradient(180deg, rgb(0 0 0 / var(--finale-curtain-edge-alpha)), #000 12%, #000 77%, rgb(0 0 0 / var(--finale-curtain-edge-alpha)));
   opacity: .94;
   scale: var(--finale-velvet-direction) 1;
 }
 .finale-velvet--right {
   left: auto;
   --finale-velvet-direction: -1;
-  --finale-curtain-delay: .06s;
-}
-.finale-spotlight {
-  position: absolute;
-  inset: 0;
-  mask-image: repeating-linear-gradient(91deg, #0008 0%, #000 11%, #0007 21%, #000 31%, #0007 41%, #000 52%, #0008 62%);
-  opacity: .8;
-  mix-blend-mode: screen;
-}
-.finale-spotlight__glow {
-  position: absolute;
-  top: 42%;
-  left: 70%;
-  width: min(110%, 360px);
-  aspect-ratio: 1;
-  transform: translate(-50%, -50%);
-  background: radial-gradient(circle closest-side, #fff3dfb3, #f4d9b978 18%, #dfb99938 38%, #caa08212 60%, #caa08200 100%);
-}
-@keyframes finale-curtain-open {
-  from { translate: calc(var(--finale-curtain-gather) * var(--finale-velvet-direction)) 0; }
-  to { translate: 0 0; }
-}
-@keyframes finale-reveal {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
 }
 @media (prefers-reduced-motion: no-preference) {
+  .finale.has-curtain-intro:not(.has-started-intro) .finale-velvet {
+    --finale-curtain-edge-alpha: 1;
+    width: calc(50% - var(--curtain-edge) + 1px);
+    border-radius: 0;
+    box-shadow: inset -18px 0 26px -16px #110508;
+    opacity: 1;
+    z-index: 2;
+  }
+  .finale.has-curtain-intro:not(.has-started-intro) .finale-content {
+    opacity: 0;
+    translate: 0 8px;
+    pointer-events: none;
+  }
   .finale.has-started-intro .finale-velvet {
-    animation: finale-curtain-open 1.15s cubic-bezier(.22,1,.36,1) var(--finale-curtain-delay, 0s) backwards;
+    --curtain-ease: cubic-bezier(.32,.08,.26,1);
+    --curtain-clear-time: 1.2s;
+    translate: var(--finale-pointer-x, 0px) var(--finale-pointer-y, 0px);
+    transition: width 1.5s var(--curtain-ease), border-radius 1.5s var(--curtain-ease),
+      box-shadow 1.2s ease, opacity .3s ease var(--curtain-clear-time),
+      --finale-curtain-edge-alpha .3s ease var(--curtain-clear-time),
+      z-index 0s linear var(--curtain-clear-time), translate .36s ease-out;
   }
-  .finale-content > .is-in-view {
-    animation: finale-reveal .75s cubic-bezier(.22,1,.36,1) var(--finale-reveal-delay, .16s) backwards;
+  .finale.has-started-intro .finale-content {
+    transition: opacity .72s ease .23s, translate .8s ease-out .23s;
   }
-  .finale-content > .is-in-view:focus-within {
-    opacity: 1 !important;
-    transform: none !important;
-  }
-  .finale-message { --finale-reveal-delay: .24s; }
-  .finale .social-contact { --finale-reveal-delay: .32s; }
-  .finale .committee-contact { --finale-reveal-delay: .4s; }
 }
 .gold-rain { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 90; }
 .finale-content { position: relative; z-index: 2; width: 100%; min-width: 0; }
@@ -1099,8 +1091,6 @@ img { max-width: 100%; }
   .finale h2 { font-size: clamp(2rem,12vw,5.5rem); }
   .finale-message { display: grid; gap: 4px; margin: 24px 0 40px; font-size: 14px; }
   .finale-message__separator { display: none; }
-  .finale-spotlight { opacity: .68; }
-  .finale-velvet { --finale-curtain-gather: 20px; }
   .committee-contact { margin-top: 28px; padding-top: 24px; }
   .committee-contact__links { display: grid; justify-items: start; gap: 8px; width: fit-content; max-width: 100%; margin-inline: auto; }
   .committee-contact__email { justify-content: start; }
