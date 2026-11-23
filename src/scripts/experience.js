@@ -543,66 +543,66 @@ function initHero() {
 }
 
 function launchFinaleConfetti(finale) {
+  const title = $('#finale-title', finale);
+  if (!title) return;
+  const stage = finale.getBoundingClientRect();
+  const text = document.createRange();
+  text.selectNodeContents(title);
+  const firstLine = [...text.getClientRects()].find(rect => rect.width > 0) || title.getBoundingClientRect();
+  const viewportHeight = window.visualViewport?.height ?? innerHeight;
+  const landing = Math.min(stage.height, Math.max(0, -stage.top) + viewportHeight);
+
   const confetti = document.createElement('div');
   confetti.className = 'finale-confetti';
   confetti.setAttribute('aria-hidden', 'true');
-  const stage = finale.getBoundingClientRect();
-  confetti.style.top = `${Math.max(0, -stage.top)}px`;
   finale.insertBefore(confetti, $('.finale-content', finale));
 
   const mobile = mobileQuery.matches;
-  const sideCount = mobile ? 8 : 16;
-  const sources = [
-    { origin: 'left', direction: 1, count: sideCount },
-    { origin: 'center', direction: 0, count: mobile ? 14 : 26 },
-    { origin: 'right', direction: -1, count: sideCount },
-  ];
-  const dropHeight = Math.min(confetti.clientHeight, window.visualViewport?.height ?? innerHeight);
+  const count = mobile ? 30 : 58;
   const finished = [];
-  for (const { origin, direction, count } of sources) {
-    const stream = document.createElement('div');
-    stream.className = `finale-confetti__stream finale-confetti__stream--${origin}`;
-    confetti.append(stream);
-    const landing = dropHeight - stream.offsetTop;
+  for (let index = 0; index < count; index++) {
+    const ribbon = document.createElement('span');
+    const position = (index + Math.random()) / count;
+    const x = firstLine.left - stage.left + firstLine.width * position;
+    const y = firstLine.top - stage.top + firstLine.height * (.28 + Math.random() * .53);
+    const width = (mobile ? 3 : 4) + Math.random() * (mobile ? 3.5 : 4.5);
+    ribbon.style.left = `${x}px`;
+    ribbon.style.top = `${y}px`;
+    ribbon.style.setProperty('--ribbon-width', `${width}px`);
+    ribbon.style.setProperty('--ribbon-length', String(1.8 + Math.random() * 1.8));
+    confetti.append(ribbon);
 
-    for (let index = 0; index < count; index++) {
-      const ribbon = document.createElement('span');
-      const position = (index + Math.random()) / count;
-      const width = (mobile ? 3 : 4) + Math.random() * (mobile ? 3.5 : 4.5);
-      ribbon.style.setProperty('--ribbon-position', `${position * 100}%`);
-      ribbon.style.setProperty('--ribbon-width', `${width}px`);
-      ribbon.style.setProperty('--ribbon-length', String(1.8 + Math.random() * 1.8));
-      stream.append(ribbon);
-
-      const start = -Math.random() * (mobile ? 42 : 76);
-      const fall = landing - start - 18 + Math.random() * 33;
-      const drift = stage.width * (direction
-        ? direction * (.07 + Math.random() * .31)
-        : (Math.random() - .5) * .34);
-      const sway = (Math.random() - .5) * (mobile ? 48 : 114);
-      const angle = (Math.random() - .5) * 180;
-      const spin = (Math.random() < .5 ? -1 : 1) * (290 + Math.random() * 510);
-      const roll = (Math.random() < .5 ? -1 : 1) * (420 + Math.random() * 620);
-      const path = [
-        { offset: 0, x: 0, y: start, opacity: 0 },
-        { offset: .10 + Math.random() * .07, x: drift * .22, y: start + fall * (.06 + Math.random() * .08), opacity: 1 },
-        { offset: .35 + Math.random() * .13, x: drift * .52 + sway, y: start + fall * (.28 + Math.random() * .17), opacity: 1 },
-        { offset: .64 + Math.random() * .14, x: drift * .76 - sway * .6, y: start + fall * (.54 + Math.random() * .22), opacity: 1 },
-        { offset: .90, x: drift * .93 + sway * .4, y: start + fall * (.89 + Math.random() * .06), opacity: 1 },
-        { offset: 1, x: drift + sway * .2, y: start + fall, opacity: 0 },
-      ];
-      const keyframes = path.map(({ offset, x, y, opacity }) => ({
-        offset,
-        opacity,
-        transform: `translate(${x}px, ${y}px) rotate(${angle + spin * offset}deg) rotateY(${roll * offset}deg)`,
-      }));
-      const motion = ribbon.animate(keyframes, {
-        duration: 3450 + Math.random() * 1650,
-        delay: Math.random() * 690,
-        fill: 'both',
-      });
-      finished.push(motion.finished);
-    }
+    const fall = Math.max(56, landing - y - 18 + Math.random() * 33);
+    const spread = stage.width * ((position - .5) * .48 + (Math.random() - .5) * .46);
+    const drift = clamp(x + spread, 8, stage.width - 8) - x;
+    const sway = (Math.random() - .5) * (mobile ? 48 : 114);
+    const lift = 4 + Math.random() * (mobile ? 14 : 26);
+    const angle = (Math.random() - .5) * 180;
+    const spin = (Math.random() < .5 ? -1 : 1) * (290 + Math.random() * 510);
+    const roll = (Math.random() < .5 ? -1 : 1) * (420 + Math.random() * 620);
+    const emerge = .12 + Math.random() * .09;
+    // Keep each ribbon behind the glyphs until it grows forward into the room.
+    const path = [
+      { offset: 0, x: 0, y: 0, scale: .18, opacity: 0, layer: 0 },
+      { offset: emerge - .015, x: drift * .15, y: -lift, scale: .72, opacity: .85, layer: 0 },
+      { offset: emerge, x: drift * .17, y: -lift, scale: .85, opacity: 1, layer: 3 },
+      { offset: .34 + Math.random() * .12, x: drift * .52 + sway, y: fall * (.19 + Math.random() * .16), scale: 1.13, opacity: 1, layer: 3 },
+      { offset: .64 + Math.random() * .14, x: drift * .76 - sway * .6, y: fall * (.54 + Math.random() * .22), scale: 1, opacity: 1, layer: 3 },
+      { offset: .90, x: drift * .93 + sway * .4, y: fall * (.89 + Math.random() * .06), scale: 1, opacity: 1, layer: 3 },
+      { offset: 1, x: drift + sway * .2, y: fall, scale: .93, opacity: 0, layer: 3 },
+    ];
+    const keyframes = path.map(({ offset, x: dx, y: dy, scale, opacity, layer }) => ({
+      offset,
+      opacity,
+      zIndex: layer,
+      transform: `translate(${dx}px, ${dy}px) rotate(${angle + spin * offset}deg) rotateY(${roll * offset}deg) scale(${scale})`,
+    }));
+    const motion = ribbon.animate(keyframes, {
+      duration: 3600 + Math.random() * 1650,
+      delay: Math.random() * 520,
+      fill: 'both',
+    });
+    finished.push(motion.finished);
   }
   Promise.allSettled(finished).then(() => confetti.remove());
 }
