@@ -784,6 +784,28 @@ img { max-width: 100%; }
 @keyframes jolt { 25%{transform:translateX(-3px) rotate(-1deg)} 55%{transform:translateX(4px) rotate(1deg)} 85%{transform:translateX(-2px)} }
 
 /* The invitation is printed locally, on demand. */
+.prom-guide {
+  padding: clamp(72px, 10vw, 128px) clamp(22px, 8vw, 110px);
+  background: radial-gradient(ellipse at 50% 35%, #34191f, #150b0e 70%);
+}
+.prom-guide__content { position: relative; z-index: 1; width: min(100%, 920px); margin-inline: auto; }
+.prom-guide h2 {
+  margin: 0 0 clamp(28px, 5vw, 54px);
+  font: 500 clamp(2.7rem, 6vw, 5.4rem)/1.06 var(--display);
+  letter-spacing: -.05em;
+  text-align: center;
+}
+.prom-guide h2 span { white-space: nowrap; }
+.prom-guide__columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border-block: 1px solid var(--rule); }
+.prom-guide__entry { padding: clamp(22px, 4vw, 42px); }
+.prom-guide__entry + .prom-guide__entry { border-inline-start: 1px solid var(--rule); }
+.prom-guide__entry h3 { margin: 0 0 8px; font: 500 clamp(1.35rem, 3vw, 2rem)/1.2 var(--display); }
+.prom-guide__entry p { margin: 0; color: var(--muted); font-size: 14px; }
+@media (max-width: 559px) {
+  .prom-guide__columns { grid-template-columns: minmax(0, 1fr); }
+  .prom-guide__entry + .prom-guide__entry { border-inline-start: 0; border-block-start: 1px solid var(--rule); }
+}
+
 .invitation { padding: 130px 8vw 145px; background: linear-gradient(105deg,#0c0709 0%,#210f14 55%,#0d0709 100%); display: grid; grid-template-columns: minmax(0,1fr) minmax(360px,.84fr); gap: min(9vw,120px); align-items: center; }
 .invitation-copy { max-width: 520px; justify-self: end; }
 .invitation h2 { font: 500 clamp(3.8rem,6.3vw,6.5rem)/1.03 var(--display); letter-spacing: -.06em; margin: 30px 0; }
