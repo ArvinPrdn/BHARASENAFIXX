@@ -546,45 +546,59 @@ function launchFinaleConfetti(finale) {
   const confetti = document.createElement('div');
   confetti.className = 'finale-confetti';
   confetti.setAttribute('aria-hidden', 'true');
+  const stage = finale.getBoundingClientRect();
+  confetti.style.top = `${Math.max(0, -stage.top)}px`;
   finale.insertBefore(confetti, $('.finale-content', finale));
 
   const mobile = mobileQuery.matches;
-  const ribbonsPerSide = mobile ? 11 : 21;
-  const stageWidth = finale.clientWidth;
+  const sideCount = mobile ? 8 : 16;
+  const sources = [
+    { origin: 'left', direction: 1, count: sideCount },
+    { origin: 'center', direction: 0, count: mobile ? 14 : 26 },
+    { origin: 'right', direction: -1, count: sideCount },
+  ];
+  const dropHeight = Math.min(confetti.clientHeight, window.visualViewport?.height ?? innerHeight);
   const finished = [];
-  for (const direction of [1, -1]) {
-    const side = document.createElement('div');
-    side.className = 'finale-confetti__side';
-    confetti.append(side);
+  for (const { origin, direction, count } of sources) {
+    const stream = document.createElement('div');
+    stream.className = `finale-confetti__stream finale-confetti__stream--${origin}`;
+    confetti.append(stream);
+    const landing = dropHeight - stream.offsetTop;
 
-    for (let index = 0; index < ribbonsPerSide; index++) {
+    for (let index = 0; index < count; index++) {
       const ribbon = document.createElement('span');
-      const position = (index + Math.random()) / ribbonsPerSide;
+      const position = (index + Math.random()) / count;
       const width = (mobile ? 3 : 4) + Math.random() * (mobile ? 3.5 : 4.5);
       ribbon.style.setProperty('--ribbon-position', `${position * 100}%`);
       ribbon.style.setProperty('--ribbon-width', `${width}px`);
       ribbon.style.setProperty('--ribbon-length', String(1.8 + Math.random() * 1.8));
-      side.append(ribbon);
+      stream.append(ribbon);
 
-      const startY = -Math.random() * (mobile ? 40 : 72);
-      const fall = (mobile ? 180 : 245) + Math.random() * (mobile ? 115 : 170);
-      const distance = Math.random() < .85
-        ? stageWidth * (.06 + Math.random() * .37)
-        : -(8 + Math.random() * (mobile ? 19 : 45));
-      const drift = direction * distance;
-      const flutter = (Math.random() - .5) * (mobile ? 34 : 68);
+      const start = -Math.random() * (mobile ? 42 : 76);
+      const fall = landing - start - 18 + Math.random() * 33;
+      const drift = stage.width * (direction
+        ? direction * (.07 + Math.random() * .31)
+        : (Math.random() - .5) * .34);
+      const sway = (Math.random() - .5) * (mobile ? 48 : 114);
       const angle = (Math.random() - .5) * 180;
-      const spin = (Math.random() < .5 ? -1 : 1) * (220 + Math.random() * 420);
-      const roll = (Math.random() < .5 ? -1 : 1) * (280 + Math.random() * 500);
-      const motion = ribbon.animate([
-        { offset: 0, opacity: 0, transform: `translate(0, ${startY}px) rotate(${angle}deg) rotateY(0deg)` },
-        { offset: .2, opacity: 1, transform: `translate(${drift * .35}px, ${startY + fall * .14}px) rotate(${angle + spin * .18}deg) rotateY(${roll * .2}deg)` },
-        { offset: .53, opacity: 1, transform: `translate(${drift * .72 + flutter}px, ${startY + fall * .43}px) rotate(${angle + spin * .5}deg) rotateY(${roll * .45}deg)` },
-        { offset: .8, opacity: .85, transform: `translate(${drift * .94 - flutter * .55}px, ${startY + fall * .78}px) rotate(${angle + spin * .8}deg) rotateY(${roll * .82}deg)` },
-        { offset: 1, opacity: 0, transform: `translate(${drift + flutter * .25}px, ${startY + fall}px) rotate(${angle + spin}deg) rotateY(${roll}deg)` },
-      ], {
-        duration: 1650 + Math.random() * 680,
-        delay: Math.random() * 460,
+      const spin = (Math.random() < .5 ? -1 : 1) * (290 + Math.random() * 510);
+      const roll = (Math.random() < .5 ? -1 : 1) * (420 + Math.random() * 620);
+      const path = [
+        { offset: 0, x: 0, y: start, opacity: 0 },
+        { offset: .10 + Math.random() * .07, x: drift * .22, y: start + fall * (.06 + Math.random() * .08), opacity: 1 },
+        { offset: .35 + Math.random() * .13, x: drift * .52 + sway, y: start + fall * (.28 + Math.random() * .17), opacity: 1 },
+        { offset: .64 + Math.random() * .14, x: drift * .76 - sway * .6, y: start + fall * (.54 + Math.random() * .22), opacity: 1 },
+        { offset: .90, x: drift * .93 + sway * .4, y: start + fall * (.89 + Math.random() * .06), opacity: 1 },
+        { offset: 1, x: drift + sway * .2, y: start + fall, opacity: 0 },
+      ];
+      const keyframes = path.map(({ offset, x, y, opacity }) => ({
+        offset,
+        opacity,
+        transform: `translate(${x}px, ${y}px) rotate(${angle + spin * offset}deg) rotateY(${roll * offset}deg)`,
+      }));
+      const motion = ribbon.animate(keyframes, {
+        duration: 3450 + Math.random() * 1650,
+        delay: Math.random() * 690,
         fill: 'both',
       });
       finished.push(motion.finished);
