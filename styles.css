@@ -784,8 +784,9 @@ img { max-width: 100%; }
 @keyframes jolt { 25%{transform:translateX(-3px) rotate(-1deg)} 55%{transform:translateX(4px) rotate(1deg)} 85%{transform:translateX(-2px)} }
 
 .prom-guide {
+  --guide-rule: #8d6659;
   padding: clamp(72px, 9vw, 120px) clamp(22px, 8vw, 110px);
-  background: radial-gradient(ellipse at 70% 30%, #361820, #150b0e 72%);
+  background: radial-gradient(ellipse at 70% 16%, #331922, #140a0e 72%);
 }
 .prom-guide__content { position: relative; z-index: 1; width: min(100%, 960px); margin-inline: auto; }
 .prom-guide h2 {
@@ -806,18 +807,19 @@ img { max-width: 100%; }
 .prom-guide__categories {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  border-block: 1px solid #c9a38960;
+  border: 1px solid var(--guide-rule);
+  box-shadow: 0 14px 34px #07040780;
 }
 .prom-guide__category {
   --guide-accent: #e4caa3;
   min-width: 0;
   padding: clamp(20px, 3.6vw, 46px);
-  background: linear-gradient(130deg, #3c2728, #24171b 75%);
+  background: linear-gradient(130deg, #624041, #4b3035 85%);
 }
 .prom-guide__category--avoid {
   --guide-accent: #efb4bd;
-  border-inline-start: 1px solid #c9a38935;
-  background: linear-gradient(130deg, #41232d, #27191f 75%);
+  border-inline-start: 1px solid var(--guide-rule);
+  background: linear-gradient(130deg, #663b4b, #4d2d3a 85%);
 }
 .prom-guide__category h3 {
   display: flex;
@@ -838,7 +840,7 @@ img { max-width: 100%; }
 }
 @media (max-width: 640px) {
   .prom-guide__categories { grid-template-columns: minmax(0, 1fr); }
-  .prom-guide__category--avoid { border-inline-start: 0; border-block-start: 1px solid #c9a38935; }
+  .prom-guide__category--avoid { border-inline-start: 0; border-block-start: 1px solid var(--guide-rule); }
 }
 
 /* The invitation is printed locally, on demand. */
