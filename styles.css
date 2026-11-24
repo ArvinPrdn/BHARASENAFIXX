@@ -805,25 +805,23 @@ img { max-width: 100%; }
 .prom-guide__heading::after { bottom: 0; transform: scaleY(-1); opacity: .36; }
 .prom-guide h2 { margin: 0; font: 500 clamp(2.65rem, 5.5vw, 5rem)/1.06 var(--display); letter-spacing: -.05em; }
 .prom-guide h2 span { color: var(--champagne); font-style: italic; white-space: nowrap; }
-.prom-guide__status { margin: 22px 0 0; color: var(--ivory); }
-.prom-guide__rules { width: 100%; border-collapse: collapse; margin-top: 20px; text-align: left; }
-.prom-guide__rules th, .prom-guide__rules td { padding: 14px 18px 14px 0; border-bottom: 1px solid var(--rule); vertical-align: top; }
-.prom-guide__rules th { font: 500 1.35rem/1.35 var(--display); }
-.prom-guide__rules thead th { color: var(--champagne); }
-.prom-guide__rules tbody th { width: 20%; }
-.prom-guide__rules td { width: 40%; }
-.prom-guide__rules ul { margin: 0; padding-inline-start: 1.2em; }
-.prom-guide__rules li + li { margin-top: 6px; }
+.prom-guide__status { margin: 16px 0 0; color: var(--muted); font-size: .875rem; }
+.prom-guide__status span { margin-inline: 4px; color: var(--champagne); }
+.prom-guide__rules {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(28px, 6vw, 84px);
+  margin-top: clamp(28px, 4vw, 46px);
+}
+.prom-guide__group { --guide-accent: var(--champagne); }
+.prom-guide__group--avoid { --guide-accent: #d8aeb4; }
+.prom-guide__group h3 { margin: 0; padding-bottom: 11px; color: var(--guide-accent); font: 500 clamp(1.5rem, 3vw, 2rem)/1.15 var(--display); }
+.prom-guide__group ul { margin: 0; padding: 0; list-style-position: inside; }
+.prom-guide__group li { display: list-item; padding: 9px 0 9px 1.2em; border-top: 1px solid var(--rule); text-indent: -1.2em; }
+.prom-guide__group li::marker { color: var(--guide-accent); }
 @media (max-width: 640px) {
   .prom-guide h2 { font-size: clamp(2rem, 8vw, 2.8rem); }
-  .prom-guide__rules thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
-  .prom-guide__rules tbody, .prom-guide__rules tbody th { display: block; }
-  .prom-guide__rules tbody tr { display: block; padding: 14px 0; border-bottom: 1px solid var(--rule); }
-  .prom-guide__rules tbody th, .prom-guide__rules td { border: 0; padding: 3px 0; }
-  .prom-guide__rules tbody th, .prom-guide__rules td { width: auto; }
-  .prom-guide__rules td { display: block; margin-top: 8px; }
-  .prom-guide__rules td::before { display: block; margin-bottom: 4px; content: 'Lakukan' / ''; color: var(--champagne); font-weight: 600; }
-  .prom-guide__rules td:last-child::before { content: 'Jangan dilakukan' / ''; }
+  .prom-guide__rules { grid-template-columns: minmax(0, 1fr); }
 }
 
 /* The invitation is printed locally, on demand. */
