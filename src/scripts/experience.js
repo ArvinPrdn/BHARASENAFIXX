@@ -943,7 +943,6 @@ function initEnvelopePointerEffects() {
     'parking-dialog': 'Lihat denah',
     'event-maps': 'Lihat denah',
     'busana-dialog': 'Lihat busana',
-    'info-letter-dialog': 'Buka surat',
   };
   let activeCard = null;
   let pointer = null;
@@ -977,7 +976,7 @@ function initEnvelopePointerEffects() {
     }
     const dialogId = card.getAttribute('aria-controls')
       ?? card.querySelector('[aria-haspopup="dialog"][aria-controls]')?.getAttribute('aria-controls');
-    const action = actionLabels[dialogId]
+    const action = (dialogId === 'info-letter-dialog' ? card.getAttribute('aria-label') : actionLabels[dialogId])
       || (card.classList.contains('is-open') ? 'Info tersedia' : 'Segera hadir');
     if (label.textContent !== action) label.textContent = action;
     label.hidden = false;
@@ -1207,7 +1206,7 @@ function initEnvelopes() {
       card.classList.add('is-open');
       card.setAttribute('role', 'button');
       card.setAttribute('tabindex', '0');
-      card.setAttribute('aria-label', `Buka surat ${title}`);
+      card.setAttribute('aria-label', venue ? 'Lihat lokasi' : 'Lihat ketentuan masuk');
       card.setAttribute('aria-haspopup', 'dialog');
       card.setAttribute('aria-controls', 'info-letter-dialog');
       card.setAttribute('aria-expanded', 'false');
