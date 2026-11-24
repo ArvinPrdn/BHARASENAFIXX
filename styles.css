@@ -913,11 +913,26 @@ img { max-width: 100%; }
 .message-list-wrap { min-width: 0; }
 .message-list-heading { display: flex; justify-content: space-between; gap: 18px; padding-bottom: 14px; border-bottom: 1px solid var(--rule); color: var(--champagne); font-size: 11px; font-weight: 700; letter-spacing: .14em; }
 .message-list-state { color: var(--muted); font-weight: 500; }
-.message-list { display: grid; gap: 12px; padding-top: 18px; }
+.message-list { display: grid; gap: 12px; margin-top: 18px; }
+.message-list[data-scrollable] {
+  max-height: var(--message-window-height);
+  overflow-y: auto;
+  scrollbar-color: var(--champagne) transparent;
+  scrollbar-width: thin;
+  padding-inline-end: 8px;
+}
+.message-list:focus-visible { outline: 1px solid var(--champagne); outline-offset: 4px; }
+.message-list-wrap:has(.message-list[data-scrollable])::after {
+  content: 'Gulir untuk membaca pesan lainnya.';
+  display: block;
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 13px;
+}
 .message-empty { margin: 0; padding: 32px 0; color: var(--muted); font: 500 clamp(1.55rem,2.3vw,2.15rem)/1.2 var(--display); }
 .message-card { position: relative; padding: 19px 22px 20px; border-left: 2px solid var(--champagne); background: rgba(243,234,216,.055); }
 .message-card::after { content: '“'; position: absolute; top: 7px; right: 15px; color: rgba(217,195,160,.24); font: 500 54px/1 var(--display); }
-.message-card p { max-width: 600px; margin: 0 24px 12px 0; color: var(--ivory); font: 500 19px/1.35 var(--display); white-space: pre-line; }
+.message-card p { max-width: 600px; margin: 0 24px 12px 0; color: var(--ivory); font: 500 19px/1.35 var(--display); white-space: pre-line; overflow-wrap: anywhere; }
 .message-card footer { color: var(--muted); font-size: 12px; letter-spacing: .06em; }
 .message-card footer strong { color: var(--champagne); font-weight: 700; }
 .message-wall .is-pending { opacity: .6; }

@@ -1506,8 +1506,33 @@ function initMessageWall() {
     card.append(quote, footer);
     return card;
   }
+  const visibleMessageLimit = 5;
+  const messageListObserver = new ResizeObserver(updateMessageWindow);
+  function updateMessageWindow() {
+    if (!list?.hasAttribute('data-scrollable')) return;
+    const cards = list.querySelectorAll(':scope > .message-card, :scope > li');
+    const first = cards[0]?.getBoundingClientRect();
+    const last = cards[visibleMessageLimit - 1]?.getBoundingClientRect();
+    if (first && last) list.style.setProperty('--message-window-height', `${last.bottom - first.top}px`);
+  }
+  function syncMessageScroll() {
+    if (!list) return;
+    const cards = list.querySelectorAll(':scope > .message-card, :scope > li');
+    const canScroll = cards.length > visibleMessageLimit;
+    list.toggleAttribute('data-scrollable', canScroll);
+    messageListObserver.disconnect();
+    if (!canScroll) {
+      list.removeAttribute('tabindex');
+      list.style.removeProperty('--message-window-height');
+      return;
+    }
+    list.tabIndex = 0;
+    updateMessageWindow();
+    Array.from(cards).slice(0, visibleMessageLimit).forEach((card) => messageListObserver.observe(card));
+  }
   function renderMessages(messages) {
     if (!list || !Array.isArray(messages)) return;
+    const scrollTop = list.scrollTop;
     // Clear both the canonical cards and the server's lightweight fallback
     // list items before hydrating the approved feed.
     list.querySelectorAll('.message-card, :scope > li').forEach((card) => card.remove());
@@ -1517,6 +1542,8 @@ function initMessageWall() {
       if (card) { list.append(card); count += 1; }
     });
     if (empty) empty.hidden = count > 0;
+    syncMessageScroll();
+    list.scrollTop = scrollTop;
     if (state) state.textContent = count ? `${count} PESAN TERBIT` : 'MENUNGGU PESAN';
   }
   async function loadMessages() {
@@ -1578,7 +1605,12 @@ function initMessageWall() {
       const approved = payload?.message && (payload.message.approved === true || payload.message.status === 'approved');
       if (approved) {
         const card = renderMessage(payload.message);
-        if (card && list) { empty?.setAttribute('hidden', ''); list.prepend(card); }
+        if (card && list) {
+          empty?.setAttribute('hidden', '');
+          list.prepend(card);
+          syncMessageScroll();
+          list.scrollTop = 0;
+        }
       }
       form.reset();
       requestId = null;
@@ -1594,6 +1626,7 @@ function initMessageWall() {
     }
   });
   updateCount();
+  syncMessageScroll();
   loadMessages();
   const refreshMessages = setInterval(() => { if (document.visibilityState === 'visible' && !form.hasAttribute('aria-busy')) loadMessages(); }, 30_000);
   addEventListener('pagehide', () => clearInterval(refreshMessages), { once: true });
