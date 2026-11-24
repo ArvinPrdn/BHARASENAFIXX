@@ -30,7 +30,7 @@ Paket publik memuat tampilan, audio lokal, kartu undangan, dan proposal. Databas
 konfigurasi rahasia, dan panel admin tidak dimasukkan. Endpoint `api/messages.mjs`
 menjalankan Dinding Pesan online dengan penyimpanan Upstash Redis dan notifikasi Telegram
 opsional ke chat pribadi. Kiriman valid langsung tampil; minimal tiga kata dan maksimal
-80 karakter. Form tetap tertutup sampai environment online lengkap dan
+200 karakter. Form tetap tertutup sampai environment online lengkap dan
 `MESSAGE_WALL_ENABLED=true`. Server lokal memakai SQLite dengan publikasi otomatis.
 Lihat [panduan aktivasi Dinding Pesan](docs/MESSAGE_WALL.md) untuk konfigurasi dan pemeriksaan.
 

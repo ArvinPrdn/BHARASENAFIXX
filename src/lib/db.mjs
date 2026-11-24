@@ -116,8 +116,8 @@ export function getPublicContent(now = new Date(), db = openDb()) {
   };
 }
 
-export function getApprovedMessages(db = openDb()) {
-  return db.prepare("SELECT id,nickname,body,created_at FROM messages WHERE status='approved' ORDER BY created_at DESC,id DESC LIMIT 40").all()
+export function getApprovedMessages(db = openDb(), limit = 40) {
+  return db.prepare("SELECT id,nickname,body,created_at FROM messages WHERE status='approved' ORDER BY created_at DESC,id DESC LIMIT ?").all(limit)
     .filter((message) => !containsMessageProfanity(message));
 }
 

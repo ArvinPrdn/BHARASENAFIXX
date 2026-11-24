@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import { createRateLimiter, hashPassword, validateMessage, verifyPassword } from '../../src/lib/security.mjs';
 
+it('keeps all 200 characters and rejects longer guestbook messages', () => {
+  const body = ('Sampai jumpa teman semua. '.repeat(10)).slice(0, 199).trimEnd().padEnd(199, 'a') + '!';
+  expect(validateMessage({ body })).toMatchObject({ ok: true, body });
+  expect(validateMessage({ body: body + '!' }).ok).toBe(false);
+});
+
 describe('security boundaries', () => {
   it('round trips password hashes without storing the password', () => {
     const encoded = hashPassword('kata-sandi-panjang');

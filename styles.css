@@ -913,6 +913,22 @@ img { max-width: 100%; }
 .message-list-wrap { min-width: 0; }
 .message-list-heading { display: flex; justify-content: space-between; gap: 18px; padding-bottom: 14px; border-bottom: 1px solid var(--rule); color: var(--champagne); font-size: 11px; font-weight: 700; letter-spacing: .14em; }
 .message-list-state { color: var(--muted); font-weight: 500; }
+.message-list-tools { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; margin-top: 16px; }
+.message-list-tools label { display: grid; gap: 4px; color: var(--champagne); font-size: 13px; }
+.message-list-tools input, .message-list-tools select, .message-list-more {
+  min-width: 0;
+  min-height: 44px;
+  padding: 8px 10px;
+  border: 1px solid var(--rule);
+  background: #211016;
+  color: var(--ivory);
+  font: inherit;
+}
+.message-list-tools input, .message-list-tools select { font-size: 16px; }
+.message-list-tools input::placeholder { color: var(--muted); }
+.message-list-more { margin-top: 14px; cursor: pointer; }
+.message-list-more:hover { border-color: var(--champagne); color: var(--champagne); }
+.message-list-tools :focus-visible, .message-list-more:focus-visible { outline: 1px solid var(--champagne); outline-offset: 3px; }
 .message-list { display: grid; gap: 12px; margin-top: 18px; }
 .message-list[data-scrollable] {
   max-height: var(--message-window-height);

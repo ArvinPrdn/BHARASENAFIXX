@@ -4,7 +4,7 @@
 // @ts-nocheck
 import { initMusic } from './music.js';
 import { initHeritage } from './heritage.js';
-import { countMessageWords, MESSAGE_MIN_WORDS } from '../data/message-rules.js';
+import { countMessageWords, MESSAGE_MAX_LENGTH, MESSAGE_MIN_WORDS } from '../data/message-rules.js';
 import {
   EVENT, rundown, envelopes, gallery,
   getPhase, getCountdown, getJakartaDate,
@@ -1447,6 +1447,10 @@ function initMessageWall() {
   const list = $('[data-messages-list]');
   const empty = $('[data-message-empty]');
   const state = $('[data-message-state]');
+  const tools = $('[data-message-tools]');
+  const search = $('[data-message-search]');
+  const order = $('[data-message-order]');
+  const more = $('[data-message-more]');
   if (!form || !nameInput || !bodyInput) return;
   const managedWall = root.dataset.hosting === 'static';
   let wallEnabled = !managedWall;
@@ -1464,12 +1468,11 @@ function initMessageWall() {
     .replace(/\s+/g, ' ')
     .trim()
     .slice(0, max);
-  const cleanBody = (value, max) => String(value || '')
+  const cleanBody = (value, max) => Array.from(String(value || '')
     // eslint-disable-next-line no-control-regex -- Remove control characters from visitor text.
     .replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/g, '')
     .replace(/\r\n?/g, '\n')
-    .trim()
-    .slice(0, max);
+    .trim()).slice(0, max).join('');
 
   function setStatus(message, tone = '') {
     if (!status) return;
@@ -1481,7 +1484,7 @@ function initMessageWall() {
   }
   function renderMessage(item) {
     if (!list || !item || typeof item !== 'object') return null;
-    const message = cleanBody(item.body ?? item.message, 80);
+    const message = cleanBody(item.body ?? item.message, MESSAGE_MAX_LENGTH);
     const author = clean(item.nickname ?? item.name ?? item.displayName ?? 'Tamu BHARASENA', 20) || 'Tamu BHARASENA';
     if (!message) return null;
     const card = document.createElement('article');
@@ -1530,33 +1533,54 @@ function initMessageWall() {
     updateMessageWindow();
     Array.from(cards).slice(0, visibleMessageLimit).forEach((card) => messageListObserver.observe(card));
   }
-  function renderMessages(messages) {
-    if (!list || !Array.isArray(messages)) return;
-    const scrollTop = list.scrollTop;
-    // Clear both the canonical cards and the server's lightweight fallback
-    // list items before hydrating the approved feed.
+  const pageSize = 20;
+  let shown = pageSize;
+  let approvedMessages = [];
+  const searchable = (value) => String(value ?? '').normalize('NFKC').toLowerCase();
+
+  function renderMessages(scrollTop = 0) {
+    if (!list) return;
+    const query = searchable(search?.value).trim();
+    const matches = approvedMessages.filter((item) => !query ||
+      searchable((item.nickname ?? item.name ?? item.displayName) || 'Tamu BHARASENA').includes(query) ||
+      searchable(item.body ?? item.message).includes(query));
+    if (order?.value === 'oldest') matches.reverse();
     list.querySelectorAll('.message-card, :scope > li').forEach((card) => card.remove());
-    let count = 0;
-    messages.slice(0, 40).forEach((item) => {
+    const cards = document.createDocumentFragment();
+    matches.slice(0, shown).forEach((item) => {
       const card = renderMessage(item);
-      if (card) { list.append(card); count += 1; }
+      if (card) cards.append(card);
     });
-    if (empty) empty.hidden = count > 0;
+    list.append(cards);
+    if (empty) {
+      empty.hidden = matches.length > 0;
+      empty.textContent = query ? 'Tidak ada pesan yang cocok.' : 'Belum ada pesan yang dibuka untuk umum. Jadilah yang pertama menulis.';
+    }
+    if (state) {
+      const total = approvedMessages.length;
+      state.textContent = query ? `${matches.length} DARI ${total} PESAN` : `${total} PESAN TERBIT`;
+    }
+    if (tools) tools.hidden = !approvedMessages.length && !query;
     syncMessageScroll();
     list.scrollTop = scrollTop;
-    if (state) state.textContent = count ? `${count} PESAN TERBIT` : 'MENUNGGU PESAN';
+    if (more) {
+      if (matches.length <= shown && more === document.activeElement) list.focus({ preventScroll: true });
+      more.hidden = matches.length <= shown;
+      more.textContent = order?.value === 'oldest' ? 'Lihat pesan lebih baru' : 'Lihat pesan lebih lama';
+    }
   }
   async function loadMessages() {
     if (!list || !('fetch' in window)) return;
     try {
-      const response = await fetch('/api/messages?status=approved', {
+      const response = await fetch('/api/messages?status=approved&feed=all', {
         headers: { Accept: 'application/json' }, credentials: 'same-origin',
       });
       if (!response.ok) throw new Error('Feed unavailable');
       const payload = await response.json();
       const messages = Array.isArray(payload) ? payload : payload?.messages;
       if (!Array.isArray(messages)) throw new Error('Invalid feed');
-      renderMessages(messages);
+      approvedMessages = messages;
+      renderMessages(list.scrollTop);
       if (managedWall) {
         const wasEnabled = wallEnabled;
         wallEnabled = payload?.enabled === true;
@@ -1576,13 +1600,23 @@ function initMessageWall() {
       }
     }
   }
+  function resetMessageView() {
+    shown = pageSize;
+    renderMessages();
+  }
+  search?.addEventListener('input', resetMessageView);
+  order?.addEventListener('change', resetMessageView);
+  more?.addEventListener('click', () => {
+    shown += pageSize;
+    renderMessages(list?.scrollTop);
+  });
   bodyInput.addEventListener('input', () => { updateCount(); requestId = null; });
   nameInput.addEventListener('input', () => { requestId = null; });
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
     if (!wallEnabled || form.hasAttribute('aria-busy')) return;
     const name = clean(nameInput.value, 20);
-    const body = cleanBody(bodyInput.value, 80);
+    const body = cleanBody(bodyInput.value, MESSAGE_MAX_LENGTH);
     if (trap?.value) return;
     if (countMessageWords(body) < MESSAGE_MIN_WORDS) { setStatus(`Pesan minimal ${MESSAGE_MIN_WORDS} kata.`, 'error'); bodyInput.focus(); return; }
     const submit = $('button[type="submit"]', form);
@@ -1603,21 +1637,15 @@ function initMessageWall() {
       try { payload = await response.json(); } catch { /* empty error body */ }
       if (!response.ok) throw new Error(payload?.error || 'Pesan belum dapat dikirim.');
       const approved = payload?.message && (payload.message.approved === true || payload.message.status === 'approved');
-      if (approved) {
-        const card = renderMessage(payload.message);
-        if (card && list) {
-          empty?.setAttribute('hidden', '');
-          list.prepend(card);
-          syncMessageScroll();
-          list.scrollTop = 0;
-        }
+      if (approved && !approvedMessages.some((item) => item.id === payload.message.id)) {
+        approvedMessages.unshift(payload.message);
+        renderMessages(list?.scrollTop);
       }
       form.reset();
       requestId = null;
       formStartedAt = Date.now();
       updateCount();
       setStatus(approved ? 'Pesanmu sudah tampil di dinding.' : 'Pesan diterima. Setelah disetujui panitia, pesanmu akan tampil.', 'success');
-      if (state && approved) state.textContent = 'PESAN TERBARU';
     } catch (error) {
       setStatus(error?.message || 'Pesan belum dapat dikirim. Coba lagi nanti.', 'error');
     } finally {

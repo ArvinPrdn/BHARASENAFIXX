@@ -120,11 +120,17 @@ export function createMessageWallHandler({ env = process.env, fetchImpl = global
     if (request.method === 'GET') {
       if (!config.readReady) return json(200, { enabled: false, messages: [] });
       try {
-        const ids = await redis(config, ['ZREVRANGE', `${config.prefix}:approved`, 0, 39], fetchImpl);
+        const fullFeed = new URL(request.url).searchParams.get('feed') === 'all';
+        const ids = await redis(config, ['ZREVRANGE', `${config.prefix}:approved`, 0, fullFeed ? -1 : 39], fetchImpl);
         if (!Array.isArray(ids)) throw new Error('Invalid feed');
-        const values = ids.length ? await redis(config, ['MGET', ...ids.map(id => `${config.prefix}:message:${id}`)], fetchImpl) : [];
-        if (!Array.isArray(values)) throw new Error('Invalid feed');
-        return json(200, { enabled: config.enabled, messages: values.map(publicMessage).filter(Boolean) }, { 'Cache-Control': 'public, max-age=0, s-maxage=15' });
+        const messages = [];
+        for (let start = 0; start < ids.length; start += 100) {
+          const keys = ids.slice(start, start + 100).map(id => `${config.prefix}:message:${id}`);
+          const values = await redis(config, ['MGET', ...keys], fetchImpl);
+          if (!Array.isArray(values)) throw new Error('Invalid feed');
+          messages.push(...values.map(publicMessage).filter(Boolean));
+        }
+        return json(200, { enabled: config.enabled, messages }, { 'Cache-Control': 'public, max-age=0, s-maxage=15' });
       } catch {
         logError({ event: 'message_wall_read_failed' });
         return json(503, { enabled: false, error: 'Dinding pesan sedang tidak tersedia. Coba lagi nanti.' });

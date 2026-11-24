@@ -30,7 +30,7 @@ Gunakan daftar ini sebagai handoff ke panitia. Isi hanya informasi yang sudah di
 ## 3. Keputusan operasional sebelum rilis
 
 - Hosting dan domain resmi, pihak yang mengelola DNS/HTTPS, serta alamat email teknis untuk insiden.
-- Siapa yang boleh menyetujui pesan Dinding Pesan dan standar moderasinya. Pesan pengunjung masuk sebagai **pending**; maksimal 80 karakter, nama panggilan opsional maksimal 20 karakter.
+- Siapa yang boleh menyetujui pesan Dinding Pesan dan standar moderasinya. Pesan pengunjung masuk sebagai **pending**; maksimal 200 karakter, nama panggilan opsional maksimal 20 karakter.
 - Jadwal backup database, lokasi salinan cadangan, dan petugas yang dapat melakukan restore.
 - Tanggal/jam ketika situs boleh dipublikasikan dan siapa pemberi persetujuan akhir.
 

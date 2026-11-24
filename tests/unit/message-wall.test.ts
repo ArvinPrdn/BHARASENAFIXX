@@ -34,6 +34,14 @@ function harness(replies: Response[], environment = env) {
 const redis = (result: unknown) => Response.json({ result });
 
 describe('online message wall', () => {
+  it('returns messages beyond 100 when the guestbook requests the full feed', async () => {
+    const messages = Array.from({ length: 125 }, (_, index) => ({ ...approved, id: String(index) }));
+    const { handle, fetchImpl } = harness([redis(messages.map(({ id }) => id)), redis(messages.slice(0, 100)), redis(messages.slice(100))]);
+    const response = await handle(new Request('https://bharasena.example/api/messages?feed=all'));
+    expect(await response.json()).toEqual({ enabled: true, messages });
+    expect(JSON.parse(String(fetchImpl.mock.calls[0]?.[1]?.body))).toEqual(['ZREVRANGE', 'bharasena:wall:v1:approved', 0, -1]);
+  });
+
   it('uses the Redis credentials provisioned by Vercel Marketplace', async () => {
     const marketplaceEnv = {
       ...env, UPSTASH_REDIS_REST_URL: '', UPSTASH_REDIS_REST_TOKEN: '',

@@ -1,5 +1,5 @@
 import { createHmac, randomBytes, scryptSync, timingSafeEqual } from 'node:crypto';
-import { countMessageWords, MESSAGE_MIN_WORDS } from '../data/message-rules.js';
+import { countMessageWords, MESSAGE_MAX_LENGTH, MESSAGE_MIN_WORDS } from '../data/message-rules.js';
 import { containsMessageProfanity } from './message-profanity.mjs';
 
 const linkPattern = /(?:https?:\/\/|www\.|[\w-]+\.(?:com|id|net|org|io|app|co)(?:\b|\/))/iu;
@@ -17,8 +17,8 @@ export function validateMessage(input) {
   const bodyRaw = input?.body ?? '';
   if (typeof nicknameRaw !== 'string' || typeof bodyRaw !== 'string') return { ok: false, reason: 'Pesan tidak valid.' };
   const nickname = cleanText(nicknameRaw, 20);
-  const body = cleanText(bodyRaw, 80);
-  if (!body || Array.from(bodyRaw).length > 80 || Array.from(nicknameRaw).length > 20) return { ok: false, reason: 'Pesan maksimal 80 karakter dan nama maksimal 20 karakter.' };
+  const body = cleanText(bodyRaw, MESSAGE_MAX_LENGTH);
+  if (!body || Array.from(bodyRaw).length > MESSAGE_MAX_LENGTH || Array.from(nicknameRaw).length > 20) return { ok: false, reason: `Pesan maksimal ${MESSAGE_MAX_LENGTH} karakter dan nama maksimal 20 karakter.` };
   if (countMessageWords(body) < MESSAGE_MIN_WORDS) return { ok: false, reason: `Pesan minimal ${MESSAGE_MIN_WORDS} kata.` };
   const content = `${body} ${nickname}`;
   if (/[<>]/u.test(content) || linkPattern.test(content) || emailPattern.test(content) || phonePattern.test(content)) return { ok: false, reason: 'Pesan mengandung konten yang tidak dapat diterima.' };

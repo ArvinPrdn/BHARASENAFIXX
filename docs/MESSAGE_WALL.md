@@ -9,7 +9,7 @@ Tidak ada tahap persetujuan dan tidak ada webhook Telegram yang harus dipasang.
 
 ## Perilaku
 
-- Minimal **3 kata**, maksimal **80 karakter**; nama opsional, maksimal 20 karakter.
+- Minimal **3 kata**, maksimal **200 karakter**; nama opsional, maksimal 20 karakter.
 - Kata kasar, HTML, tautan, alamat email, dan nomor telepon ditolak oleh server.
 - Maksimal empat kiriman per alamat IP dalam 15 menit, memakai penghitung Redis
   yang tetap bekerja antar-instance Vercel. IP asli tidak disimpan atau dikirim ke bot.
