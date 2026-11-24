@@ -784,63 +784,64 @@ img { max-width: 100%; }
 @keyframes jolt { 25%{transform:translateX(-3px) rotate(-1deg)} 55%{transform:translateX(4px) rotate(1deg)} 85%{transform:translateX(-2px)} }
 
 .prom-guide {
-  --guide-rule: #8d6659;
-  padding: clamp(72px, 9vw, 120px) clamp(22px, 8vw, 110px);
+  padding: clamp(60px, 8vw, 108px) clamp(22px, 8vw, 110px);
   background: radial-gradient(ellipse at 70% 16%, #331922, #140a0e 72%);
 }
 .prom-guide__content { position: relative; z-index: 1; width: min(100%, 960px); margin-inline: auto; }
-.prom-guide h2 {
-  margin: 0;
-  font: 500 clamp(2.65rem, 5.5vw, 5rem)/1.06 var(--display);
-  letter-spacing: -.05em;
-}
-.prom-guide h2 span { color: var(--champagne); font-style: italic; white-space: nowrap; }
-.prom-guide__status {
+.prom-guide__heading {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin: 16px 0 clamp(26px, 4vw, 44px);
-  color: var(--muted);
-  font-size: 15px;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: clamp(24px, 4vw, 44px);
+  border-bottom: 1px dashed var(--champagne);
 }
-.prom-guide__status::before { content: ''; width: 16px; height: 1px; background: var(--champagne); }
-.prom-guide__categories {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  border: 1px solid var(--guide-rule);
-  box-shadow: 0 14px 34px #07040780;
-}
-.prom-guide__category {
-  --guide-accent: #e4caa3;
-  min-width: 0;
-  padding: clamp(20px, 3.6vw, 46px);
-  background: linear-gradient(130deg, #624041, #4b3035 85%);
-}
-.prom-guide__category--avoid {
-  --guide-accent: #efb4bd;
-  border-inline-start: 1px solid var(--guide-rule);
-  background: linear-gradient(130deg, #663b4b, #4d2d3a 85%);
-}
-.prom-guide__category h3 {
-  display: flex;
-  align-items: center;
-  gap: clamp(12px, 2vw, 22px);
-  margin: 0;
-  font: 500 clamp(1.45rem, 3vw, 2.45rem)/1.18 var(--display);
-}
-.prom-guide__symbol {
-  display: grid;
-  flex: 0 0 clamp(34px, 4vw, 46px);
-  aspect-ratio: 1;
-  place-items: center;
-  border: 1px solid color-mix(in srgb, var(--guide-accent) 43%, transparent);
+.prom-guide__heading::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  width: 9px;
+  height: 9px;
   border-radius: 50%;
-  color: var(--guide-accent);
-  font: 500 1.35rem/1 system-ui, sans-serif;
+  background: var(--seal);
+  box-shadow: inset 0 0 0 1px #ce808452, 0 1px 3px var(--ink);
 }
+.prom-guide h2 { margin: 0; font: 500 clamp(2.65rem, 5.5vw, 5rem)/1.06 var(--display); letter-spacing: -.05em; }
+.prom-guide h2 span { color: var(--champagne); font-style: italic; white-space: nowrap; }
+.prom-guide__tickets {
+  position: relative;
+  flex: 0 0 clamp(126px, 15vw, 190px);
+  aspect-ratio: 2.14;
+  margin: 10px 8px;
+  filter: drop-shadow(0 5px 4px #0d070966);
+}
+.prom-guide__tickets::before, .prom-guide__tickets::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url('assets/prom-guide-ticket.webp') center / contain no-repeat;
+}
+.prom-guide__tickets::before { transform: translate(-5%, 7%) rotate(6deg); }
+.prom-guide__tickets::after { transform: rotate(-7deg); }
+.prom-guide__status { margin: 22px 0 0; color: var(--ivory); }
+.prom-guide__rules { width: 100%; border-collapse: collapse; margin-top: 20px; text-align: left; }
+.prom-guide__rules:not(:has(tbody tr)), .prom-guide__content:has(tbody tr) .prom-guide__status { display: none; }
+.prom-guide__rules th, .prom-guide__rules td { padding: 14px 18px 14px 0; border-bottom: 1px solid var(--rule); vertical-align: top; }
+.prom-guide__rules th { font: 500 1.35rem/1.35 var(--display); }
+.prom-guide__rules thead th { color: var(--champagne); }
 @media (max-width: 640px) {
-  .prom-guide__categories { grid-template-columns: minmax(0, 1fr); }
-  .prom-guide__category--avoid { border-inline-start: 0; border-block-start: 1px solid var(--guide-rule); }
+  .prom-guide__tickets { flex-basis: clamp(60px, 18vw, 95px); margin: 0 3px; }
+  .prom-guide__tickets::before { display: none; }
+  .prom-guide h2 { font-size: clamp(2rem, 8vw, 2.8rem); }
+  .prom-guide__rules thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+  .prom-guide__rules tbody, .prom-guide__rules tbody th { display: block; }
+  .prom-guide__rules tbody tr { display: block; padding: 14px 0; border-bottom: 1px solid var(--rule); }
+  .prom-guide__rules tbody th, .prom-guide__rules td { border: 0; padding: 3px 0; }
+  .prom-guide__rules td { display: grid; grid-template-columns: 4em 1fr; gap: 8px; }
+  .prom-guide__rules td::before { content: 'Boleh'; color: var(--champagne); font-weight: 600; }
+  .prom-guide__rules td:last-child::before { content: 'Hindari'; }
 }
 
 /* The invitation is printed locally, on demand. */
