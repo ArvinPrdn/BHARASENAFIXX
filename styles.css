@@ -790,41 +790,21 @@ img { max-width: 100%; }
 .prom-guide__content { position: relative; z-index: 1; width: min(100%, 960px); margin-inline: auto; }
 .prom-guide__heading {
   position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  padding-bottom: clamp(24px, 4vw, 44px);
-  border-bottom: 1px dashed var(--champagne);
+  padding-bottom: clamp(25px, 3.5vw, 38px);
+  background: linear-gradient(90deg, transparent, #6b16264d 34%, #6b162633 72%, transparent) center bottom 2px / calc(100% - 12px) 8px no-repeat;
 }
-.prom-guide__heading::after {
+.prom-guide__heading::before, .prom-guide__heading::after {
   content: '';
   position: absolute;
-  bottom: -5px;
-  left: 0;
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  background: var(--seal);
-  box-shadow: inset 0 0 0 1px #ce808452, 0 1px 3px var(--ink);
+  inset: auto 0 6px;
+  height: 6px;
+  background: var(--champagne);
+  opacity: .58;
+  clip-path: polygon(0 5px, 6px 5px, 6px 2px, 12px 2px, 12px 0, calc(100% - 12px) 0, calc(100% - 12px) 2px, calc(100% - 6px) 2px, calc(100% - 6px) 5px, 100% 5px, 100% 6px, calc(100% - 7px) 6px, calc(100% - 7px) 3px, calc(100% - 13px) 3px, calc(100% - 13px) 1px, 13px 1px, 13px 3px, 7px 3px, 7px 6px, 0 6px);
 }
+.prom-guide__heading::after { bottom: 0; transform: scaleY(-1); opacity: .36; }
 .prom-guide h2 { margin: 0; font: 500 clamp(2.65rem, 5.5vw, 5rem)/1.06 var(--display); letter-spacing: -.05em; }
 .prom-guide h2 span { color: var(--champagne); font-style: italic; white-space: nowrap; }
-.prom-guide__tickets {
-  position: relative;
-  flex: 0 0 clamp(126px, 15vw, 190px);
-  aspect-ratio: 2.14;
-  margin: 10px 8px;
-  filter: drop-shadow(0 5px 4px #0d070966);
-}
-.prom-guide__tickets::before, .prom-guide__tickets::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: url('assets/prom-guide-ticket.webp') center / contain no-repeat;
-}
-.prom-guide__tickets::before { transform: translate(-5%, 7%) rotate(6deg); }
-.prom-guide__tickets::after { transform: rotate(-7deg); }
 .prom-guide__status { margin: 22px 0 0; color: var(--ivory); }
 .prom-guide__rules { width: 100%; border-collapse: collapse; margin-top: 20px; text-align: left; }
 .prom-guide__rules:not(:has(tbody tr)), .prom-guide__content:has(tbody tr) .prom-guide__status { display: none; }
@@ -832,8 +812,6 @@ img { max-width: 100%; }
 .prom-guide__rules th { font: 500 1.35rem/1.35 var(--display); }
 .prom-guide__rules thead th { color: var(--champagne); }
 @media (max-width: 640px) {
-  .prom-guide__tickets { flex-basis: clamp(60px, 18vw, 95px); margin: 0 3px; }
-  .prom-guide__tickets::before { display: none; }
   .prom-guide h2 { font-size: clamp(2rem, 8vw, 2.8rem); }
   .prom-guide__rules thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
   .prom-guide__rules tbody, .prom-guide__rules tbody th { display: block; }
