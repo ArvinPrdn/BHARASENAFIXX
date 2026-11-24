@@ -807,19 +807,23 @@ img { max-width: 100%; }
 .prom-guide h2 span { color: var(--champagne); font-style: italic; white-space: nowrap; }
 .prom-guide__status { margin: 22px 0 0; color: var(--ivory); }
 .prom-guide__rules { width: 100%; border-collapse: collapse; margin-top: 20px; text-align: left; }
-.prom-guide__rules:not(:has(tbody tr)), .prom-guide__content:has(tbody tr) .prom-guide__status { display: none; }
 .prom-guide__rules th, .prom-guide__rules td { padding: 14px 18px 14px 0; border-bottom: 1px solid var(--rule); vertical-align: top; }
 .prom-guide__rules th { font: 500 1.35rem/1.35 var(--display); }
 .prom-guide__rules thead th { color: var(--champagne); }
+.prom-guide__rules tbody th { width: 20%; }
+.prom-guide__rules td { width: 40%; }
+.prom-guide__rules ul { margin: 0; padding-inline-start: 1.2em; }
+.prom-guide__rules li + li { margin-top: 6px; }
 @media (max-width: 640px) {
   .prom-guide h2 { font-size: clamp(2rem, 8vw, 2.8rem); }
   .prom-guide__rules thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
   .prom-guide__rules tbody, .prom-guide__rules tbody th { display: block; }
   .prom-guide__rules tbody tr { display: block; padding: 14px 0; border-bottom: 1px solid var(--rule); }
   .prom-guide__rules tbody th, .prom-guide__rules td { border: 0; padding: 3px 0; }
-  .prom-guide__rules td { display: grid; grid-template-columns: 4em 1fr; gap: 8px; }
-  .prom-guide__rules td::before { content: 'Boleh'; color: var(--champagne); font-weight: 600; }
-  .prom-guide__rules td:last-child::before { content: 'Hindari'; }
+  .prom-guide__rules tbody th, .prom-guide__rules td { width: auto; }
+  .prom-guide__rules td { display: block; margin-top: 8px; }
+  .prom-guide__rules td::before { display: block; margin-bottom: 4px; content: 'Lakukan' / ''; color: var(--champagne); font-weight: 600; }
+  .prom-guide__rules td:last-child::before { content: 'Jangan dilakukan' / ''; }
 }
 
 /* The invitation is printed locally, on demand. */
