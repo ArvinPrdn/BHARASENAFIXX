@@ -1593,7 +1593,7 @@ function initMessageWall() {
           if (state && !messages.length) state.textContent = 'SEGERA DIBUKA';
         } else if (!wasEnabled) {
           formStartedAt = Date.now();
-          setStatus('Pesan yang memenuhi ketentuan langsung tampil di dinding.');
+          setStatus('Setiap pesan perlu persetujuan admin sebelum ditampilkan.');
         }
       }
     } catch {
@@ -1648,7 +1648,7 @@ function initMessageWall() {
       requestId = null;
       formStartedAt = Date.now();
       updateCount();
-      setStatus(approved ? 'Pesanmu sudah tampil di dinding.' : 'Pesan diterima. Setelah disetujui panitia, pesanmu akan tampil.', 'success');
+      setStatus(approved ? 'Pesanmu sudah tampil di dinding.' : 'Pesanmu sudah diterima dan sedang menunggu persetujuan admin.', 'success');
     } catch (error) {
       setStatus(error?.message || 'Pesan belum dapat dikirim. Coba lagi nanti.', 'error');
     } finally {
