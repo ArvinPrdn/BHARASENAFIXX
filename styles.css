@@ -925,7 +925,37 @@ img { max-width: 100%; }
   font: inherit;
 }
 .message-list-tools input, .message-list-tools select { font-size: 16px; }
+.message-list-tools label:has(> [data-message-search]) { position: relative; }
+.message-list-tools label:has(> [data-message-search])::before,
+.message-list-tools label:has(> [data-message-search])::after {
+  content: '';
+  position: absolute;
+  pointer-events: none;
+}
+.message-list-tools label:has(> [data-message-search])::before {
+  inset-inline-start: 13px;
+  bottom: 18px;
+  width: 11px;
+  height: 11px;
+  border: 1.5px solid currentColor;
+  border-radius: 50%;
+}
+.message-list-tools label:has(> [data-message-search])::after {
+  inset-inline-start: 22px;
+  bottom: 18px;
+  width: 6px;
+  height: 1.5px;
+  border-radius: 2px;
+  background: currentColor;
+  transform: rotate(45deg);
+  transform-origin: left center;
+}
+.message-list-tools [data-message-search] { padding-inline-start: 36px; }
 .message-list-tools input::placeholder { color: var(--muted); }
+@media (max-width: 350px) {
+  .message-list-tools { grid-template-columns: minmax(0, 1fr); }
+  .message-list-tools label:last-child { justify-self: start; }
+}
 .message-list-more { margin-top: 14px; cursor: pointer; }
 .message-list-more:hover { border-color: var(--champagne); color: var(--champagne); }
 .message-list-tools :focus-visible, .message-list-more:focus-visible { outline: 1px solid var(--champagne); outline-offset: 3px; }
