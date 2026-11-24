@@ -945,6 +945,7 @@ function initEnvelopePointerEffects() {
 
   const actionLabels = {
     'parking-dialog': 'Lihat denah',
+    'event-maps': 'Lihat denah',
     'busana-dialog': 'Lihat busana',
     'info-letter-dialog': 'Buka surat',
   };
@@ -978,7 +979,9 @@ function initEnvelopePointerEffects() {
       resetCard();
       activeCard = card;
     }
-    const action = actionLabels[card.getAttribute('aria-controls')]
+    const dialogId = card.getAttribute('aria-controls')
+      ?? card.querySelector('[aria-haspopup="dialog"][aria-controls]')?.getAttribute('aria-controls');
+    const action = actionLabels[dialogId]
       || (card.classList.contains('is-open') ? 'Info tersedia' : 'Segera hadir');
     if (label.textContent !== action) label.textContent = action;
     label.hidden = false;
