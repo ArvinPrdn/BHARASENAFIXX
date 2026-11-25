@@ -787,16 +787,25 @@ img { max-width: 100%; }
   padding: clamp(60px, 8vw, 108px) clamp(22px, 8vw, 110px);
   background: radial-gradient(ellipse at 70% 16%, #331922, #140a0e 72%);
 }
-.prom-guide__content { position: relative; z-index: 1; width: min(100%, 960px); margin-inline: auto; }
+.prom-guide__content {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr);
+  align-items: start;
+  gap: clamp(32px, 6vw, 84px);
+  width: min(100%, 1050px);
+  margin-inline: auto;
+}
 .prom-guide__heading {
   position: relative;
-  padding-bottom: clamp(25px, 3.5vw, 38px);
-  background: linear-gradient(90deg, transparent, #6b16264d 34%, #6b162633 72%, transparent) center bottom 2px / calc(100% - 12px) 8px no-repeat;
+  padding-bottom: 30px;
 }
 .prom-guide__heading::before, .prom-guide__heading::after {
   content: '';
   position: absolute;
-  inset: auto 0 6px;
+  inset: auto auto 6px 0;
+  width: min(148px, 100%);
   height: 6px;
   background: var(--champagne);
   opacity: .58;
@@ -804,24 +813,42 @@ img { max-width: 100%; }
 }
 .prom-guide__heading::after { bottom: 0; transform: scaleY(-1); opacity: .36; }
 .prom-guide h2 { margin: 0; font: 500 clamp(2.65rem, 5.5vw, 5rem)/1.06 var(--display); letter-spacing: -.05em; }
-.prom-guide h2 span { color: var(--champagne); font-style: italic; white-space: nowrap; }
+.prom-guide h2 span { display: block; color: var(--champagne); font-style: italic; }
 .prom-guide__status { margin: 16px 0 0; color: var(--muted); font-size: .875rem; }
 .prom-guide__status span { margin-inline: 4px; color: var(--champagne); }
 .prom-guide__rules {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: clamp(28px, 6vw, 84px);
-  margin-top: clamp(28px, 4vw, 46px);
+  border-inline-start: 1px solid var(--rule);
+  padding: clamp(18px, 3vw, 32px);
+  background: linear-gradient(110deg, #f3ead809, transparent 90%);
 }
 .prom-guide__group { --guide-accent: var(--champagne); }
 .prom-guide__group--avoid { --guide-accent: #d8aeb4; }
-.prom-guide__group h3 { margin: 0; padding-bottom: 11px; color: var(--guide-accent); font: 500 clamp(1.5rem, 3vw, 2rem)/1.15 var(--display); }
-.prom-guide__group ul { margin: 0; padding: 0; list-style-position: inside; }
-.prom-guide__group li { display: list-item; padding: 9px 0 9px 1.2em; border-top: 1px solid var(--rule); text-indent: -1.2em; }
+.prom-guide__group + .prom-guide__group { margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--rule); }
+.prom-guide__group h3 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 12px;
+  color: var(--guide-accent);
+  font: 500 clamp(1.5rem, 3vw, 2rem)/1.15 var(--display);
+}
+.prom-guide__group h3 span {
+  display: grid;
+  place-items: center;
+  flex: 0 0 24px;
+  aspect-ratio: 1;
+  border: 1px solid var(--rule);
+  border-radius: 50%;
+  font: 500 .85rem/1 var(--body);
+}
+.prom-guide__group ul { margin: 0; padding-inline-start: 1.2em; }
+.prom-guide__group li + li { margin-top: 7px; }
 .prom-guide__group li::marker { color: var(--guide-accent); }
-@media (max-width: 640px) {
-  .prom-guide h2 { font-size: clamp(2rem, 8vw, 2.8rem); }
-  .prom-guide__rules { grid-template-columns: minmax(0, 1fr); }
+@media (max-width: 720px) {
+  .prom-guide__content { grid-template-columns: minmax(0, 1fr); gap: 22px; }
+  .prom-guide h2 { font-size: clamp(2rem, 8.3vw, 3.6rem); }
+  .prom-guide h2 span { display: inline; }
+  .prom-guide__rules { padding-inline: 16px; }
 }
 
 /* The invitation is printed locally, on demand. */
