@@ -224,6 +224,7 @@ function initTimeline(openFinale) {
   const navigationLinks = $$('.header-nav a[href^="#"], .mobile-dock a[href^="#"]');
   let dirty = true;
   let activeIndex = -1;
+  let pendingGuideDivider = $('.prom-guide__divider');
 
   function selectScene(index) {
     if (index === activeIndex || index < 0) return;
@@ -286,6 +287,13 @@ function initTimeline(openFinale) {
     selectScene(nearest);
     const activeScene = scenes[nearest];
     if (activeScene?.matches('.finale:not(.has-started-intro)') && !activeScene.closest('[inert]')) openFinale?.();
+    if (pendingGuideDivider && !pendingGuideDivider.closest('[inert]')) {
+      const { top, bottom } = pendingGuideDivider.getBoundingClientRect();
+      if (bottom > 0 && top < innerHeight) {
+        if (!reduceMotion()) pendingGuideDivider.classList.add('is-revealed');
+        pendingGuideDivider = null;
+      }
+    }
     return false;
   }
   addFrameTask(update);
