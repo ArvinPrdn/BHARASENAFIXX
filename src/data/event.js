@@ -9,7 +9,7 @@ export const EVENT = {
   title: 'BHARASENA',
   subtitle: 'Prom Night Batalyon 6',
   battalion: 'Batalyon Bhara Arsa Nawasena',
-  school: 'SMAN 2 Taruna Bhayangkara',
+  school: 'SMA Negeri 2 Taruna Bhayangkara Jawa Timur',
   guestArtist: 'Budi Doremi',
   tz: 'Asia/Jakarta',
   dateStart: '2026-12-11',
@@ -21,7 +21,7 @@ export const EVENT = {
   venue: 'SMA Negeri 2 Taruna Bhayangkara Jawa Timur, Jl. Pandan, Desa Kembiritan, Kecamatan Genteng, Kabupaten Banyuwangi.',
   artistAt: '13 Desember 2026 · 21.05–22.15 WIB',
   dressCode: null,
-  admission: 'Hadir untuk seluruh anggota SMAN 2 Taruna Bhayangkara dan tamu tertentu yang diundang. Parkir dan konsumsi tersedia.',
+  admission: 'Hadir untuk seluruh anggota SMA Negeri 2 Taruna Bhayangkara Jawa Timur dan tamu tertentu yang diundang. Parkir dan konsumsi tersedia.',
   contact: null,
   showPlaceholderHints: false,
 };

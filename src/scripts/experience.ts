@@ -1780,7 +1780,7 @@ function initCard() {
     ctx.font = 'italic 38px Georgia, serif'; ctx.fillText('Sampai bertemu,',w/2,1140);
     ctx.font = '400 22px "Hanken Grotesk", sans-serif';
     ctx.fillText('BATALYON BHARA ARSA NAWASENA',w/2,1210);
-    ctx.fillText('SMAN 2 TARUNA BHAYANGKARA',w/2,1255);
+    ctx.fillText('SMA NEGERI 2 TARUNA BHAYANGKARA JAWA TIMUR',w/2,1255);
     return new Promise((resolve) => canvas.toBlob((blob) => {
       canvas.width = canvas.height = 0;
       resolve(blob);
