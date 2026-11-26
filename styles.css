@@ -688,8 +688,6 @@ img { max-width: 100%; }
   .programme-detail-toggle[aria-expanded="true"]::after { content: '−'; }
   .speaker-spotlight { display: grid; grid-template-columns: 112px minmax(0, 1fr); align-items: center; gap: 14px; width: 100%; margin: 0; }
   .speaker-spotlight__portrait img { height: 112px; }
-  .day-panel[data-day="11"] .speaker-spotlight__portrait { overflow: hidden; }
-  .day-panel[data-day="11"] .speaker-spotlight__portrait img { width: 168px; max-width: none; }
   .speaker-spotlight__portrait::after { opacity: .3; }
   .speaker-spotlight__copy { margin: 0; }
   .speaker-spotlight__session { font-size: 11px; letter-spacing: .025em; }
