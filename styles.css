@@ -818,7 +818,6 @@ img { max-width: 100%; }
 .prom-guide h2 { margin: 0; font: 500 clamp(2.1rem, 5.3vw, 4.6rem)/1.06 var(--display); letter-spacing: -.05em; }
 .prom-guide h2 span { color: var(--champagne); font-style: italic; white-space: nowrap; }
 .prom-guide__status { margin: 0; color: var(--muted); font-size: .875rem; line-height: 1.55; text-align: end; }
-.prom-guide__status span { margin-inline: .2em; color: var(--champagne); }
 .prom-guide__divider {
   display: grid;
   align-items: center;
