@@ -436,6 +436,16 @@ img { max-width: 100%; }
   letter-spacing: -.035em;
 }
 .is-intimate .programme-summary h3 em { font-weight: 400; }
+.is-intimate .programme-summary::after {
+  content: '';
+  display: block;
+  width: min(100%, 355px);
+  aspect-ratio: 4 / 5;
+  margin: 18px auto 0 0;
+  background: url('assets/intimate-ballroom.webp') center / contain no-repeat;
+  opacity: .8;
+  pointer-events: none;
+}
 .intimate-ornament {
   display: flex;
   align-items: center;
@@ -648,6 +658,7 @@ img { max-width: 100%; }
   .programme-session-tabs button { transition: color .15s ease, border-color .15s ease; }
   .programme-session-tabs button::before { transition: opacity .15s ease; }
   .is-intimate .programme-summary h3 em { animation: intimate-title-enter .24s ease-out; }
+  .is-intimate .programme-summary::after { animation: intimate-ballroom-enter .45s ease-out; }
   .is-intimate .intimate-ornament::before { animation: intimate-line-enter .35s cubic-bezier(.22,1,.36,1); }
   .is-intimate .intimate-ornament::after { animation: intimate-diamond-enter .35s ease-out; }
   .is-intimate .programme-agenda > .is-revealed > span,
@@ -655,6 +666,9 @@ img { max-width: 100%; }
   @keyframes intimate-title-enter {
     from { opacity: 0; transform: translateY(4px); }
     to { opacity: 1; transform: none; }
+  }
+  @keyframes intimate-ballroom-enter {
+    from { opacity: 0; transform: translateY(4px); }
   }
   @keyframes intimate-line-enter {
     from { transform: scaleX(0); }
@@ -725,7 +739,21 @@ img { max-width: 100%; }
   .programme-date { margin-bottom: 6px; font-size: 11px; }
   .programme-summary h3 { font-size: clamp(1.65rem, 6.8vw, 2.4rem); text-wrap: wrap; }
   .is-intimate .programme-summary h3 { font-size: clamp(2.4rem, 10vw, 3rem); gap: 20px; }
-  .is-intimate .intimate-ornament { max-width: 80px; }
+  .is-intimate .intimate-ornament { max-width: clamp(38px, calc(60vw - 154px), 80px); }
+  .is-intimate .programme-summary { position: relative; isolation: isolate; }
+  .is-intimate .programme-summary::after {
+    position: absolute;
+    z-index: -1;
+    top: 28px;
+    right: 0;
+    width: clamp(68px, 27vw, 114px);
+    height: 82px;
+    margin: 0;
+    background-position: center 5%;
+    background-size: 120% auto;
+    mask-image: linear-gradient(#000 56%, transparent);
+    opacity: .64;
+  }
   .programme-meta { margin-top: 8px; font-size: 12px; }
   .programme-session-tabs { margin-bottom: 13px; }
   .programme-agenda { --time-width: 6.1rem; --timeline-gutter: 18px; }
