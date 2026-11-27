@@ -816,12 +816,27 @@ function initRundown() {
     if (sessionTabs.length) {
       panel.classList.add('has-sessions', 'is-interactive');
       details.classList.add('is-interactive');
+      const date = $('.programme-date', panel);
+      const originalDate = date?.textContent;
       wireTabs(sessionTabs, sessions, (session) => {
         const spotlight = $('.speaker-spotlight', panel);
         const hasPerformer = Boolean($('.programme-agenda__featured', session));
         if (spotlight) spotlight.hidden = !hasPerformer;
         panel.classList.toggle('is-night', !hasPerformer);
-        $('.programme-summary h3', panel).textContent = $('h4', session).textContent.split('·').pop().trim();
+        const title = $('.programme-summary h3', panel);
+        const sessionTitle = $('h4', session).textContent.split('·').pop().trim();
+        const isIntimate = session.id === 'programme-12-2' && sessionTitle === 'Intimate';
+        panel.classList.toggle('is-intimate', isIntimate);
+        title.textContent = sessionTitle;
+        if (isIntimate) {
+          const name = document.createElement('em');
+          name.textContent = sessionTitle;
+          const ornament = document.createElement('span');
+          ornament.className = 'intimate-ornament';
+          ornament.setAttribute('aria-hidden', 'true');
+          title.replaceChildren(name, ornament);
+        }
+        if (date) date.textContent = isIntimate ? 'Sabtu Malam · 12 Desember' : originalDate;
         const times = $$('.programme-agenda__time', session);
         const hours = $('.programme-meta', panel);
         if (hours && times.length) {

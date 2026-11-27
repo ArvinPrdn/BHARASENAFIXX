@@ -428,6 +428,38 @@ img { max-width: 100%; }
 .programme-summary h3 { margin: 0; font: 500 clamp(2.25rem, 3.9vw, 3.8rem)/1.04 var(--display); letter-spacing: -.045em; text-wrap: balance; }
 .programme-meta { margin: 14px 0 0; color: var(--champagne); font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; }
 
+.is-intimate .programme-summary h3 {
+  display: flex;
+  align-items: center;
+  gap: clamp(18px, 2vw, 28px);
+  font-size: clamp(2.75rem, 4.5vw, 4.3rem);
+  letter-spacing: -.035em;
+}
+.is-intimate .programme-summary h3 em { font-weight: 400; }
+.intimate-ornament {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 38px;
+  max-width: 130px;
+  height: 10px;
+}
+.intimate-ornament::before {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, var(--champagne), rgba(217,195,160,.2));
+  transform-origin: left;
+}
+.intimate-ornament::after {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border: 1px solid var(--champagne);
+  transform: rotate(45deg);
+}
+
 .programme-details { grid-area: agenda; min-width: 0; }
 .programme-detail-toggle { display: none; }
 .programme-layout.is-interactive .programme-session > h4 {
@@ -443,6 +475,8 @@ img { max-width: 100%; }
 .programme-session-tabs { display: none; flex-wrap: wrap; gap: 6px; margin: 0 0 16px; }
 .is-interactive > .programme-session-tabs { display: flex; }
 .programme-session-tabs button {
+  position: relative;
+  isolation: isolate;
   display: inline-flex;
   align-items: center;
   min-height: 44px;
@@ -454,8 +488,18 @@ img { max-width: 100%; }
   font-size: 13px;
   font-weight: 600;
 }
+.programme-session-tabs button::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(125deg, #f8e4bf, #d3ac75);
+  opacity: 0;
+}
 .programme-session-tabs button:hover { border-color: var(--champagne); }
-.programme-session-tabs button[aria-selected="true"] { border-color: #efd5a9; color: var(--ink); background: linear-gradient(125deg, #f8e4bf, #d3ac75); box-shadow: 0 3px 16px rgba(237,187,116,.14); }
+.programme-session-tabs button[aria-selected="true"] { border-color: #efd5a9; color: var(--ink); }
+.programme-session-tabs button[aria-selected="true"]::before { opacity: 1; }
 .programme-session + .programme-session:not([hidden]) { margin-top: 24px; }
 .programme-details.is-interactive .programme-session { margin-top: 0; }
 .programme-session > h4 { margin: 0 0 10px; color: var(--ivory); font: 500 clamp(1.45rem, 2.1vw, 2.15rem)/1.14 var(--display); letter-spacing: -.018em; }
@@ -601,7 +645,25 @@ img { max-width: 100%; }
   }
   .day-tab { transition: color .2s ease; }
   .day-tab::after { transition: transform .28s cubic-bezier(.22,1,.36,1); }
-  .programme-session-tabs button { transition: color .2s ease, background-color .2s ease, border-color .2s ease; }
+  .programme-session-tabs button { transition: color .15s ease, border-color .15s ease; }
+  .programme-session-tabs button::before { transition: opacity .15s ease; }
+  .is-intimate .programme-summary h3 em { animation: intimate-title-enter .24s ease-out; }
+  .is-intimate .intimate-ornament::before { animation: intimate-line-enter .35s cubic-bezier(.22,1,.36,1); }
+  .is-intimate .intimate-ornament::after { animation: intimate-diamond-enter .35s ease-out; }
+  .is-intimate .programme-agenda > .is-revealed > span,
+  .is-intimate .programme-agenda > .is-revealed > div { animation: none; }
+  @keyframes intimate-title-enter {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes intimate-line-enter {
+    from { transform: scaleX(0); }
+    to { transform: scaleX(1); }
+  }
+  @keyframes intimate-diamond-enter {
+    0%, 60% { opacity: 0; }
+    to { opacity: 1; }
+  }
   .programme-layout.is-interactive .day-panel:not([hidden]) .programme-summary { animation: programme-enter .24s ease-out; }
   .programme-details.is-interactive .programme-session:not([hidden]) > h4 { animation: programme-enter .2s ease-out; }
   .has-rundown-motion .programme-agenda::after {
@@ -662,6 +724,8 @@ img { max-width: 100%; }
   .day-panel.has-sessions.is-night { grid-template-areas: "sessions" "summary" "agenda"; grid-template-rows: auto; }
   .programme-date { margin-bottom: 6px; font-size: 11px; }
   .programme-summary h3 { font-size: clamp(1.65rem, 6.8vw, 2.4rem); text-wrap: wrap; }
+  .is-intimate .programme-summary h3 { font-size: clamp(2.4rem, 10vw, 3rem); gap: 20px; }
+  .is-intimate .intimate-ornament { max-width: 80px; }
   .programme-meta { margin-top: 8px; font-size: 12px; }
   .programme-session-tabs { margin-bottom: 13px; }
   .programme-agenda { --time-width: 6.1rem; --timeline-gutter: 18px; }
